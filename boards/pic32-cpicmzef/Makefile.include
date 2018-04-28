@@ -1,0 +1,5 @@
+export CPU = mips_pic32mzef
+export CPU_MODEL=p32mz2048efm100
+export INCLUDES += -I$(RIOTBOARD)/$(BOARD)/include/
+export APPDEPS += $(RIOTCPU)/$(CPU)/$(CPU_MODEL)/$(CPU_MODEL).S
+export USE_UHI_SYSCALLS = 1
