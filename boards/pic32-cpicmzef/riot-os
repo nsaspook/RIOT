@@ -1,0 +1,2 @@
+cd /root/ble/RIOT/examples/hello-world
+BOARD=pic32-cpicmzef make all term
