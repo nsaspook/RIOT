@@ -35,22 +35,23 @@ extern "C" {
 #endif
 
 #include "vendor/p32mz2048efm100.h"
+#include "vendor/ports_p32mz2048efm100.h"
 
-/**
- * @brief   Set how many increments of the count register per uS
- *          needed by the timer code.
- */
+	/**
+	 * @brief   Set how many increments of the count register per uS
+	 *          needed by the timer code.
+	 */
 #define TICKS_PER_US (100)
 
-/**
- * @brief   We are using an External Interrupt Controller (all pic32 devices use this mode)
- */
+	/**
+	 * @brief   We are using an External Interrupt Controller (all pic32 devices use this mode)
+	 */
 #define EIC_IRQ      (1)
 
-/**
- * @name    LED pin configuration
- * @{
- */
+	/**
+	 * @name    LED pin configuration
+	 * @{
+	 */
 #define LED1_PIN            GPIO_PIN(PORT_E, 3)
 #define LED2_PIN            GPIO_PIN(PORT_E, 4)
 #define LED3_PIN            GPIO_PIN(PORT_E, 6)
@@ -84,16 +85,16 @@ extern "C" {
 #define LED4G_OFF           (LATBSET = LED4_MASKG)
 #define LED4G_ON            (LATBCLR = LED4_MASKG)
 #define LED4G_TOGGLE        (LATBINV = LED4_MASKG)
-	
+
 #define LED4B_OFF           (LATBSET = LED4_MASKB)
 #define LED4B_ON            (LATBCLR = LED4_MASKB)
 #define LED4B_TOGGLE        (LATBINV = LED4_MASKB)
-/** @} */
+	/** @} */
 
-/**
- * @brief   Board level initialization
- */
-void board_init(void);
+	/**
+	 * @brief   Board level initialization
+	 */
+	void board_init(void);
 
 #ifdef __cplusplus
 }
