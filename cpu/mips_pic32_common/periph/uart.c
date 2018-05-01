@@ -8,16 +8,16 @@
  *
  */
 
- /**
-  * @ingroup     cpu_mips_pic32_common
-  * @ingroup     drivers_periph_uart
-  * @{
-  *
-  * @file
-  * @brief       Peripheral UART driver implementation
-  *
-  * @}
-  */
+/**
+ * @ingroup     cpu_mips_pic32_common
+ * @ingroup     drivers_periph_uart
+ * @{
+ *
+ * @file
+ * @brief       Peripheral UART driver implementation
+ *
+ * @}
+ */
 #include <assert.h>
 #include "periph/uart.h"
 #include "board.h"
@@ -36,56 +36,109 @@
 /* PERIPHERAL_CLOCK must be defined in board file */
 
 typedef struct PIC32_UART_tag {
-    volatile uint32_t *regs;
-    uint32_t clock;
+	volatile uint32_t *regs;
+	uint32_t clock;
 } PIC32_UART_T;
 
 /* pic uarts are numbered 1 to 6 */
 static PIC32_UART_T pic_uart[UART_NUMOF + 1];
 
+/**
+ * @brief   Allocate memory to store the callback functions
+ */
+static uart_isr_ctx_t isr_ctx[UART_NUMOF];
+
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
-    (void)rx_cb;
-    (void)arg;
 
-    assert(uart <= UART_NUMOF && uart != 0); /*No uart 0 on pic32*/
+	assert(uart <= UART_NUMOF && uart != 0); /*No uart 0 on pic32*/
 
-    /* Pin Mux should be setup in board file */
+	/* save interrupt callback context */
+	isr_ctx[uart].rx_cb = rx_cb;
+	isr_ctx[uart].arg = arg;
 
-    pic_uart[uart].regs =
-        (volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
-    pic_uart[uart].clock = PERIPHERAL_CLOCK;
+	/* Pin Mux should be setup in board file */
 
-    UxBRG(pic_uart[uart])= (pic_uart[uart].clock / (16 * baudrate)) - 1;
-    UxSTA(pic_uart[uart])= 0;
-    UxMODE(pic_uart[uart])= _U1MODE_ON_MASK;
-    UxSTASET(pic_uart[uart])= _U1STA_URXEN_MASK;
-    UxSTASET(pic_uart[uart])= _U1STA_UTXEN_MASK;
+	pic_uart[uart].regs =
+		(volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
+	pic_uart[uart].clock = PERIPHERAL_CLOCK;
 
-    return 0;
+	UxBRG(pic_uart[uart]) = (pic_uart[uart].clock / (16 * baudrate)) - 1;
+	UxSTA(pic_uart[uart]) = 0;
+	UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK;
+	UxSTASET(pic_uart[uart]) = _U1STA_URXEN_MASK;
+	UxSTASET(pic_uart[uart]) = _U1STA_UTXEN_MASK;
+	/* enable receive interrupt */
+	//        USART_IntEnable(uart, USART_IEN_RXDATAV);
+
+	return 0;
 }
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    while(len--) {
-        while(UxSTA(pic_uart[uart])& _U1STA_UTXBF_MASK) {}
-        UxTXREG(pic_uart[uart]) = *data++;
-    }
+	while (len--) {
+		while (UxSTA(pic_uart[uart]) & _U1STA_UTXBF_MASK) {
+		}
+		UxTXREG(pic_uart[uart]) = *data++;
+	}
 }
 
 void uart_poweron(uart_t uart)
 {
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    UxMODESET(pic_uart[uart])= _U1MODE_ON_MASK;
+	UxMODESET(pic_uart[uart]) = _U1MODE_ON_MASK;
 
 }
 
 void uart_poweroff(uart_t uart)
 {
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    UxMODECLR(pic_uart[uart])= _U1MODE_ON_MASK;
+	UxMODECLR(pic_uart[uart]) = _U1MODE_ON_MASK;
+}
+
+/* polled in the timer interrupt for now, so check for a active uart */
+static void rx_irq(uart_t uart)
+{
+	/* reload registers for each uart */
+	pic_uart[uart].regs =
+		(volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
+
+	if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+		if (isr_ctx[uart].rx_cb)
+			isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+	}
+}
+
+void UART_1_ISR_RX(void)
+{
+	rx_irq(1);
+}
+
+void UART_2_ISR_RX(void)
+{
+	rx_irq(2);
+}
+
+void UART_3_ISR_RX(void)
+{
+	rx_irq(3);
+}
+
+void UART_4_ISR_RX(void)
+{
+	rx_irq(4);
+}
+
+void UART_5_ISR_RX(void)
+{
+	rx_irq(5);
+}
+
+void UART_6_ISR_RX(void)
+{
+	rx_irq(6);
 }
