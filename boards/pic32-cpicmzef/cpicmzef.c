@@ -43,12 +43,16 @@ void board_init(void)
 	gpio_init(LED4_PINR, GPIO_OUT);
 	gpio_init(LED4_PING, GPIO_OUT);
 	gpio_init(LED4_PINB, GPIO_OUT);
+	gpio_init(PDEBUG1_PIN, GPIO_OUT);
+	gpio_init(PDEBUG2_PIN, GPIO_OUT);
 	LED1_OFF;
 	LED2_OFF;
 	LED3_OFF;
 	LED4R_OFF;
 	LED4G_OFF;
 	LED4B_OFF;
+	PDEBUG1_OFF;
+	PDEBUG2_OFF;
 
 	/* initialize the CPU */
 	cpu_init();

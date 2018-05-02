@@ -252,6 +252,16 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 		counter += TIMER_ACCURACY;
 		irq_restore(status);
 
+		/* process uart receive interrupts here */
+#ifdef _PORTS_P32MZ2048EFM100_H
+		UART_1_ISR_RX();
+		UART_2_ISR_RX();
+		UART_3_ISR_RX();
+		UART_4_ISR_RX();
+		UART_5_ISR_RX();
+		UART_6_ISR_RX();
+#endif
+
 		if (counter == compares[0]) {
 			/*
 			 * The Xtimer code expects the ISR to take some time
@@ -283,16 +293,6 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 		}
 
 		mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
-
-		/* process uart receive interrupts here */
-#ifdef _PORTS_P32MZ2048EFM100_H
-		UART_1_ISR_RX();
-		UART_2_ISR_RX();
-		UART_3_ISR_RX();
-		UART_4_ISR_RX();
-		UART_5_ISR_RX();
-		UART_6_ISR_RX();
-#endif
 
 	} else {
 		spurious_int++;

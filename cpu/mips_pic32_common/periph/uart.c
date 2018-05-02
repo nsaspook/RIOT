@@ -19,6 +19,7 @@
  * @}
  */
 #include <assert.h>
+#include "periph/gpio.h"
 #include "periph/uart.h"
 #include "board.h"
 
@@ -46,7 +47,7 @@ static PIC32_UART_T pic_uart[UART_NUMOF + 1];
 /**
  * @brief   Allocate memory to store the callback functions
  */
-static uart_isr_ctx_t isr_ctx[UART_NUMOF];
+static uart_isr_ctx_t isr_ctx[UART_NUMOF+1];
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
@@ -76,6 +77,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
+	PDEBUG2_ON;
 	assert(uart <= UART_NUMOF && uart != 0);
 
 	while (len--) {
@@ -83,6 +85,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 		}
 		UxTXREG(pic_uart[uart]) = *data++;
 	}
+	PDEBUG2_OFF;
 }
 
 void uart_poweron(uart_t uart)
@@ -103,13 +106,21 @@ void uart_poweroff(uart_t uart)
 /* polled in the timer interrupt for now, so check for a active uart */
 static void rx_irq(uart_t uart)
 {
-	/* reload registers for each uart */
-	pic_uart[uart].regs =
-		(volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
+	PDEBUG1_TOGGLE;
+	if (pic_uart[uart].regs) { /* do we have an configured uart? */
+		if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
+			/* clear the FIFO */
+			while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+				if (isr_ctx[uart].rx_cb)
+					isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+			}
+			UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
+		}
 
-	if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
-		if (isr_ctx[uart].rx_cb)
-			isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+		if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+			if (isr_ctx[uart].rx_cb)
+				isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+		}
 	}
 }
 

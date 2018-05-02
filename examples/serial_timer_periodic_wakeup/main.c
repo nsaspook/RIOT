@@ -19,6 +19,7 @@
  */
 
 #include <stdio.h>
+#include<string.h>
 #include "xtimer.h"
 #include "timex.h"
 #include "periph/uart.h"
@@ -45,15 +46,18 @@ static void _rx_cb2(void* data, uint8_t c)
 
 int main(void)
 {
-	uint8_t data1,data2;
+	uint8_t data1, data2;
+	char buffer[80];
 	xtimer_ticks32_t last_wakeup = xtimer_now();
 	uart_init(1, DEBUG_UART_BAUD, _rx_cb1, &data1);
 	uart_init(2, DEBUG_UART_BAUD, _rx_cb2, &data2);
+	uart_init(4, DEBUG_UART_BAUD, NULL, 0);
 
 
 	while (1) {
 		xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
-		printf("slept until %" PRIu32 "\n", xtimer_usec_from_ticks(xtimer_now()));
+		sprintf(buffer, "%" PRIu32 "\n", xtimer_usec_from_ticks(xtimer_now()));
+		uart_write(4, (uint8_t *) buffer, strlen(buffer));
 	}
 
 	return 0;

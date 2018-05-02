@@ -58,6 +58,8 @@ extern "C" {
 #define LED4_PINR           GPIO_PIN(PORT_B, 5)
 #define LED4_PING           GPIO_PIN(PORT_B, 1)	
 #define LED4_PINB           GPIO_PIN(PORT_B, 0)
+#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)	
+#define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
 
 #define LED1_MASK           (1 << 3)
 #define LED2_MASK           (1 << 4)
@@ -65,6 +67,8 @@ extern "C" {
 #define LED4_MASKR          (1 << 5)
 #define LED4_MASKG          (1 << 1)
 #define LED4_MASKB          (1 << 0)
+#define PDEBUG1_MASK        (1 << 7)
+#define PDEBUG2_MASK        (1 << 1)
 
 #define LED1_ON             (LATESET = LED1_MASK)
 #define LED1_OFF            (LATECLR = LED1_MASK)
@@ -89,6 +93,14 @@ extern "C" {
 #define LED4B_OFF           (LATBSET = LED4_MASKB)
 #define LED4B_ON            (LATBCLR = LED4_MASKB)
 #define LED4B_TOGGLE        (LATBINV = LED4_MASKB)
+
+#define PDEBUG1_ON          (LATESET = PDEBUG1_MASK)
+#define PDEBUG1_OFF         (LATECLR = PDEBUG1_MASK)
+#define PDEBUG1_TOGGLE      (LATEINV = PDEBUG1_MASK)
+
+#define PDEBUG2_ON          (LATESET = PDEBUG2_MASK)
+#define PDEBUG2_OFF         (LATECLR = PDEBUG2_MASK)
+#define PDEBUG2_TOGGLE      (LATEINV = PDEBUG2_MASK)
 	/** @} */
 
 	/**
