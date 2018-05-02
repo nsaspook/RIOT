@@ -36,6 +36,13 @@ void board_init(void)
 	uart_init(DEBUG_VIA_UART, DEBUG_UART_BAUD, NULL, 0);
 #endif
 
+	/* init uart ports */
+	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
+	gpio_init(GPIO_PIN(PORT_C, 2), GPIO_OUT);
+	gpio_init(GPIO_PIN(PORT_D, 15), GPIO_OUT);
+	gpio_init(GPIO_PIN(PORT_B, 2), GPIO_IN);
+	gpio_init(GPIO_PIN(PORT_C, 3), GPIO_IN);
+	gpio_init(GPIO_PIN(PORT_D, 10), GPIO_IN);
 	/* Turn off all LED's */
 	gpio_init(LED1_PIN, GPIO_OUT);
 	gpio_init(LED2_PIN, GPIO_OUT);

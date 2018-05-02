@@ -47,7 +47,46 @@ static PIC32_UART_T pic_uart[UART_NUMOF + 1];
 /**
  * @brief   Allocate memory to store the callback functions
  */
-static uart_isr_ctx_t isr_ctx[UART_NUMOF+1];
+static uart_isr_ctx_t isr_ctx[UART_NUMOF + 1];
+
+/* 1,2,4 are the active uarts on the cpicmzef board configuration */
+void uart_irq_enable(uart_t uart)
+{
+	if (uart == 1) {
+		IEC3CLR = _IEC3_U1RXIE_MASK; // disable U1RX interrupt
+		IFS3CLR = _IFS3_U1RXIF_MASK; // clear U1RX flag
+		IEC3SET = _IEC3_U1RXIE_MASK;
+		IPC28bits.U1RXIP = 1;
+		IPC28bits.U1RXIS = 0;
+	}
+	if (uart == 2) {
+		IEC4CLR = _IEC4_U2RXIE_MASK; // disable U2RX interrupt
+		IFS4CLR = _IFS4_U2RXIF_MASK; // clear U2RX flag
+		IEC4SET = _IEC4_U2RXIE_MASK;
+		IPC36bits.U2RXIP = 1;
+		IPC36bits.U2RXIS = 0;
+	}
+	if (uart == 4) {
+		IEC5CLR = _IEC5_U4RXIE_MASK; // disable U2RX interrupt
+		IFS5CLR = _IFS5_U4RXIF_MASK; // clear U2RX flag
+		IEC5SET = _IEC5_U4RXIE_MASK;
+		IPC42bits.U4RXIP = 1;
+		IPC42bits.U4RXIS = 0;
+	}
+}
+
+void uart_irq_disable(uart_t uart)
+{
+	if (uart == 1) {
+		IEC3CLR = _IEC3_U1RXIE_MASK;
+	}
+	if (uart == 2) {
+		IEC4CLR = _IEC4_U2RXIE_MASK;
+	}
+	if (uart == 4) {
+		IEC5CLR = _IEC5_U4RXIE_MASK;
+	}
+}
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
@@ -69,9 +108,9 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 	UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK;
 	UxSTASET(pic_uart[uart]) = _U1STA_URXEN_MASK;
 	UxSTASET(pic_uart[uart]) = _U1STA_UTXEN_MASK;
-	/* enable receive interrupt */
-	//        USART_IntEnable(uart, USART_IEN_RXDATAV);
-
+	/* enable receive interrupt for ports with callbacks */
+	if (rx_cb)
+		uart_irq_enable(uart);
 	return 0;
 }
 
@@ -103,24 +142,22 @@ void uart_poweroff(uart_t uart)
 	UxMODECLR(pic_uart[uart]) = _U1MODE_ON_MASK;
 }
 
-/* polled in the timer interrupt for now, so check for a active uart */
+/* uart interrupt in single vector sw0 */
 static void rx_irq(uart_t uart)
 {
 	PDEBUG1_TOGGLE;
-	if (pic_uart[uart].regs) { /* do we have an configured uart? */
-		if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
-			/* clear the FIFO */
-			while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
-				if (isr_ctx[uart].rx_cb)
-					isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
-			}
-			UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
-		}
-
-		if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+	if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
+		/* clear the FIFO */
+		while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
 			if (isr_ctx[uart].rx_cb)
 				isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
 		}
+		UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
+	}
+
+	if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+		if (isr_ctx[uart].rx_cb)
+			isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
 	}
 }
 

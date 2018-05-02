@@ -24,6 +24,7 @@
 #include <string.h>
 
 #include <periph/timer.h>
+#include "periph/uart.h"
 #include "cpu_conf.h"
 #include <stdio.h>
 #include "sched.h"
@@ -53,10 +54,7 @@
 
 extern void UART_1_ISR_RX(void);
 extern void UART_2_ISR_RX(void);
-extern void UART_3_ISR_RX(void);
 extern void UART_4_ISR_RX(void);
-extern void UART_5_ISR_RX(void);
-extern void UART_6_ISR_RX(void);
 
 /*
  * The base MIPS count / compare timer is fixed frequency at core clock / 2
@@ -252,16 +250,6 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 		counter += TIMER_ACCURACY;
 		irq_restore(status);
 
-		/* process uart receive interrupts here */
-#ifdef _PORTS_P32MZ2048EFM100_H
-		UART_1_ISR_RX();
-		UART_2_ISR_RX();
-		UART_3_ISR_RX();
-		UART_4_ISR_RX();
-		UART_5_ISR_RX();
-		UART_6_ISR_RX();
-#endif
-
 		if (counter == compares[0]) {
 			/*
 			 * The Xtimer code expects the ISR to take some time
@@ -297,4 +285,21 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	} else {
 		spurious_int++;
 	}
+#ifdef _PORTS_P32MZ2048EFM100_H
+	/* process uart receive interrupts here */
+	if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
+		UART_1_ISR_RX();
+		IFS3CLR = _IFS3_U1RXIF_MASK;
+	}
+
+	if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
+		UART_2_ISR_RX();
+		IFS4CLR = _IFS4_U2RXIF_MASK;
+	}
+
+	if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
+		UART_4_ISR_RX();
+		IFS5CLR = _IFS5_U4RXIF_MASK;
+	}
+#endif
 }

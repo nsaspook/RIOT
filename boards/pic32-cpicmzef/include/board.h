@@ -9,18 +9,18 @@
  */
 
 /**
- * @defgroup    boards_pic32-wifire Digilent PIC32 WiFire
+ * @defgroup    boards_pic32-cpicmzef PIC32MZ EF Curiosity Development Board
  * @ingroup     boards
- * @brief       Support for the Digilent PIC32 WiFire
+ * @brief       Support for the PIC32MZ EF Curiosity Development Board
  * @details
- * See:
- * http://store.digilentinc.com/chipkit-wi-fire-wifi-enabled-mz-microcontroller-board/
+ * See:http://ww1.microchip.com/downloads/en/DeviceDoc/70005282B.pdf
+ * 
  * for more information on the board.
  *
  * @{
  *
  * @file
- * @brief       board configuration for the Digilent PIC32 WiFire
+ * @brief       board configuration for the PIC32MZ EF Curiosity Development Board
  *
  * @author      Neil Jones <Neil.Jones@imgtec.com>
  */

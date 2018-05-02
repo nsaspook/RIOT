@@ -48,6 +48,7 @@ int main(void)
 {
 	uint8_t data1, data2;
 	char buffer[80];
+	int dd;
 	xtimer_ticks32_t last_wakeup = xtimer_now();
 	uart_init(1, DEBUG_UART_BAUD, _rx_cb1, &data1);
 	uart_init(2, DEBUG_UART_BAUD, _rx_cb2, &data2);
@@ -55,9 +56,13 @@ int main(void)
 
 
 	while (1) {
-		xtimer_periodic_wakeup(&last_wakeup, INTERVAL);
-		sprintf(buffer, "%" PRIu32 "\n", xtimer_usec_from_ticks(xtimer_now()));
+		(void)last_wakeup;
+//		xtimer_periodic_wakeup(&last_wakeup, INTERVAL/10);
+		sprintf(buffer, "Testing longer string %" PRIu32 "\n", xtimer_usec_from_ticks(xtimer_now()));
 		uart_write(4, (uint8_t *) buffer, strlen(buffer));
+		for (dd=0;dd<1000000;dd++) {
+			last_wakeup = xtimer_now();
+		}
 	}
 
 	return 0;

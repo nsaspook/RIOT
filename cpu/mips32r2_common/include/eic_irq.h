@@ -22,7 +22,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+	
 /**
  * @ brief Internal Interrupt numbers
  *
@@ -40,6 +40,10 @@ extern "C" {
 #define EIC_IRQ_PC    (-3)
 /** @} */
 
+#define EIC_IRQ_UART_1_ISR_RX	113 /* Persistent interrupts */
+#define EIC_IRQ_UART_2_ISR_RX	146
+#define EIC_IRQ_UART_4_ISR_RX	171
+	
 /**
  * @brief   Configure and route the interrupt
  */
