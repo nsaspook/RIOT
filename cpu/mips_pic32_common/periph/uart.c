@@ -34,6 +34,9 @@
 #define UxBRG(U)     (U.regs[0x40/4])
 #define REGS_SPACING (_UART2_BASE_ADDRESS - _UART1_BASE_ADDRESS)
 
+#define UxPRI_SW0	1
+#define UXSUBPRI_SW0	0
+
 /* PERIPHERAL_CLOCK must be defined in board file */
 
 typedef struct PIC32_UART_tag {
@@ -53,25 +56,25 @@ static uart_isr_ctx_t isr_ctx[UART_NUMOF + 1];
 void uart_irq_enable(uart_t uart)
 {
 	if (uart == 1) {
-		IEC3CLR = _IEC3_U1RXIE_MASK; // disable U1RX interrupt
-		IFS3CLR = _IFS3_U1RXIF_MASK; // clear U1RX flag
+		IEC3CLR = _IEC3_U1RXIE_MASK; /* disable U1RX interrupt */
+		IFS3CLR = _IFS3_U1RXIF_MASK; /* clear U1RX flag */
 		IEC3SET = _IEC3_U1RXIE_MASK;
-		IPC28bits.U1RXIP = 1;
-		IPC28bits.U1RXIS = 0;
+		IPC28bits.U1RXIP = UxPRI_SW0; /* Set IRQ 0 to priority 1.0 */
+		IPC28bits.U1RXIS = UXSUBPRI_SW0;
 	}
 	if (uart == 2) {
-		IEC4CLR = _IEC4_U2RXIE_MASK; // disable U2RX interrupt
-		IFS4CLR = _IFS4_U2RXIF_MASK; // clear U2RX flag
+		IEC4CLR = _IEC4_U2RXIE_MASK;
+		IFS4CLR = _IFS4_U2RXIF_MASK;
 		IEC4SET = _IEC4_U2RXIE_MASK;
-		IPC36bits.U2RXIP = 1;
-		IPC36bits.U2RXIS = 0;
+		IPC36bits.U2RXIP = UxPRI_SW0;
+		IPC36bits.U2RXIS = UXSUBPRI_SW0;
 	}
 	if (uart == 4) {
-		IEC5CLR = _IEC5_U4RXIE_MASK; // disable U2RX interrupt
-		IFS5CLR = _IFS5_U4RXIF_MASK; // clear U2RX flag
+		IEC5CLR = _IEC5_U4RXIE_MASK;
+		IFS5CLR = _IFS5_U4RXIF_MASK;
 		IEC5SET = _IEC5_U4RXIE_MASK;
-		IPC42bits.U4RXIP = 1;
-		IPC42bits.U4RXIS = 0;
+		IPC42bits.U4RXIP = UxPRI_SW0;
+		IPC42bits.U4RXIS = UXSUBPRI_SW0;
 	}
 }
 
@@ -171,22 +174,8 @@ void UART_2_ISR_RX(void)
 	rx_irq(2);
 }
 
-void UART_3_ISR_RX(void)
-{
-	rx_irq(3);
-}
-
 void UART_4_ISR_RX(void)
 {
 	rx_irq(4);
 }
 
-void UART_5_ISR_RX(void)
-{
-	rx_irq(5);
-}
-
-void UART_6_ISR_RX(void)
-{
-	rx_irq(6);
-}
