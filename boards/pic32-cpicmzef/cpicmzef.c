@@ -63,17 +63,17 @@ void board_init(void)
 	PDEBUG2_OFF;
 	
 	/* board device defaults */
-	gpio_init(WIFI_SLEEP, GPIO_OUT);
+	gpio_init(C_WIFI_SLEEP, GPIO_OUT);
 	LATACLR = (1 << 0);
-	gpio_init(STBY_RST, GPIO_OUT);
+	gpio_init(C_STBY_RST, GPIO_OUT);
 	LATACLR = (1 << 5);
-	gpio_init(BLE_IO_WAKE, GPIO_OUT);
+	gpio_init(C_BLE_IO_WAKE, GPIO_OUT);
 	LATACLR = (1 << 9);
-	gpio_init(BLE_IO_CONN, GPIO_IN);
-	gpio_init(WIFI_INT, GPIO_IN);
-	gpio_init(SWITCH_1, GPIO_IN);
+	gpio_init(C_BLE_IO_CONN, GPIO_IN);
+	gpio_init(C_WIFI_INT, GPIO_IN);
+	gpio_init(C_SWITCH_1, GPIO_IN);
 	CNPUGSET= (1 << 12);
-	gpio_init(USB_VBUS_SWITCH, GPIO_OUT);
+	gpio_init(C_USB_VBUS_SWITCH, GPIO_OUT);
 	LATGCLR = (1 << 13);
 
 	hwrng_init();
