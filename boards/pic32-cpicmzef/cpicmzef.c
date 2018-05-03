@@ -62,14 +62,11 @@ void board_init(void)
 	PDEBUG1_OFF;
 	PDEBUG2_OFF;
 
-	/* initialize the CPU */
-	cpu_init();
-
 	hwrng_init();
 
 	/* Initialize all SPI modules */
-//	for (unsigned i = 1; i <= SPI_NUMOF; i++)
-//		spi_init(SPI_DEV(i));
+	for (unsigned i = 1; i <= SPI_NUMOF; i++)
+		spi_init(SPI_DEV(i));
 
 
 	/* Stop the linker from throwing away the PIC32 config register settings */
