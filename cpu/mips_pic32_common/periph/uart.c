@@ -119,7 +119,9 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
+#ifdef _PORTS_P32MZ2048EFM100_H
 	PDEBUG2_ON;
+#endif
 	assert(uart <= UART_NUMOF && uart != 0);
 
 	while (len--) {
@@ -127,7 +129,9 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 		}
 		UxTXREG(pic_uart[uart]) = *data++;
 	}
+#ifdef _PORTS_P32MZ2048EFM100_H
 	PDEBUG2_OFF;
+#endif
 }
 
 void uart_poweron(uart_t uart)
@@ -148,7 +152,9 @@ void uart_poweroff(uart_t uart)
 /* uart interrupt in single vector sw0 */
 static void rx_irq(uart_t uart)
 {
+#ifdef _PORTS_P32MZ2048EFM100_H
 	PDEBUG1_TOGGLE;
+#endif
 	if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
 		/* clear the FIFO */
 		while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {

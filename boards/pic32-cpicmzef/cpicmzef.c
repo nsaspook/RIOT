@@ -12,6 +12,7 @@
 #include <stdint.h>
 #include "periph/gpio.h"
 #include "periph/hwrng.h"
+#include "periph/spi.h"
 #include "periph/uart.h"
 #include "bitarithm.h"
 #include "board.h"
@@ -63,6 +64,13 @@ void board_init(void)
 
 	/* initialize the CPU */
 	cpu_init();
+
+	hwrng_init();
+
+	/* Initialize all SPI modules */
+//	for (unsigned i = 1; i <= SPI_NUMOF; i++)
+//		spi_init(SPI_DEV(i));
+
 
 	/* Stop the linker from throwing away the PIC32 config register settings */
 	dummy();

@@ -9,6 +9,9 @@ QUIET ?= 1
 # development process:
 DEVELHELP ?= 1
 
+FEATURES_REQUIRED += periph_hwrng
+FEATURES_REQUIRED += periph_spi
 FEATURES_REQUIRED += periph_timer
+FEATURES_REQUIRED += periph_uart
 
 include $(RIOTBASE)/Makefile.include
