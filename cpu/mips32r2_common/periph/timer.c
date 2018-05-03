@@ -225,8 +225,7 @@ void timer_irq_disable(tim_t dev)
  * MCU-ASE) defaults to non vectored mode anyway with all interrupts coming via
  * vector 0 which is equivalent to 'sw0' in 'VI' mode.
  *
- * Thus all EIC interrupts should be decoded here (currently only Timer is
- * used)
+ * Thus all EIC interrupts should be decoded here 
  *
  * When toolchain support is available we could move to full vector mode but
  * this does take up significant space (MCU-ASE provides 256 vectors at 32B

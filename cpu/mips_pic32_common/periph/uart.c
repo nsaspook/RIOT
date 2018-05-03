@@ -160,6 +160,9 @@ static void rx_irq(uart_t uart)
 		while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
 			if (isr_ctx[uart].rx_cb)
 				isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+#ifdef _PORTS_P32MZ2048EFM100_H
+			PDEBUG1_TOGGLE;
+#endif
 		}
 		UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
 	}
