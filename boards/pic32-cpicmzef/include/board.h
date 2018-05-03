@@ -61,6 +61,14 @@ extern "C" {
 #define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)	
 #define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
 
+#define WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
+#define STBY_RST	    GPIO_PIN(PORT_A, 5)
+#define BLE_IO_WAKE	    GPIO_PIN(PORT_A, 9)
+#define BLE_IO_CONN	    GPIO_PIN(PORT_B, 4)
+#define WIFI_INT	    GPIO_PIN(PORT_F, 4)
+#define SWITCH_1	    GPIO_PIN(PORT_G, 12)
+#define USB_VBUS_SWITCH	    GPIO_PIN(PORT_G, 13)
+
 #define LED1_MASK           (1 << 3)
 #define LED2_MASK           (1 << 4)
 #define LED3_MASK           (1 << 6)

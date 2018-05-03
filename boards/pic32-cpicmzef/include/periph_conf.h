@@ -24,6 +24,7 @@
 
 #include "periph_cpu.h"
 #include "vendor/p32mz2048efm100.h"
+#include "vendor/ports_p32mz2048efm100.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -71,66 +72,53 @@ extern "C" {
 			.miso_pin = 0,
 			.miso_reg = 0,
 			.miso_af = 0
-		}, /* No SPI0 on PIC32, dupe to compile */
+		}, /* No SPI0 on PIC32, dummy to compile */
 
 		{ /*
-         * SPI 1 (J10 connector)
-         *      MOSI -> RE5
-         *      MISO -> RD2
+         * SPI 1 (MikBUS 1)
+         *      MOSI -> RD3
+         *      MISO -> RD14
          *      SCK  -> RD1
          */
-			.mosi_pin = GPIO_PIN(PORT_E, 5),
-			.mosi_reg = (volatile uint32_t*) & RPE5R,
-			.mosi_af = 0b0101,
-			.miso_pin = GPIO_PIN(PORT_D, 2),
+			.mosi_pin = GPIO_PIN(PORT_D, 3),
+			.mosi_reg = (volatile uint32_t*) & RPD3R,
+			.mosi_af = OUTPUT_FUNC_SDO1,
+			.miso_pin = GPIO_PIN(PORT_D, 14),
 			.miso_reg = (volatile uint32_t*) & SDI1R,
-			.miso_af = 0b000
+			.miso_af = INPUT_PIN_RPD14,
 		},
-
+		
 		{ /*
-         * SPI 2 (J9 connector)
-         *      MOSI -> RF0
-         *      MISO -> RD11
+         * SPI 2 (MikBUS 2)
+         *      MOSI -> RG7
+         *      MISO -> RG0
          *      SCK  -> RG6
          */
-			.mosi_pin = GPIO_PIN(PORT_F, 0),
-			.mosi_reg = (volatile uint32_t*) & RPF0R,
-			.mosi_af = 0b0110,
-			.miso_pin = GPIO_PIN(PORT_D, 11),
+			.mosi_pin = GPIO_PIN(PORT_G, 7),
+			.mosi_reg = (volatile uint32_t*) & RPG7R,
+			.mosi_af = OUTPUT_FUNC_SDO2,
+			.miso_pin = GPIO_PIN(PORT_G, 0),
 			.miso_reg = (volatile uint32_t*) & SDI2R,
-			.miso_af = 0b0011,
+			.miso_af = INPUT_PIN_RPG0,
 		},
+		
 		{ /*
-         * SPI 3 (microSD card)
-         *   MOSI -> RC4
+         * SPI 3 (MRF24WN0MA-1/RM100 - wifi module)
+         *   MOSI -> RB9
          *   MISO -> RB10
          *   SCK  -> RB14
          */
-			.mosi_pin = GPIO_PIN(PORT_C, 4),
-			.mosi_reg = (volatile uint32_t*) & RPC4R,
-			.mosi_af = 0b0111,
+			.mosi_pin = GPIO_PIN(PORT_B, 9),
+			.mosi_reg = (volatile uint32_t*) & RPB9R,
+			.mosi_af = OUTPUT_FUNC_SDO3,
 			.miso_pin = GPIO_PIN(PORT_B, 10),
 			.miso_reg = (volatile uint32_t*) & SDI3R,
-			.miso_af = 0b0110,
-		},
-
-		{ /*
-         * SPI 4 (MRF24WG0MA - wifi module)
-         *   MOSI -> RG0
-         *   MISO -> RF5
-         *   SCK  -> RD10
-         */
-			.mosi_pin = GPIO_PIN(PORT_G, 0),
-			.mosi_reg = (volatile uint32_t*) & RPG0R,
-			.mosi_af = 0b1000,
-			.miso_pin = GPIO_PIN(PORT_F, 5),
-			.miso_reg = (volatile uint32_t*) & SDI4R,
-			.miso_af = 0b0010,
+			.miso_af = INPUT_PIN_RPB10,
 		},
 	};
 
 
-#define SPI_NUMOF           (2)
+#define SPI_NUMOF           (3)
 	/** @} */
 
 #ifdef __cplusplus

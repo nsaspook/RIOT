@@ -5,20 +5,7 @@
 
 /* Section 1 - Enumerate instances, define constants, VREGs */
 
-//#include <xc.h>
 #include <stdbool.h>
-
-//#include "peripheral/peripheral_common_32bit.h"
-
-/* Default definition used for all API dispatch functions */
-//#ifndef PLIB_INLINE_API
-//    #define PLIB_INLINE_API extern inline
-//#endif
-
-/* Default definition used for all other functions */
-//#ifndef PLIB_INLINE
-//    #define PLIB_INLINE extern inline
-//#endif
 
 typedef enum {
 
