@@ -19,11 +19,29 @@
 #include "bitarithm.h"
 #include "board.h"
 #include "cpu.h"
+#include <mips/m32c0.h>
 
 extern void dummy(void);
 
+/* L1 cache modes */
+#define UNCACHED	0x02
+#define WB_WA		0x03
+#define WT_WA		0x01
+#define WT_NWA		0x00
+
+void set_cache_policy(uint32_t cc)
+{
+	uint32_t cp0;
+
+	cp0 = _mips_mfc0(16);
+	cp0 &= ~0x03;
+	cp0 |= cc;
+	_mips_mtc0(16, cp0);
+}
+
 void board_init(void)
 {
+	set_cache_policy(WB_WA);
 	/*
 	 * Setup pin mux for UARTS 
 	 */
@@ -63,7 +81,7 @@ void board_init(void)
 	LED4B_OFF;
 	PDEBUG1_OFF;
 	PDEBUG2_OFF;
-	
+
 	/* board device defaults */
 	gpio_init(C_WIFI_SLEEP, GPIO_OUT);
 	LATACLR = (1 << 0);
@@ -74,7 +92,7 @@ void board_init(void)
 	gpio_init(C_BLE_IO_CONN, GPIO_IN);
 	gpio_init(C_WIFI_INT, GPIO_IN);
 	gpio_init(C_SWITCH_1, GPIO_IN);
-	CNPUGSET= (1 << 12);
+	CNPUGSET = (1 << 12);
 	gpio_init(C_USB_VBUS_SWITCH, GPIO_OUT);
 	LATGCLR = (1 << 13);
 
