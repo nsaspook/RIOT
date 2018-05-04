@@ -6,6 +6,8 @@
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
  *
+ * Many thanks to for his hard work on the pic32 port
+ * https://github.com/francois-berder/RIOT
  */
 
 #include <stdio.h>
