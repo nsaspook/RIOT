@@ -19,6 +19,7 @@
 #include "bitarithm.h"
 #include "board.h"
 #include "cpu.h"
+#include <mips/cpu.h>
 #include <mips/m32c0.h>
 
 extern void dummy(void);
@@ -33,11 +34,14 @@ void set_cache_policy(uint32_t cc)
 {
 	uint32_t cp0;
 
+	mips_flush_cache();
 	cp0 = _mips_mfc0(16);
 	cp0 &= ~0x03;
 	cp0 |= cc;
 	_mips_mtc0(16, cp0);
+	asm("nop"); /* re-sequence the pipeline after cp0 write */
 	asm("nop");
+	asm("sync" ::);
 }
 
 void board_init(void)
