@@ -13,6 +13,8 @@
 /* set interval to 1 second */
 #define INTERVAL (1U * US_PER_SEC)
 
+extern void set_cache_policy(uint32_t);
+
 /* serial #1 interrupt received data callback processing */
 static void _rx_cb1(void* data, uint8_t c)
 {
@@ -48,6 +50,9 @@ int main(void)
 	char buffer[128];
 	int dd, times_count = 0;
 	xtimer_ticks32_t last_wakeup = xtimer_now();
+
+	/* testing cache modes */
+	set_cache_policy(WB_WA);
 	/*
 	 * setup serial ports, uart 1,2,4 @115200 bps and spi 1,2
 	 * uart callback uses a 4 byte variable for data so SPI can 

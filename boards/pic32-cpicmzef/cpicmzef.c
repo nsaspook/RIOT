@@ -23,12 +23,12 @@
 
 extern void dummy(void);
 
-/* L1 cache modes */
-#define UNCACHED	0x02
-#define WB_WA		0x03
-#define WT_WA		0x01
-#define WT_NWA		0x00
-
+/* L1 cache control 
+ * CP0 Register 16, Select 0
+ * bit 2-0 K0<2:0>: Kseg0 bits
+ * Kseg0 coherency algorithm.
+ * http://ww1.microchip.com/downloads/en/AppNotes/00001600C.pdf
+ */
 void set_cache_policy(uint32_t cc)
 {
 	uint32_t cp0;
@@ -37,11 +37,11 @@ void set_cache_policy(uint32_t cc)
 	cp0 &= ~0x03;
 	cp0 |= cc;
 	_mips_mtc0(16, cp0);
+	asm("nop");
 }
 
 void board_init(void)
 {
-	set_cache_policy(WB_WA);
 	/*
 	 * Setup pin mux for UARTS 
 	 */

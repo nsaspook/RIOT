@@ -115,6 +115,12 @@ extern "C" {
 #define PDEBUG2_TOGGLE      (LATEINV = PDEBUG2_MASK)
 	/** @} */
 
+	/* L1 cache modes, boot code defaults to WB_WA */
+#define UNCACHED	0x02
+#define WB_WA		0x03
+#define WT_WA		0x01
+#define WT_NWA		0x00
+
 	/**
 	 * @brief   Board level initialization
 	 */
