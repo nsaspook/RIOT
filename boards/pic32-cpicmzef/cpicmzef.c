@@ -77,6 +77,7 @@ void board_init(void)
 	gpio_init(LED4_PINB, GPIO_OUT);
 	gpio_init(PDEBUG1_PIN, GPIO_OUT);
 	gpio_init(PDEBUG2_PIN, GPIO_OUT);
+	gpio_init(PDEBUG3_PIN, GPIO_OUT);
 	LED1_OFF;
 	LED2_OFF;
 	LED3_OFF;
@@ -85,6 +86,7 @@ void board_init(void)
 	LED4B_OFF;
 	PDEBUG1_OFF;
 	PDEBUG2_OFF;
+	PDEBUG3_OFF;
 
 	/* board device defaults */
 	gpio_init(C_WIFI_SLEEP, GPIO_OUT);

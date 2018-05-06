@@ -57,7 +57,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 {
 	volatile int rdata __attribute__((unused));
 
-	(void)cs;
+	(void) cs;
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
@@ -91,6 +91,8 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 		return SPI_NOMODE;
 	}
 
+	/* try to make the FIFO work in some modes of transmit only */
+	SPIxCONSET(pic_spi[bus]) = _SPI1CON_ENHBUF_MASK; /* enable FIFO */
 	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
 	SPIxSTATCLR(pic_spi[bus]) = _SPI1STAT_SPIROV_MASK;
 	SPIxCONSET(pic_spi[bus]) = (_SPI1CON_ON_MASK | _SPI1CON_MSTEN_MASK);
@@ -127,19 +129,35 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 		if (out_buffer) {
 			SPIxBUF(pic_spi[bus]) = *out_buffer++;
 
-			/* Wait until TX FIFO is empty */
-			while (!(SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBE_MASK)) {
+			if (in_buffer) {
+				/* Wait until TX BUFFER is empty */
+				while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBE_MASK))) {
+				}
+			} else {
+				/* Wait until TX FIFO is empty */
+				while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
+				}
 			}
 		}
 
-		/* Wait until RX FIFO is not empty */
-		while (!(SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBF_MASK)) {
-		}
-
-		rdata = SPIxBUF(pic_spi[bus]);
-
-		if (in_buffer)
+		if (in_buffer) {
+			/* Wait until RX BUFFER is not empty */
+			while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK)) {
+			}
+#ifdef _PORTS_P32MZ2048EFM100_H
+			PDEBUG3_TOGGLE; // buffer has data
+#endif
+			rdata = SPIxBUF(pic_spi[bus]);
 			*in_buffer++ = rdata;
+		} else {
+			/* clean up the receive FIFO */
+			while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK))) {
+#ifdef _PORTS_P32MZ2048EFM100_H
+				PDEBUG3_TOGGLE; // FIFO has data
+#endif
+				rdata = SPIxBUF(pic_spi[bus]);
+			}
+		}
 	}
 
 	if (!cont && cs != SPI_CS_UNDEF)

@@ -153,7 +153,7 @@ void uart_poweroff(uart_t uart)
 static void rx_irq(uart_t uart)
 {
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_TOGGLE;
+	PDEBUG1_ON;
 #endif
 	if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
 		/* clear the FIFO */
@@ -161,7 +161,7 @@ static void rx_irq(uart_t uart)
 			if (isr_ctx[uart].rx_cb)
 				isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
 #ifdef _PORTS_P32MZ2048EFM100_H
-			PDEBUG1_TOGGLE;
+			PDEBUG1_TOGGLE; // receiver error
 #endif
 		}
 		UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
@@ -171,6 +171,9 @@ static void rx_irq(uart_t uart)
 		if (isr_ctx[uart].rx_cb)
 			isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
 	}
+#ifdef _PORTS_P32MZ2048EFM100_H
+	PDEBUG1_OFF;
+#endif
 }
 
 void UART_1_ISR_RX(void)

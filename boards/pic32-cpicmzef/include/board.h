@@ -60,6 +60,7 @@ extern "C" {
 #define LED4_PINB           GPIO_PIN(PORT_B, 0)
 #define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)	
 #define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
+#define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
 
 #define C_WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
 #define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
@@ -81,6 +82,7 @@ extern "C" {
 #define LED4_MASKB          (1 << 0)
 #define PDEBUG1_MASK        (1 << 7)
 #define PDEBUG2_MASK        (1 << 1)
+#define PDEBUG3_MASK        (1 << 2)
 
 #define LED1_ON             (LATESET = LED1_MASK)
 #define LED1_OFF            (LATECLR = LED1_MASK)
@@ -113,6 +115,10 @@ extern "C" {
 #define PDEBUG2_ON          (LATESET = PDEBUG2_MASK)
 #define PDEBUG2_OFF         (LATECLR = PDEBUG2_MASK)
 #define PDEBUG2_TOGGLE      (LATEINV = PDEBUG2_MASK)
+	
+#define PDEBUG3_ON          (LATESET = PDEBUG3_MASK)
+#define PDEBUG3_OFF         (LATECLR = PDEBUG3_MASK)
+#define PDEBUG3_TOGGLE      (LATEINV = PDEBUG3_MASK)
 	/** @} */
 
 	/* L1 cache modes, boot code defaults to WB_WA, best performance
