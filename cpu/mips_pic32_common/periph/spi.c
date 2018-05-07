@@ -123,6 +123,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	if (cs != SPI_CS_UNDEF)
 		gpio_clear((gpio_t) cs);
 
+
 	while (len--) {
 		uint8_t rdata;
 
@@ -140,6 +141,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 			}
 		}
 
+
 		if (in_buffer) {
 			/* Wait until RX BUFFER is not empty */
 			while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK)) {
@@ -155,6 +157,10 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 #ifdef _PORTS_P32MZ2048EFM100_H
 				PDEBUG3_TOGGLE; // FIFO has data
 #endif
+				if ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIROV_MASK)) {
+					SPIxSTATCLR(pic_spi[bus]) = _SPI1STAT_SPIROV_MASK;
+					LED1_ON; /* red error led */
+				}
 				rdata = SPIxBUF(pic_spi[bus]);
 			}
 		}

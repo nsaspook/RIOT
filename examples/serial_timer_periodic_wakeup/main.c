@@ -18,7 +18,7 @@ extern void set_cache_policy(uint32_t);
 /* serial #1 interrupt received data callback processing */
 static void _rx_cb1(void* data, uint8_t c)
 {
-	uint8_t *recd = data, rdata[4] __attribute__((unused));
+	uint8_t *recd = data, rdata[20] __attribute__((unused));
 
 	*recd = c;
 	/* write received data to TX and send SPI byte */
@@ -26,13 +26,13 @@ static void _rx_cb1(void* data, uint8_t c)
 	/* SPI in interrupt context for testing, bus has mutex_lock 
 	 * we receive one byte from the uart and transfer 4 bytes using SPI
 	 */
-	spi_transfer_bytes(SPI_DEV(1), 0, true, recd, rdata, 4);
+	spi_transfer_bytes(SPI_DEV(1), 0, true, recd, NULL, 18);
 }
 
 /* serial #2 interrupt received data callback processing */
 static void _rx_cb2(void* data, uint8_t c)
 {
-	uint8_t *recd = data, rdata[4] __attribute__((unused));
+	uint8_t *recd = data, rdata[20] __attribute__((unused));
 
 	*recd = c;
 	/* write received data to TX and send SPI byte */
@@ -40,7 +40,7 @@ static void _rx_cb2(void* data, uint8_t c)
 	/* SPI in interrupt context for testing, bus has mutex_lock 
 	 * we receive one byte from the uart and transfer 4 bytes using SPI
 	 */
-	spi_transfer_bytes(SPI_DEV(2), 0, true, recd, rdata, 4);
+	spi_transfer_bytes(SPI_DEV(2), 0, true, recd, NULL, 18);
 }
 
 int main(void)
