@@ -33,8 +33,9 @@
 
 typedef struct PIC32_SPI_tag {
 	volatile uint32_t *regs;
-	volatile uint8_t *in;
-	uint32_t data;
+	uint8_t *in;
+	size_t len;
+	volatile int32_t complete;
 } PIC32_SPI_T;
 
 static PIC32_SPI_T pic_spi[SPI_NUMOF + 1];
@@ -91,20 +92,20 @@ void spi_init(spi_t bus)
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	mutex_init(&locks[bus]);
-	isr_ctx[bus].rx_cb = _rx_cb_sync;
-	isr_ctx[bus].arg = &pic_spi[bus].data;
+	isr_ctx[bus].rx_cb = _rx_cb_sync; /* internal callback */
+	isr_ctx[bus].arg = &pic_spi[bus]; /* pointer to the structure */
 
 	PMD5SET = _PMD5_SPI1MD_MASK << (bus - 1);
 	spi_init_pins(bus);
 }
 
-void spi_init_async(spi_t bus, spi_rx_cb_t rx_cb, void *arg)
+void spi_init_async(spi_t bus, spi_rx_cb_t rx_cb)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	mutex_init(&locks[bus]);
 	isr_ctx[bus].rx_cb = rx_cb;
-	isr_ctx[bus].arg = arg;
+	isr_ctx[bus].arg = &pic_spi[bus];
 
 	PMD5SET = _PMD5_SPI1MD_MASK << (bus - 1);
 	spi_init_pins(bus);
@@ -191,10 +192,11 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 
 	/* set input buffer address */
 	pic_spi[bus].in = in_buffer;
+	pic_spi[bus].len = len;
+	pic_spi[bus].complete = false;
+	LED2_OFF;
 
 	while (len--) {
-		uint8_t rdata __attribute__((unused));
-
 		if (out_buffer) {
 #ifdef _PORTS_P32MZ2048EFM100_H
 			PDEBUG3_TOGGLE; // buffer has data
@@ -252,8 +254,10 @@ static void spi_rx_irq(spi_t bus)
 		PDEBUG1_TOGGLE; // FIFO has data
 #endif
 		if (isr_ctx[bus].rx_cb) {
+			/* run the callback with the pointer to the correct pic_spi[bus] */
 			isr_ctx[bus].rx_cb(isr_ctx[bus].arg, SPIxBUF(pic_spi[bus]));
 		} else {
+			/* dump the received data with no callback */
 			rdata = SPIxBUF(pic_spi[bus]);
 		}
 	}
@@ -262,25 +266,30 @@ static void spi_rx_irq(spi_t bus)
 void SPI_1_ISR_RX(void)
 {
 	spi_rx_irq(1);
-	LED2_ON;
 }
 
 void SPI_2_ISR_RX(void)
 {
-
 	spi_rx_irq(2);
 }
 
 void SPI_4_ISR_RX(void)
 {
-
 	spi_rx_irq(4);
 }
 
-/* serial #1 interrupt received data callback processing */
+/* spi interrupt received data callback processing */
 static void _rx_cb_sync(void* data, uint8_t c)
 {
-	uint8_t *recd = data, rdata[20] __attribute__((unused));
+	/* load the internal pointers with the pic_spi[bus] data */
+	PIC32_SPI_T *pic_spi_ptr = data;
+	uint8_t *recd = pic_spi_ptr->in;
 
-	*recd = c;
+	if (!pic_spi_ptr->len--) {
+		*recd++ = c;
+	} else {
+		/* flag received data complete */
+		pic_spi_ptr->complete = true;
+		LED2_ON;
+	}
 }
