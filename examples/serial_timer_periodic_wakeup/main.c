@@ -23,10 +23,6 @@ static void _rx_cb1(void* data, uint8_t c)
 	*recd = c;
 	/* write received data to TX and send SPI byte */
 	uart_write(1, &c, 1);
-	/* SPI in interrupt context for testing, bus has mutex_lock 
-	 * we receive one byte from the uart and transfer 4 bytes using SPI
-	 */
-	spi_transfer_bytes(SPI_DEV(1), 0, true, recd, NULL, 18);
 }
 
 /* serial #2 interrupt received data callback processing */
@@ -37,22 +33,20 @@ static void _rx_cb2(void* data, uint8_t c)
 	*recd = c;
 	/* write received data to TX and send SPI byte */
 	uart_write(2, &c, 1);
-	/* SPI in interrupt context for testing, bus has mutex_lock 
-	 * we receive one byte from the uart and transfer 4 bytes using SPI
-	 */
-	spi_transfer_bytes(SPI_DEV(2), 0, true, recd, NULL, 18);
 }
 
 int main(void)
 {
 	/* variable data[1..2] byte 4 has SPI id data for testing */
 	uint32_t data1 = 0x0f000000, data2 = 0xf0000000;
+	uint8_t tdata[20], rdata[20] __attribute__((unused));
 	char buffer[128];
 	int dd, times_count = 0;
 	xtimer_ticks32_t last_wakeup = xtimer_now();
 
 	/* testing cache modes */
 	set_cache_policy(WB_WA);
+	LED3_ON;
 	/*
 	 * setup serial ports, uart 1,2,4 @115200 bps and spi 1,2
 	 * uart callback uses a 4 byte variable for data so SPI can 
@@ -66,6 +60,7 @@ int main(void)
 	spi_acquire(SPI_DEV(1), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 
+	LED3_OFF;
 	while (1) {
 		/* stop unused variable warning from compiler */
 		(void) last_wakeup;
@@ -75,6 +70,12 @@ int main(void)
 		sprintf(buffer, "Times %d, Testing longer string %" PRIu32 "\n", times_count++, xtimer_usec_from_ticks(xtimer_now()));
 		/* send string to serial device #4, TX pin out looped to device #1 and 2 RX pin inputs */
 		uart_write(4, (uint8_t *) buffer, strlen(buffer));
+
+		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 18);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
+		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 18);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
+
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 100000; dd++) {
 			last_wakeup = xtimer_now();
