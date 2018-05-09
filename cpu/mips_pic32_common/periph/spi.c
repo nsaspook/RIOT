@@ -4,6 +4,11 @@
  * This file is subject to the terms and conditions of the GNU Lesser
  * General Public License v2.1. See the file LICENSE in the top level
  * directory for more details.
+ * 
+ * May 2018
+ * modified for receive interrupt, async and fifo operation @nsaspook
+ * The 'normal' sync transfer function is a wrapper on the async engine
+ * _spi_transfer_bytes_async
  *
  */
 
@@ -38,7 +43,7 @@ typedef struct PIC32_SPI_tag {
 static PIC32_SPI_T pic_spi[SPI_NUMOF + 1];
 static mutex_t locks[SPI_NUMOF + 1];
 
-int spi_complete(spi_t);
+int32_t spi_complete(spi_t);
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
 void spi_irq_enable(spi_t bus)
@@ -47,25 +52,25 @@ void spi_irq_enable(spi_t bus)
 		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
 		SPI1CONbits.SRXISEL = 1; /* interrupt when not full */
 		IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
-		IEC3SET = _IEC3_SPI1RXIE_MASK;
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
+		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
 		SPI2CONbits.SRXISEL = 1;
 		IFS4CLR = _IFS4_SPI2RXIF_MASK;
-		IEC4SET = _IEC4_SPI2RXIE_MASK;
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
+		IEC4SET = _IEC4_SPI2RXIE_MASK;
 	}
 	if (bus == 4) {
 		IEC5CLR = _IEC5_SPI4RXIE_MASK;
 		SPI4CONbits.SRXISEL = 1;
 		IFS5CLR = _IFS5_SPI4RXIF_MASK;
-		IEC5SET = _IEC5_SPI4RXIE_MASK;
 		IPC41bits.SPI4RXIP = SPIxPRI_SW0;
 		IPC41bits.SPI4RXIS = SPIXSUBPRI_SW0;
+		IEC5SET = _IEC5_SPI4RXIE_MASK;
 	}
 }
 
@@ -140,7 +145,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 		return SPI_NOMODE;
 	}
 
-	/* try to make the FIFO work in some modes of transmit only */
+	/* try to make the FIFO work in some modes */
 	SPIxCONSET(pic_spi[bus]) = _SPI1CON_ENHBUF_MASK; /* enable FIFO */
 	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
 	SPIxSTATCLR(pic_spi[bus]) = _SPI1STAT_SPIROV_MASK;
@@ -177,7 +182,6 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	pic_spi[bus].in = in_buffer;
 	pic_spi[bus].len = len;
 	pic_spi[bus].complete = false;
-	LED2_OFF;
 
 	while (len--) {
 		if (out_buffer) {
@@ -222,32 +226,6 @@ void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 
 	_spi_transfer_bytes_async(bus, cs, cont, out, in, len);
 	/* don't mess with cs on exit */
-}
-
-static inline void pic32mzef_rd_fifo(spi_t bus, void *in, int len)
-{
-	uint8_t byte;
-	uint8_t *in_buffer = (uint8_t*) in;
-
-	while (len--) {
-		byte = SPIxBUF(pic_spi[bus]);
-		if (in_buffer)
-			*in_buffer++ = byte;
-	}
-}
-
-static inline void pic32mzef_wr_fifo(spi_t bus, const void *out, int len)
-{
-	uint8_t byte;
-	const uint8_t *out_buffer = (const uint8_t*) out;
-
-	if (len > 16)
-		len = 16;
-
-	while (len--) {
-		byte = out_buffer ? *out_buffer++ : 0;
-		SPIxBUF(pic_spi[bus]) = byte;
-	}
 }
 
 /* spi interrupt in single vector sw0 */
@@ -297,7 +275,7 @@ void SPI_4_ISR_RX(void)
 	spi_rx_irq(4);
 }
 
-int spi_complete(spi_t bus)
+int32_t spi_complete(spi_t bus)
 {
 	return pic_spi[bus].complete;
 }

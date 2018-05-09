@@ -116,7 +116,7 @@ extern "C" {
 #define PDEBUG2_ON          (LATESET = PDEBUG2_MASK)
 #define PDEBUG2_OFF         (LATECLR = PDEBUG2_MASK)
 #define PDEBUG2_TOGGLE      (LATEINV = PDEBUG2_MASK)
-	
+
 #define PDEBUG3_ON          (LATESET = PDEBUG3_MASK)
 #define PDEBUG3_OFF         (LATECLR = PDEBUG3_MASK)
 #define PDEBUG3_TOGGLE      (LATEINV = PDEBUG3_MASK)
@@ -135,8 +135,8 @@ extern "C" {
 
 
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
-                        const void *out, void *in, size_t len);
-	int spi_complete(spi_t bus);
+		const void *out, void *in, size_t len);
+	int32_t spi_complete(spi_t bus);
 	/**
 	 * @brief   Board level initialization
 	 */
