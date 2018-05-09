@@ -291,18 +291,18 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 #ifdef _PORTS_P32MZ2048EFM100_H
 	/* process uart receive interrupts here */
 	if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
-		UART_1_ISR_RX();
 		IFS3CLR = _IFS3_U1RXIF_MASK;
+		UART_1_ISR_RX();
 	}
 
 	if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
-		UART_2_ISR_RX();
 		IFS4CLR = _IFS4_U2RXIF_MASK;
+		UART_2_ISR_RX();
 	}
 
 	if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
-		UART_4_ISR_RX();
 		IFS5CLR = _IFS5_U4RXIF_MASK;
+		UART_4_ISR_RX();
 	}
 
 	/* process spi receive interrupts here */

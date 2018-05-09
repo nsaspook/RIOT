@@ -39,7 +39,8 @@ int main(void)
 {
 	/* variable data[1..2] byte 4 has SPI id data for testing */
 	uint32_t data1 = 0x0f000000, data2 = 0xf0000000;
-	uint8_t tdata[20], rdata[20] __attribute__((unused));
+	uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18},
+	bdata[20], rdata[20] __attribute__((unused));
 	char buffer[128];
 	int dd, times_count = 0;
 	xtimer_ticks32_t last_wakeup = xtimer_now();
@@ -61,6 +62,8 @@ int main(void)
 	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 
 	LED3_OFF;
+	LED2_ON;
+
 	while (1) {
 		/* stop unused variable warning from compiler */
 		(void) last_wakeup;
@@ -72,14 +75,17 @@ int main(void)
 		uart_write(4, (uint8_t *) buffer, strlen(buffer));
 
 		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
-		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
+		//		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
+		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rdata, tdata, 18);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, rdata, bdata, 18);
 
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 100000; dd++) {
 			last_wakeup = xtimer_now();
 		}
+
+		while (!spi_complete(SPI_DEV(1))) {
+		};
 	}
 
 	return 0;

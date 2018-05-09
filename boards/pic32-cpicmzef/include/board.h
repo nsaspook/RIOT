@@ -29,6 +29,7 @@
 #define BOARD_H
 
 #include "periph_conf.h"
+#include "periph/spi.h"
 
 #ifdef __cplusplus
 extern "C" {
@@ -132,6 +133,10 @@ extern "C" {
 #define WT_WA		0x01
 #define WT_NWA		0x00
 
+
+	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
+                        const void *out, void *in, size_t len);
+	int spi_complete(spi_t bus);
 	/**
 	 * @brief   Board level initialization
 	 */

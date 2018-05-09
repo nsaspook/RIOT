@@ -26,10 +26,7 @@
 #define SPIxPRI_SW0	1
 #define SPIXSUBPRI_SW0	0
 
-#define SPI_USE_TX_FIFO
-
 /* PERIPHERAL_CLOCK must be defined in board file */
-
 
 typedef struct PIC32_SPI_tag {
 	volatile uint32_t *regs;
@@ -41,7 +38,7 @@ typedef struct PIC32_SPI_tag {
 static PIC32_SPI_T pic_spi[SPI_NUMOF + 1];
 static mutex_t locks[SPI_NUMOF + 1];
 
-static spi_isr_ctx_t isr_ctx[SPI_NUMOF + 1];
+int spi_complete(spi_t);
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
 void spi_irq_enable(spi_t bus)
@@ -85,27 +82,11 @@ void spi_irq_disable(spi_t bus)
 	}
 }
 
-static void _rx_cb_sync(void*, uint8_t);
-
 void spi_init(spi_t bus)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	mutex_init(&locks[bus]);
-	isr_ctx[bus].rx_cb = _rx_cb_sync; /* internal callback */
-	isr_ctx[bus].arg = &pic_spi[bus]; /* pointer to the structure */
-
-	PMD5SET = _PMD5_SPI1MD_MASK << (bus - 1);
-	spi_init_pins(bus);
-}
-
-void spi_init_async(spi_t bus, spi_rx_cb_t rx_cb)
-{
-	assert(bus != 0 && bus <= SPI_NUMOF);
-
-	mutex_init(&locks[bus]);
-	isr_ctx[bus].rx_cb = rx_cb;
-	isr_ctx[bus].arg = &pic_spi[bus];
 
 	PMD5SET = _PMD5_SPI1MD_MASK << (bus - 1);
 	spi_init_pins(bus);
@@ -179,7 +160,7 @@ void spi_release(spi_t bus)
 	mutex_unlock(&locks[bus]);
 }
 
-void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
+static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	const uint8_t *out_buffer = (const uint8_t*) out;
@@ -187,9 +168,11 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
-	if (cs != SPI_CS_UNDEF)
-		gpio_clear((gpio_t) cs);
-
+#ifdef _PORTS_P32MZ2048EFM100_H
+	PDEBUG3_ON; // buffer has data
+#endif
+	(void) cs;
+	(void) cont;
 	/* set input buffer address */
 	pic_spi[bus].in = in_buffer;
 	pic_spi[bus].len = len;
@@ -199,23 +182,46 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	while (len--) {
 		if (out_buffer) {
 #ifdef _PORTS_P32MZ2048EFM100_H
-			PDEBUG3_TOGGLE; // buffer has data
+			//			PDEBUG3_TOGGLE; // buffer has data
 #endif
 			SPIxBUF(pic_spi[bus]) = *out_buffer++;
-#ifdef	SPI_USE_TX_FIFO
 			/* Wait until TX FIFO is empty */
 			while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
-#else
-			/* Wait until TX BUFFER is empty */
-			while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBE_MASK))) {
-			}
-#endif
 			}
 		}
 	}
+#ifdef _PORTS_P32MZ2048EFM100_H
+	PDEBUG3_OFF; // buffer has data
+#endif
+}
+
+void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
+	const void *out, void *in, size_t len)
+{
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
+	if (cs != SPI_CS_UNDEF)
+		gpio_clear((gpio_t) cs);
+
+	_spi_transfer_bytes_async(bus, cs, cont, out, in, len);
+
+	while (!spi_complete(bus)) {
+	};
 
 	if (!cont && cs != SPI_CS_UNDEF)
 		gpio_set((gpio_t) cs);
+}
+
+void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
+	const void *out, void *in, size_t len)
+{
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
+	if (cs != SPI_CS_UNDEF)
+		gpio_clear((gpio_t) cs);
+
+	_spi_transfer_bytes_async(bus, cs, cont, out, in, len);
+	/* don't mess with cs on exit */
 }
 
 static inline void pic32mzef_rd_fifo(spi_t bus, void *in, int len)
@@ -249,18 +255,31 @@ static void spi_rx_irq(spi_t bus)
 {
 	uint8_t rdata __attribute__((unused));
 
+#ifdef _PORTS_P32MZ2048EFM100_H
+	PDEBUG1_ON; // FIFO has data
+#endif
 	while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK))) {
 #ifdef _PORTS_P32MZ2048EFM100_H
 		PDEBUG1_TOGGLE; // FIFO has data
 #endif
-		if (isr_ctx[bus].rx_cb) {
-			/* run the callback with the pointer to the correct pic_spi[bus] */
-			isr_ctx[bus].rx_cb(isr_ctx[bus].arg, SPIxBUF(pic_spi[bus]));
+		if (pic_spi[bus].in) {
+			*pic_spi[bus].in++ = SPIxBUF(pic_spi[bus]);
 		} else {
 			/* dump the received data with no callback */
 			rdata = SPIxBUF(pic_spi[bus]);
 		}
+		if (!--pic_spi[bus].len)
+			pic_spi[bus].complete = true;
+#ifdef _PORTS_P32MZ2048EFM100_H
+		PDEBUG1_TOGGLE; // FIFO has data
+#endif
 	}
+	/* time ref toggle */
+#ifdef _PORTS_P32MZ2048EFM100_H
+	PDEBUG1_OFF; // FIFO has data
+	PDEBUG1_ON; // FIFO has data
+	PDEBUG1_OFF; // FIFO has data
+#endif	
 }
 
 void SPI_1_ISR_RX(void)
@@ -278,18 +297,7 @@ void SPI_4_ISR_RX(void)
 	spi_rx_irq(4);
 }
 
-/* spi interrupt received data callback processing */
-static void _rx_cb_sync(void* data, uint8_t c)
+int spi_complete(spi_t bus)
 {
-	/* load the internal pointers with the pic_spi[bus] data */
-	PIC32_SPI_T *pic_spi_ptr = data;
-	uint8_t *recd = pic_spi_ptr->in;
-
-	if (!pic_spi_ptr->len--) {
-		*recd++ = c;
-	} else {
-		/* flag received data complete */
-		pic_spi_ptr->complete = true;
-		LED2_ON;
-	}
+	return pic_spi[bus].complete;
 }
