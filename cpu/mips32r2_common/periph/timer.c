@@ -290,16 +290,28 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 #ifdef _PORTS_P32MZ2048EFM100_H
 	/* process spi receive interrupts here */
 
-	/* Bus TX - SPI1 Master */
+	/* Bus TX - SPI1 DMA 1 Master */
 	if (IEC4bits.DMA1IE && IFS4bits.DMA1IF) {
 		DCH1INTCLR = 0xFF; // Clear interrupt events.
 		IFS4CLR = _IFS4_DMA1IF_MASK; // Clear the interrupt flag.
 	}
 
-	/* Bus RX SPI1 */
+	/* Bus RX SPI1 DMA 0 */
 	if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
 		DCH0INTCLR = 0xFF; // Clear interrupt events.
 		IFS4CLR = _IFS4_DMA0IF_MASK; // Clear the interrupt flag.
+	}
+
+	/* Bus TX - SPI2 DMA 3 Master */
+	if (IEC4bits.DMA3IE && IFS4bits.DMA3IF) {
+		DCH3INTCLR = 0xFF; // Clear interrupt events.
+		IFS4CLR = _IFS4_DMA3IF_MASK; // Clear the interrupt flag.
+	}
+
+	/* Bus RX SPI2 DMA 2 */
+	if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
+		DCH2INTCLR = 0xFF; // Clear interrupt events.
+		IFS4CLR = _IFS4_DMA2IF_MASK; // Clear the interrupt flag.
 	}
 
 	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {

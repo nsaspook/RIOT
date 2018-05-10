@@ -61,20 +61,17 @@ void Init_Bus_Dma_Tx1(void)
 	IEC4bits.DMA1IE = 0; /* Disable the DMA interrupt. */
 	IFS4bits.DMA1IF = 0; /* Clear the DMA interrupt flag. */
 	DMACONbits.ON = 1; /* Enable the DMA module. */
-	DCH1CONbits.CHAEN = 1; /* Channel Automatic Enable bit. */
 	DCH1SSAbits.CHSSA = physDestDma; /* Source start address. */
 	DCH1DSAbits.CHDSA = physDestDma; /* Destination start address. */
 	DCH1SSIZbits.CHSSIZ = 1; /* Source bytes. */
 	DCH1DSIZbits.CHDSIZ = 1; /* Destination bytes. */
 	DCH1CSIZbits.CHCSIZ = 1; /* Bytes to transfer per event. */
-	DCH1ECONbits.CHSIRQ = 0;
-	DCH1ECONbits.SIRQEN = 0;
-	DCH1ECONbits.AIRQEN = 0;
-	DCH1INTbits.CHBCIE = 1; /* Channel block transfer complete interrupt. */
+	DCH1ECONbits.CHSIRQ = EIC_IRQ_SPI_1_TX; /* from board.h defines */
+	DCH1ECONbits.SIRQEN = 1; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
+	DCH1INTbits.CHBCIE = 0; /* enable Channel block transfer complete interrupt. */
 	IPC33bits.DMA1IP = 1; /* DMA interrupt priority. */
 	IPC33bits.DMA1IS = 0; /* DMA subpriority. */
 	IEC4bits.DMA1IE = 0; /* DMA interrupt enable.  */
-	DCH1CONbits.CHEN = 1; /* Channel enable. */
 }
 
 void Init_Bus_Dma_Tx2(void)
@@ -87,36 +84,33 @@ void Init_Bus_Dma_Tx2(void)
 	IEC4bits.DMA3IE = 0;
 	IFS4bits.DMA3IF = 0;
 	DMACONbits.ON = 1;
-	DCH3CONbits.CHAEN = 1;
 	DCH3SSAbits.CHSSA = physDestDma;
 	DCH3DSAbits.CHDSA = physDestDma;
 	DCH3SSIZbits.CHSSIZ = 1;
 	DCH3DSIZbits.CHDSIZ = 1;
 	DCH3CSIZbits.CHCSIZ = 1;
-	DCH3ECONbits.CHSIRQ = 0;
-	DCH3ECONbits.SIRQEN = 0;
-	DCH3ECONbits.AIRQEN = 0;
-	DCH3INTbits.CHBCIE = 1;
+	DCH3ECONbits.CHSIRQ = EIC_IRQ_SPI_2_TX;
+	DCH3ECONbits.SIRQEN = 1;
+	DCH3INTbits.CHBCIE = 0;
 	IPC34bits.DMA3IP = 1;
 	IPC34bits.DMA3IS = 0;
 	IEC4bits.DMA3IE = 0;
-	DCH3CONbits.CHEN = 1;
 }
 
 void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
 {
 	DCH1SSAbits.CHSSA = physSourceDma;
 	DCH1SSIZbits.CHSSIZ = len;
-	DCH1CSIZbits.CHCSIZ = len;
-	DCH1ECONbits.CFORCE = 1;
+	DCH1CSIZbits.CHCSIZ = 1;
+	DCH1CONbits.CHEN = 1; /* Channel enable. */
 }
 
 void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
 {
 	DCH3SSAbits.CHSSA = physSourceDma;
 	DCH3SSIZbits.CHSSIZ = len;
-	DCH3CSIZbits.CHCSIZ = len;
-	DCH3ECONbits.CFORCE = 1;
+	DCH3CSIZbits.CHCSIZ = 1;
+	DCH3CONbits.CHEN = 1;
 }
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
@@ -125,6 +119,7 @@ void spi_irq_enable(spi_t bus)
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
 		SPI1CONbits.SRXISEL = 1; /* interrupt when not full */
+		SPI1CONbits.STXISEL = 0; /*  last transfer is shifted out */
 		IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
@@ -134,6 +129,7 @@ void spi_irq_enable(spi_t bus)
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
 		SPI2CONbits.SRXISEL = 1;
+		SPI2CONbits.STXISEL = 0;
 		IFS4CLR = _IFS4_SPI2RXIF_MASK;
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
@@ -258,7 +254,7 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	/* Translate a kernel (KSEG) virtual address to a physical address. */
 	physSourceDma = KVA_TO_PA(out_buffer);
 
-	/* set input buffer address */
+	/* set input buffer params */
 	pic_spi[bus].in = in_buffer;
 	pic_spi[bus].len = len;
 	pic_spi[bus].complete = false;

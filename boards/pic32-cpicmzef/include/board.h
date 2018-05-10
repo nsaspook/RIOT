@@ -135,6 +135,21 @@ extern "C" {
 #define WT_WA		0x01
 #define WT_NWA		0x00
 
+	/* from the TABLE 7-2: INTERRUPT IRQ, VECTOR, AND BIT LOCATION 
+	 * PIC32MZ Embedded Connectivity with Floating Point Unit (EF) Family Data Sheet
+	 */
+#define EIC_IRQ_UART_1_RX	113 /* Persistent interrupts */
+#define EIC_IRQ_UART_2_RX	146
+#define EIC_IRQ_UART_4_RX	171
+
+#define EIC_IRQ_SPI_1_TX	111
+#define EIC_IRQ_SPI_2_TX	144
+#define EIC_IRQ_SPI_3_TX	156
+
+#define EIC_IRQ_SPI_1_RX	110
+#define EIC_IRQ_SPI_2_RX	143
+#define EIC_IRQ_SPI_3_RX	155
+
 	/*
 	 * Address typedefs
 	 */
