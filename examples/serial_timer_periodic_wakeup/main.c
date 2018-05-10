@@ -39,7 +39,7 @@ int main(void)
 {
 	/* variable data[1..2] byte 4 has SPI id data for testing */
 	uint32_t data1 = 0x0f000000, data2 = 0xf0000000;
-	const uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
+	uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 	/* allocate buffer memory in kseg1 uncached */
 	uint8_t* td = __pic32_alloc_coherent(32);
 	uint8_t* rd = __pic32_alloc_coherent(32);
@@ -77,9 +77,11 @@ int main(void)
 		sprintf(buffer, "Times %d, Testing longer string %" PRIu32 "\n", times_count++, xtimer_usec_from_ticks(xtimer_now()));
 		/* send string to serial device #4, TX pin out looped to device #1 and 2 RX pin inputs */
 		uart_write(4, (uint8_t *) buffer, strlen(buffer));
+
+		/* copy test-pattern data into DMA buffer */
 		memcpy(td, tdata, 18);
+		/* loop data for engine testing */
 		spi_transfer_bytes(SPI_DEV(1), 0, true, td, rd, 18);
-		//		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
 		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rd, td, 18);
 		spi_transfer_bytes(SPI_DEV(2), 0, true, rd, bd, 18);
 
@@ -88,6 +90,7 @@ int main(void)
 			last_wakeup = xtimer_now();
 		}
 
+		/* check for spi #1 async transfer complete */
 		while (!spi_complete(SPI_DEV(1))) {
 		};
 	}

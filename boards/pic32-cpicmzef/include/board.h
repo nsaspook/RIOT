@@ -159,8 +159,9 @@ extern "C" {
 	/* 
 	 * Translate a kernel virtual address in KSEG0 or KSEG1 to a real
 	 * physical address and back.
+	 * using compiler KVA_TO_PA macro
 	 */
-	//#define KVA_TO_PA(v) 	((_paddr_t)(v) & 0x1fffffff)
+	/* #define KVA_TO_PA(v) 	((_paddr_t)(v) & 0x1fffffff) */
 #define PA_TO_KVA0(pa)	((void *) ((pa) | 0x80000000))
 #define PA_TO_KVA1(pa)	((void *) ((pa) | 0xa0000000))
 

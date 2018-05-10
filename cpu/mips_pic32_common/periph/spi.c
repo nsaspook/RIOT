@@ -266,12 +266,9 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	case 2:
 		Trigger_Bus_DMA_Tx2(len, physSourceDma);
 		break;
-	default:
+	default: /* non-dma mode for testing */
 		while (len--) {
 			if (out_buffer) {
-#ifdef _PORTS_P32MZ2048EFM100_H
-				//			PDEBUG3_TOGGLE;
-#endif
 				SPIxBUF(pic_spi[bus]) = *out_buffer++;
 				/* Wait until TX FIFO is empty */
 				while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
