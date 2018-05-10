@@ -37,7 +37,7 @@ extern "C" {
 
 #include "vendor/p32mz2048efm100.h"
 #include "vendor/ports_p32mz2048efm100.h"
-	
+#include <malloc.h>
 #include <mips/notlb.h>
 
 	/**
@@ -145,7 +145,7 @@ extern "C" {
 	 * Translate a kernel virtual address in KSEG0 or KSEG1 to a real
 	 * physical address and back.
 	 */
-//#define KVA_TO_PA(v) 	((_paddr_t)(v) & 0x1fffffff)
+	//#define KVA_TO_PA(v) 	((_paddr_t)(v) & 0x1fffffff)
 #define PA_TO_KVA0(pa)	((void *) ((pa) | 0x80000000))
 #define PA_TO_KVA1(pa)	((void *) ((pa) | 0xa0000000))
 
@@ -177,6 +177,24 @@ extern "C" {
 #define __PIC32_KVA0_TO_KVA1_PTR(v) ((__typeof__(v)*)((unsigned long)(v) | 0x20000000u))
 #define __PIC32_KVA1_TO_KVA0_VAR(v) (*(__typeof__(v)*)((unsigned long)&(v) & ~0x20000000u))
 #define __PIC32_KVA1_TO_KVA0_PTR(v) ((__typeof__(v)*)((unsigned long)(v) & ~0x20000000u))
+
+	static __inline__ void * __pic32_alloc_coherent(size_t size)
+	{
+		void *retptr;
+		retptr = malloc(size);
+		if (retptr == NULL) {
+			return NULL;
+		}
+		/* malloc returns a cached pointer, but convert it to an uncached pointer */
+		return __PIC32_UNCACHED_PTR(retptr);
+	}
+
+	static __inline__ void __pic32_free_coherent(void* ptr)
+	{
+		/* Convert back to a cached pointer before calling free. */
+		free(__PIC32_CACHED_PTR(ptr));
+	}
+
 
 
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
