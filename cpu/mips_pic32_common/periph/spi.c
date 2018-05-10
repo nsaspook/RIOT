@@ -10,6 +10,12 @@
  * The 'normal' sync transfer function is a wrapper on the async engine
  * _spi_transfer_bytes_async
  *
+ * DMA links
+ * https://tutorial.cytron.io/2017/09/01/i2s-pic32mxmz-direct-memory-access-dma/
+ * http://www.microchip.com/forums/m1022425.aspx
+ * 
+ * L1-cache memory allocation
+ * https://github.com/jasonkajita/pic32-part-support/blob/master/include/sys/l1cache.h
  */
 
 #include "assert.h"
@@ -45,6 +51,74 @@ static mutex_t locks[SPI_NUMOF + 1];
 
 int32_t spi_complete(spi_t);
 
+void Init_Bus_Dma_Tx1(void)
+{
+	uint32_t physDestDma;
+	/* DMA channel 1 - SPI1 TX. */
+
+	physDestDma = KVA_TO_PA(&SPI1BUF);
+
+	IEC4bits.DMA1IE = 0; // Disable the DMA interrupt.
+	IFS4bits.DMA1IF = 0; // Clear the DMA interrupt flag.
+	DMACONbits.ON = 1; // Enable the DMA module.
+	DCH1CONbits.CHAEN = 1; // Channel Automatic Enable bit.
+	DCH1SSAbits.CHSSA = physDestDma; // Source start address.
+	DCH1DSAbits.CHDSA = physDestDma; // Destination start address.
+	DCH1SSIZbits.CHSSIZ = 1; // Source bytes.
+	DCH1DSIZbits.CHDSIZ = 1; // Destination bytes.
+	DCH1CSIZbits.CHCSIZ = 1; // Bytes to transfer per event.
+	DCH1ECONbits.CHSIRQ = 0;
+	DCH1ECONbits.SIRQEN = 0;
+	DCH1ECONbits.AIRQEN = 0;
+	DCH1INTbits.CHBCIE = 1; // Channel block transfer complete interrupt.
+	IPC33bits.DMA1IP = 1; // DMA interrupt priority.
+	IPC33bits.DMA1IS = 0; // DMA subpriority.
+	IEC4bits.DMA1IE = 0; // DMA interrupt enable. 
+	DCH1CONbits.CHEN = 1; // Channel enable.
+}
+
+void Init_Bus_Dma_Tx2(void)
+{
+	uint32_t physDestDma;
+	/* DMA channel 3 - SPI2 TX. */
+
+	physDestDma = KVA_TO_PA(&SPI2BUF);
+
+	IEC4bits.DMA3IE = 0; // Disable the DMA interrupt.
+	IFS4bits.DMA3IF = 0; // Clear the DMA interrupt flag.
+	DMACONbits.ON = 1; // Enable the DMA module.
+	DCH3CONbits.CHAEN = 1; // Channel Automatic Enable bit.
+	DCH3SSAbits.CHSSA = physDestDma; // Source start address.
+	DCH3DSAbits.CHDSA = physDestDma; // Destination start address.
+	DCH3SSIZbits.CHSSIZ = 1; // Source bytes.
+	DCH3DSIZbits.CHDSIZ = 1; // Destination bytes.
+	DCH3CSIZbits.CHCSIZ = 1; // Bytes to transfer per event.
+	DCH3ECONbits.CHSIRQ = 0;
+	DCH3ECONbits.SIRQEN = 0;
+	DCH3ECONbits.AIRQEN = 0;
+	DCH3INTbits.CHBCIE = 1; // Channel block transfer complete interrupt.
+	IPC34bits.DMA3IP = 1; // DMA interrupt priority.
+	IPC34bits.DMA3IS = 0; // DMA subpriority.
+	IEC4bits.DMA3IE = 0; // DMA interrupt enable. 
+	DCH3CONbits.CHEN = 1; // Channel enable.
+}
+
+void Fire_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
+{
+	DCH1SSAbits.CHSSA = physSourceDma; // Source start address.
+	DCH1SSIZbits.CHSSIZ = len; // Source bytes.
+	DCH1CSIZbits.CHCSIZ = len; // Bytes to transfer per event.
+	DCH1ECONbits.CFORCE = 1; // manually start transfuint32_t physSourceDma = 0;eruint32_t physSourceDma = 0;
+}
+
+void Fire_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
+{
+	DCH3SSAbits.CHSSA = physSourceDma; // Source start address.
+	DCH3SSIZbits.CHSSIZ = len; // Source bytes.
+	DCH3CSIZbits.CHCSIZ = len; // Bytes to transfer per event.
+	DCH3ECONbits.CFORCE = 1; // manually start transfer
+}
+
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
 void spi_irq_enable(spi_t bus)
 {
@@ -55,6 +129,7 @@ void spi_irq_enable(spi_t bus)
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
 		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
+		Init_Bus_Dma_Tx1();
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
@@ -63,6 +138,7 @@ void spi_irq_enable(spi_t bus)
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI2RXIE_MASK;
+		Init_Bus_Dma_Tx2();
 	}
 	if (bus == 4) {
 		IEC5CLR = _IEC5_SPI4RXIE_MASK;
@@ -170,6 +246,7 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 {
 	const uint8_t *out_buffer = (const uint8_t*) out;
 	uint8_t *in_buffer = (uint8_t*) in;
+	uint32_t physSourceDma;
 
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
@@ -178,22 +255,35 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 #endif
 	(void) cs;
 	(void) cont;
+
+	physSourceDma = KVA_TO_PA(&out_buffer); //Translate a kernel (KSEG) virtual address to a physical address.
+
 	/* set input buffer address */
 	pic_spi[bus].in = in_buffer;
 	pic_spi[bus].len = len;
 	pic_spi[bus].complete = false;
 
-	while (len--) {
-		if (out_buffer) {
+	switch (bus) {
+	case 1:
+		Fire_Bus_DMA_Tx1(len, physSourceDma);
+		break;
+	case 2:
+		Fire_Bus_DMA_Tx2(len, physSourceDma);
+		break;
+	default:
+		while (len--) {
+			if (out_buffer) {
 #ifdef _PORTS_P32MZ2048EFM100_H
-			//			PDEBUG3_TOGGLE; // buffer has data
+				//			PDEBUG3_TOGGLE; // buffer has data
 #endif
-			SPIxBUF(pic_spi[bus]) = *out_buffer++;
-			/* Wait until TX FIFO is empty */
-			while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
+				SPIxBUF(pic_spi[bus]) = *out_buffer++;
+				/* Wait until TX FIFO is empty */
+				while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
+				}
 			}
 		}
 	}
+
 #ifdef _PORTS_P32MZ2048EFM100_H
 	PDEBUG3_OFF; // buffer has data
 #endif

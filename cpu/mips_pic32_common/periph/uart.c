@@ -35,7 +35,7 @@
 #define REGS_SPACING (_UART2_BASE_ADDRESS - _UART1_BASE_ADDRESS)
 
 #define UxPRI_SW0	1
-#define UXSUBPRI_SW0	1
+#define UXSUBPRI_SW0	0
 
 /* PERIPHERAL_CLOCK must be defined in board file */
 

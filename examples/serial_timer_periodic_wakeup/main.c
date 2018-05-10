@@ -58,8 +58,8 @@ int main(void)
 	uart_init(4, DEBUG_UART_BAUD, NULL, 0);
 	spi_init(SPI_DEV(1));
 	spi_init(SPI_DEV(2));
-	spi_acquire(SPI_DEV(1), 0, SPI_MODE_0, SPI_CLK_1MHZ);
-	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
+	spi_acquire(SPI_DEV(1), 0, SPI_MODE_0, SPI_CLK_10MHZ);
+	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_10MHZ);
 
 	LED3_OFF;
 	LED2_ON;
@@ -74,10 +74,10 @@ int main(void)
 		/* send string to serial device #4, TX pin out looped to device #1 and 2 RX pin inputs */
 		uart_write(4, (uint8_t *) buffer, strlen(buffer));
 
-		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 18);
+		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rdata, 16);
 		//		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, rdata, 18);
-		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rdata, tdata, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, rdata, bdata, 18);
+		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rdata, tdata, 16);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, rdata, bdata, 16);
 
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 100000; dd++) {

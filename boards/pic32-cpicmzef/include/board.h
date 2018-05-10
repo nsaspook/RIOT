@@ -37,6 +37,8 @@ extern "C" {
 
 #include "vendor/p32mz2048efm100.h"
 #include "vendor/ports_p32mz2048efm100.h"
+	
+#include <mips/notlb.h>
 
 	/**
 	 * @brief   Set how many increments of the count register per uS
@@ -132,6 +134,49 @@ extern "C" {
 #define WB_WA		0x03
 #define WT_WA		0x01
 #define WT_NWA		0x00
+
+	/*
+	 * Address typedefs
+	 */
+	typedef unsigned long _paddr_t; /* a physical address */
+	typedef unsigned long _vaddr_t; /* a virtual address */
+
+	/* 
+	 * Translate a kernel virtual address in KSEG0 or KSEG1 to a real
+	 * physical address and back.
+	 */
+//#define KVA_TO_PA(v) 	((_paddr_t)(v) & 0x1fffffff)
+#define PA_TO_KVA0(pa)	((void *) ((pa) | 0x80000000))
+#define PA_TO_KVA1(pa)	((void *) ((pa) | 0xa0000000))
+
+	/* translate between KSEG0 and KSEG1 virtual addresses */
+#define KVA0_TO_KVA1(v)	((void *) ((unsigned)(v) | 0x20000000))
+#define KVA1_TO_KVA0(v)	((void *) ((unsigned)(v) & ~0x20000000))
+
+	/* Test for KSEGS */
+#define IS_KVA(v)	((int)(v) < 0)
+#define IS_KVA0(v)	(((unsigned)(v) >> 29) == 0x4)
+#define IS_KVA1(v)	(((unsigned)(v) >> 29) == 0x5)
+#define IS_KVA01(v) (((unsigned)(v) >> 30) == 0x2)
+
+	/*  Access a KSEG0 Virtual Address variable as uncached (KSEG1) */
+#define __PIC32_UNCACHED_VAR(v) __PIC32_KVA0_TO_KVA1_VAR(v)
+	/*  Access a KSEG0 Virtual Address pointer as uncached (KSEG1) */
+#define __PIC32_UNCACHED_PTR(v) __PIC32_KVA0_TO_KVA1_PTR(v)
+	/*  Access a KSEG1 Virtual Address variable as cached (KSEG0) */
+#define __PIC32_CACHED_VAR(v) __PIC32_KVA1_TO_KVA0_VAR(v)
+	/*  Access a KSEG1 Virtual Address pointer as cached (KSEG0) */
+#define __PIC32_CACHED_PTR(v) __PIC32_KVA1_TO_KVA0_PTR(v)
+
+	/* Helper macros used by those above. */
+
+	/*  Convert a KSEG0 Virtual Address variable or pointer to a KSEG1 virtual 
+	 *  address access.
+	 */
+#define __PIC32_KVA0_TO_KVA1_VAR(v) (*(__typeof__(v)*)((unsigned long)&(v) | 0x20000000u))
+#define __PIC32_KVA0_TO_KVA1_PTR(v) ((__typeof__(v)*)((unsigned long)(v) | 0x20000000u))
+#define __PIC32_KVA1_TO_KVA0_VAR(v) (*(__typeof__(v)*)((unsigned long)&(v) & ~0x20000000u))
+#define __PIC32_KVA1_TO_KVA0_PTR(v) ((__typeof__(v)*)((unsigned long)(v) & ~0x20000000u))
 
 
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,

@@ -79,7 +79,7 @@ extern void SPI_4_ISR_RX(void);
 static timer_isr_ctx_t timer_isr_ctx;
 volatile unsigned int counter;
 volatile unsigned int compares[CHANNELS];
-static volatile int spurious_int;
+// static volatile int spurious_int;
 
 /*
  * The mips toolchain C library does not implement gettimeofday()
@@ -285,10 +285,38 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 
 		mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
 
-	} else {
-		spurious_int++;
 	}
+
 #ifdef _PORTS_P32MZ2048EFM100_H
+	/* process spi receive interrupts here */
+
+	/* Bus TX - SPI1 Master */
+	if (IEC4bits.DMA1IE && IFS4bits.DMA1IF) {
+		DCH1INTCLR = 0xFF; // Clear interrupt events.
+		IFS4CLR = _IFS4_DMA1IF_MASK; // Clear the interrupt flag.
+	}
+
+	/* Bus RX SPI1 */
+	if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
+		DCH0INTCLR = 0xFF; // Clear interrupt events.
+		IFS4CLR = _IFS4_DMA0IF_MASK; // Clear the interrupt flag.
+	}
+
+	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
+		SPI_1_ISR_RX();
+		IFS3CLR = _IFS3_SPI1RXIF_MASK;
+	}
+
+	if (IEC4bits.SPI2RXIE && IFS4bits.SPI2RXIF) {
+		SPI_2_ISR_RX();
+		IFS4CLR = _IFS4_SPI2RXIF_MASK;
+	}
+
+	if (IEC5bits.SPI4RXIE && IFS5bits.SPI4RXIF) {
+		SPI_4_ISR_RX();
+		IFS5CLR = _IFS5_SPI4RXIF_MASK;
+	}
+
 	/* process uart receive interrupts here */
 	if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
 		IFS3CLR = _IFS3_U1RXIF_MASK;
@@ -303,22 +331,6 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
 		IFS5CLR = _IFS5_U4RXIF_MASK;
 		UART_4_ISR_RX();
-	}
-
-	/* process spi receive interrupts here */
-	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
-		SPI_1_ISR_RX();
-		IFS3CLR = _IFS3_SPI1RXIF_MASK;
-	}
-
-	if (IEC4bits.SPI2RXIE && IFS4bits.SPI2RXIF) {
-		SPI_2_ISR_RX();
-		IFS4CLR = _IFS4_SPI2RXIF_MASK;
-	}
-
-	if (IEC5bits.SPI4RXIE && IFS5bits.SPI4RXIF) {
-		SPI_4_ISR_RX();
-		IFS5CLR = _IFS5_SPI4RXIF_MASK;
 	}
 #endif
 }

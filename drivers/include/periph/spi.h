@@ -72,24 +72,6 @@ extern "C" {
 #ifndef SPI_DEV
 #define SPI_DEV(x)      (x)
 #endif
-
-/**
- * @brief   Signature for receive interrupt callback
- *
- * @param[in] arg           context to the callback (optional)
- * @param[in] data          the byte that was received
- */
-typedef void(*spi_rx_cb_t)(void *arg, uint8_t data);
-
-/**
- * @brief   Interrupt context for a SPI device
- */
-#ifndef HAVE_SPI_ISR_CTX_T
-typedef struct {
-    spi_rx_cb_t rx_cb;     /**< data received interrupt callback */
-    void *arg;              /**< argument to both callback routines */
-} spi_isr_ctx_t;
-#endif
 	
 /**
  * @brief   Define global value for undefined SPI device
