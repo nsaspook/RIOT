@@ -65,7 +65,7 @@ int main(void)
 	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_10MHZ);
 
 	LED3_OFF;
-	LED2_ON;
+
 	(void) bd;
 
 	while (1) {
@@ -83,7 +83,7 @@ int main(void)
 		/* loop data for engine testing */
 		spi_transfer_bytes(SPI_DEV(1), 0, true, td, rd, 18);
 		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rd, td, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, rd, bd, 18);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, td, bd, 18);
 
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 100000; dd++) {
@@ -93,6 +93,7 @@ int main(void)
 		/* check for spi #1 async transfer complete */
 		while (!spi_complete(SPI_DEV(1))) {
 		};
+		LED2_ON;
 	}
 
 	return 0;

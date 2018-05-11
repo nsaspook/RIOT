@@ -60,6 +60,10 @@ extern void SPI_1_ISR_RX(void);
 extern void SPI_2_ISR_RX(void);
 extern void SPI_4_ISR_RX(void);
 
+extern void DMA_SPI_1_ISR_RX(void);
+extern void DMA_SPI_2_ISR_RX(void);
+extern void DMA_SPI_3_ISR_RX(void);
+
 /*
  * The base MIPS count / compare timer is fixed frequency at core clock / 2
  * and is pretty basic This timer is currently only supported in Vectored
@@ -298,6 +302,7 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 
 	/* Bus RX SPI1 DMA 0 */
 	if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
+		DMA_SPI_1_ISR_RX();
 		DCH0INTCLR = 0xFF; // Clear interrupt events.
 		IFS4CLR = _IFS4_DMA0IF_MASK; // Clear the interrupt flag.
 	}
@@ -310,6 +315,7 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 
 	/* Bus RX SPI2 DMA 2 */
 	if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
+		DMA_SPI_2_ISR_RX();
 		DCH2INTCLR = 0xFF; // Clear interrupt events.
 		IFS4CLR = _IFS4_DMA2IF_MASK; // Clear the interrupt flag.
 	}
