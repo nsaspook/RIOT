@@ -9,6 +9,7 @@
  * modified for receive interrupt, async and fifo operation @nsaspook
  * The 'normal' sync transfer function is a wrapper on the async engine
  * _spi_transfer_bytes_async
+ * using non-atomic set and clears for setup functions, might need fixing
  *
  * DMA links
  * https://tutorial.cytron.io/2017/09/01/i2s-pic32mxmz-direct-memory-access-dma/
@@ -60,7 +61,7 @@ static void Init_Bus_Dma_Tx1(void)
 
 	IEC4bits.DMA1IE = 0; /* Disable the DMA interrupt. */
 	IFS4bits.DMA1IF = 0; /* Clear the DMA interrupt flag. */
-	DMACONbits.ON = 1; /* Enable the DMA module. */
+	DMACONSET = _DMACON_ON_MASK; /* Enable the DMA module. */
 	DCH1SSAbits.CHSSA = physDestDma; /* Source start address. */
 	DCH1DSAbits.CHDSA = physDestDma; /* Destination start address. */
 	DCH1SSIZbits.CHSSIZ = 1; /* Source bytes. */
