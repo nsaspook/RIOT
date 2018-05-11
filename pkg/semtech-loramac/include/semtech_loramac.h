@@ -44,6 +44,8 @@ extern "C" {
 #define MSG_TYPE_LORAMAC_JOIN          (0x3461)  /**< MAC join event */
 #define MSG_TYPE_LORAMAC_TX_DONE       (0x3462)  /**< MAC TX completes */
 #define MSG_TYPE_LORAMAC_RX            (0x3463)  /**< Some data received */
+#define MSG_TYPE_LORAMAC_LINK_CHECK    (0x3464)  /**< Link check info received */
+#define MSG_TYPE_LORAMAC_TX_CNF_FAILED (0x3465)  /**< MAC TX confirmed failed */
 /** @} */
 
 /**
@@ -60,6 +62,7 @@ enum {
     SEMTECH_LORAMAC_NOT_JOINED,                  /**< MAC is not joined */
     SEMTECH_LORAMAC_TX_SCHEDULED,                /**< TX data scheduled */
     SEMTECH_LORAMAC_TX_DONE,                     /**< Transmission completed */
+    SEMTECH_LORAMAC_TX_CNF_FAILED,               /**< Confirmable transmission failed */
     SEMTECH_LORAMAC_DATA_RECEIVED,               /**< Data received */
     SEMTECH_LORAMAC_BUSY                         /**< Internal MAC is busy */
 };
@@ -90,6 +93,15 @@ typedef struct {
 } semtech_loramac_rx_data_t;
 
 /**
+ * @brief   LoRaMAC link check information
+ */
+typedef struct {
+    uint8_t demod_margin;                        /**< Demodulation margin */
+    uint8_t nb_gateways;                         /**< number of LoRa gateways found */
+    bool available;                              /**< new link check information avalable */
+} semtech_loramac_link_check_info_t;
+
+/**
  * @brief   Semtech LoRaMAC descriptor
  */
 typedef struct {
@@ -105,6 +117,7 @@ typedef struct {
     uint8_t nwkskey[LORAMAC_NWKSKEY_LEN];        /**< network session key */
     uint8_t devaddr[LORAMAC_DEVADDR_LEN];        /**< device address */
     semtech_loramac_rx_data_t rx_data;           /**< struct handling the RX data */
+    semtech_loramac_link_check_info_t link_chk;  /**< link check information */
 } semtech_loramac_t;
 
 /**
@@ -165,6 +178,13 @@ uint8_t semtech_loramac_send(semtech_loramac_t *mac, uint8_t *data, uint8_t len)
  * @return SEMTECH_LORAMAC_DATA_RECEIVED when TX has completed and data is received
  */
 uint8_t semtech_loramac_recv(semtech_loramac_t *mac);
+
+/**
+ * @brief   Requests a LoRaWAN link check
+ *
+ * @param[in] mac          Pointer to the mac
+ */
+void semtech_loramac_request_link_check(semtech_loramac_t *mac);
 
 /**
  * @brief   Sets the device EUI
