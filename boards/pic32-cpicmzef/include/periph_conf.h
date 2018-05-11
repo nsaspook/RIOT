@@ -87,7 +87,7 @@ extern "C" {
 			.miso_reg = (volatile uint32_t*) & SDI1R,
 			.miso_af = INPUT_PIN_RPD14,
 		},
-		
+
 		{ /*
          * SPI 2 (MikBUS 2)
          *      MOSI -> RG7
@@ -101,7 +101,7 @@ extern "C" {
 			.miso_reg = (volatile uint32_t*) & SDI2R,
 			.miso_af = INPUT_PIN_RPG0,
 		},
-		
+
 		{ /*
          * SPI 3 (MRF24WN0MA-1/RM100 - wifi module)
          *   MOSI -> RB9
@@ -118,7 +118,8 @@ extern "C" {
 	};
 
 
-#define SPI_NUMOF           (3)
+#define SPI_NUMOF	(3)
+#define DMA_NUMOF	(8)
 	/** @} */
 
 #ifdef __cplusplus

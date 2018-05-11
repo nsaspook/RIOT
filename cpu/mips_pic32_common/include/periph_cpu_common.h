@@ -106,6 +106,15 @@ typedef struct {
     gpio_t miso_pin;                /**< GPIO pin for MISO */
 } spi_conf_t;
 
+typedef struct {
+    volatile uint32_t *mosi_reg;    /**< Output pin mux register address */
+    volatile uint32_t *miso_reg;    /**< MISO pin mux register address */
+    uint8_t mosi_af;                /**< Specify function of output pin */
+    uint8_t miso_af;                /**< Specify input pin for MISO */
+    gpio_t mosi_pin;                /**< GPIO pin for MOSI */
+    gpio_t miso_pin;                /**< GPIO pin for MISO */
+} spi_dma_conf_t;
+
 #ifdef __cplusplus
 }
 #endif
