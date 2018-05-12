@@ -53,7 +53,7 @@
 #define DCHxCSIZ(U)         ((U).regs[0x90 / 4])
 #define DCHxCPTR(U)         ((U).regs[0xA0 / 4])
 #define DCHxDAT(U)          ((U).regs[0xB0 / 4])
-#define DMA_REGS_SPACING    (0xBF811120 - 0xBF811060)
+#define DMA_REGS_SPACING    (&DCH1CON - &DCH0CON)
 
 #define SPIxPRI_SW0 1
 #define SPIXSUBPRI_SW0  0
@@ -76,14 +76,14 @@ static mutex_t locks[SPI_NUMOF + 1];
 static PIC32_DMA_T pic_dma[DMA_NUMOF];
 
 int32_t spi_complete(spi_t);
-void Init_Dma_Chan(uint8_t, uint32_t);
+static void Init_Dma_Chan(uint8_t, uint32_t);
 
-void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
+static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
 {
 	uint32_t physDestDma = 0, physSourceDma = 0;
 	assert(chan < DMA_NUMOF);
 
-	pic_dma[chan].regs = (volatile uint32_t *)(0xBF811060 + (chan * DMA_REGS_SPACING));
+	pic_dma[chan].regs = (volatile uint32_t *)(&DCH0CON + (chan * DMA_REGS_SPACING));
 
 	/* DMA channel configuration to device */
 	switch (chan) {
@@ -103,176 +103,84 @@ void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
 		physSourceDma = KVA_TO_PA(&SPI2BUF);
 		break;
 	case 3:
-		IEC4bits.DMA3IE = 0;
-		IFS4bits.DMA3IF = 0;
+		IEC4CLR = _IEC4_DMA3IE_MASK;
+		IFS4CLR = _IFS4_DMA3IF_MASK;
 		physDestDma = KVA_TO_PA(&SPI2BUF);
 		break;
 	default:
 		break;
 	}
 
+	DCRCCON = 0;
 	DMACONSET = _DMACON_ON_MASK; /* Enable the DMA module. */
+	DCHxCON(pic_dma[chan]) = 0;
+	DCHxECON(pic_dma[chan]) = 0;
+	DCHxINT(pic_dma[chan]) = 0;
 	DCHxSSA(pic_dma[chan]) = physSourceDma; /* Source start address. */
 	DCHxDSA(pic_dma[chan]) = physDestDma; /* Destination start address. */
 	DCHxSSIZ(pic_dma[chan]) = 1; /* Source bytes. */
 	DCHxDSIZ(pic_dma[chan]) = 1; /* Destination bytes. */
 	DCHxCSIZ(pic_dma[chan]) = 1; /* Bytes to transfer per event. */
-	DCHxECONSET(pic_dma[chan]) = _DCH0ECON_CHSIRQ_MASK & (irq_num << _DCH0ECON_CHSIRQ_POSITION); /* cell trigger interrupt */
+	DCHxECON(pic_dma[chan]) = irq_num << _DCH0ECON_CHSIRQ_POSITION; /* cell trigger interrupt */
 	DCHxECONSET(pic_dma[chan]) = _DCH0ECON_SIRQEN_MASK; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
 	DCHxINTSET(pic_dma[chan]) = _DCH0INT_CHBCIE_MASK; /* enable Channel block transfer complete interrupt. */
 
 	switch (chan) {
 	case 0:
-		IPC33bits.DMA0IP = 1; /* DMA interrupt priority. */
-		IPC33bits.DMA0IS = 0; /* DMA subpriority. */
-		IEC4bits.DMA0IE = 1; /* DMA interrupt enable.  */
+		IPC33bits.DMA0IP = SPIxPRI_SW0; /* DMA interrupt priority. */
+		IPC33bits.DMA0IS = SPIXSUBPRI_SW0; /* DMA sub-priority. */
+		IEC4SET = _IEC4_DMA0IE_MASK; /* DMA interrupt enable.  */
 		break;
 	case 1:
-		IPC33bits.DMA1IP = 1;
-		IPC33bits.DMA1IS = 0;
-		IEC4bits.DMA1IE = 0;
+		IPC33bits.DMA1IP = SPIxPRI_SW0;
+		IPC33bits.DMA1IS = SPIXSUBPRI_SW0;
+		IEC4CLR = _IEC4_DMA1IE_MASK;
 		break;
 	case 2:
-		IPC34bits.DMA2IP = 1;
-		IPC34bits.DMA2IS = 0;
-		IEC4bits.DMA2IE = 1;
+		IPC34bits.DMA2IP = SPIxPRI_SW0;
+		IPC34bits.DMA2IS = SPIXSUBPRI_SW0;
+		IEC4SET = _IEC4_DMA2IE_MASK;
 		break;
 	case 3:
-		IPC34bits.DMA3IP = 1;
-		IPC34bits.DMA3IS = 0;
-		IEC4bits.DMA3IE = 0;
+		IPC34bits.DMA3IP = SPIxPRI_SW0;
+		IPC34bits.DMA3IS = SPIXSUBPRI_SW0;
+		IEC4CLR = _IEC4_DMA3IE_MASK;
 		break;
 	default:
 		break;
 	}
 }
 
-void Init_Bus_Dma_Tx1(void)
+static inline void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
 {
-	uint32_t physDestDma;
-
-	/* DMA channel 1 - SPI1 TX. */
-
-	physDestDma = KVA_TO_PA(&SPI1BUF);
-
-	IEC4bits.DMA1IE = 0; /* Disable the DMA interrupt. */
-	IFS4bits.DMA1IF = 0; /* Clear the DMA interrupt flag. */
-	DMACONSET = _DMACON_ON_MASK; /* Enable the DMA module. */
-	DCH1SSAbits.CHSSA = physDestDma; /* Source start address. */
-	DCH1DSAbits.CHDSA = physDestDma; /* Destination start address. */
-	DCH1SSIZbits.CHSSIZ = 1; /* Source bytes. */
-	DCH1DSIZbits.CHDSIZ = 1; /* Destination bytes. */
-	DCH1CSIZbits.CHCSIZ = 1; /* Bytes to transfer per event. */
-	DCH1ECONbits.CHSIRQ = EIC_IRQ_SPI_1_TX; /* from board.h defines */
-	DCH1ECONbits.SIRQEN = 1; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
-	DCH1INTbits.CHBCIE = 0; /* enable Channel block transfer complete interrupt. */
-	IPC33bits.DMA1IP = 1; /* DMA interrupt priority. */
-	IPC33bits.DMA1IS = 0; /* DMA subpriority. */
-	IEC4bits.DMA1IE = 0; /* DMA interrupt enable.  */
-}
-
-void Init_Bus_Dma_Rx1(void)
-{
-	uint32_t physSourceDma;
-
-	/* DMA channel 0 - SPI1 RX. */
-
-	physSourceDma = KVA_TO_PA(&SPI1BUF);
-
-	IEC4bits.DMA0IE = 0; /* Disable the DMA interrupt. */
-	IFS4bits.DMA0IF = 0; /* Clear the DMA interrupt flag. */
-	DMACONbits.ON = 1; /* Enable the DMA module. */
-	DCH0SSAbits.CHSSA = physSourceDma; /* Source start address. */
-	DCH0DSAbits.CHDSA = physSourceDma; /* Destination start address. */
-	DCH0SSIZbits.CHSSIZ = 1; /* Source bytes. */
-	DCH0DSIZbits.CHDSIZ = 1; /* Destination bytes. */
-	DCH0CSIZbits.CHCSIZ = 1; /* Bytes to transfer per event. */
-	DCH0ECONbits.CHSIRQ = EIC_IRQ_SPI_1_RX; /* from board.h defines */
-	DCH0ECONbits.SIRQEN = 1; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
-	DCH0INTbits.CHBCIE = 1; /* enable Channel block transfer complete interrupt. */
-	IPC33bits.DMA0IP = 1; /* DMA interrupt priority. */
-	IPC33bits.DMA0IS = 0; /* DMA subpriority. */
-	IEC4bits.DMA0IE = 1; /* DMA interrupt enable.  */
-}
-
-void Init_Bus_Dma_Tx2(void)
-{
-	uint32_t physDestDma;
-
-	/* DMA channel 3 - SPI2 TX. */
-
-	physDestDma = KVA_TO_PA(&SPI2BUF);
-
-	IEC4bits.DMA3IE = 0;
-	IFS4bits.DMA3IF = 0;
-	DMACONbits.ON = 1;
-	DCH3SSAbits.CHSSA = physDestDma;
-	DCH3DSAbits.CHDSA = physDestDma;
-	DCH3SSIZbits.CHSSIZ = 1;
-	DCH3DSIZbits.CHDSIZ = 1;
-	DCH3CSIZbits.CHCSIZ = 1;
-	DCH3ECONbits.CHSIRQ = EIC_IRQ_SPI_2_TX;
-	DCH3ECONbits.SIRQEN = 1;
-	DCH3INTbits.CHBCIE = 0;
-	IPC34bits.DMA3IP = 1;
-	IPC34bits.DMA3IS = 0;
-	IEC4bits.DMA3IE = 0;
-}
-
-void Init_Bus_Dma_Rx2(void)
-{
-	uint32_t physSourceDma;
-
-	/* DMA channel 2 - SPI2 RX. */
-
-	physSourceDma = KVA_TO_PA(&SPI2BUF);
-
-	IEC4bits.DMA2IE = 0; /* Disable the DMA interrupt. */
-	IFS4bits.DMA2IF = 0; /* Clear the DMA interrupt flag. */
-	DMACONbits.ON = 1; /* Enable the DMA module. */
-	DCH2SSAbits.CHSSA = physSourceDma; /* Source start address. */
-	DCH2DSAbits.CHDSA = physSourceDma; /* Destination start address. */
-	DCH2SSIZbits.CHSSIZ = 1; /* Source bytes. */
-	DCH2DSIZbits.CHDSIZ = 1; /* Destination bytes. */
-	DCH2CSIZbits.CHCSIZ = 1; /* Bytes to transfer per event. */
-	DCH2ECONbits.CHSIRQ = EIC_IRQ_SPI_2_RX; /* from board.h defines */
-	DCH2ECONbits.SIRQEN = 1; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
-	DCH2INTbits.CHBCIE = 1; /* enable Channel block transfer complete interrupt. */
-	IPC34bits.DMA2IP = 1; /* DMA interrupt priority. */
-	IPC34bits.DMA2IS = 0; /* DMA subpriority. */
-	IEC4bits.DMA2IE = 1; /* DMA interrupt enable.  */
-}
-
-static void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
-{
-	DCH1SSAbits.CHSSA = physSourceDma;
+	DCH1SSA = physSourceDma;
 	DCH1SSIZbits.CHSSIZ = len;
 	DCH1CONbits.CHEN = 1; /* Channel enable. */
 }
 
-static void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
+static inline void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
 {
 	IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
 	SPI1CONbits.SRXISEL = 1; /* not empty */
 	IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
-	DCH0DSAbits.CHDSA = physDestDma;
+	DCH0DSA = physDestDma;
 	DCH0DSIZbits.CHDSIZ = len;
 	DCH0CONbits.CHEN = 1; /* Channel enable. */
 }
 
-static void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
+static inline void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
 {
-	DCH3SSAbits.CHSSA = physSourceDma;
+	DCH3SSA = physSourceDma;
 	DCH3SSIZbits.CHSSIZ = len;
 	DCH3CONbits.CHEN = 1;
 }
 
-static void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
+static inline void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
 {
 	IEC4CLR = _IEC4_SPI2RXIE_MASK; /* disable SPI2RX interrupt */
 	SPI2CONbits.SRXISEL = 1; /* not empty */
 	IFS4CLR = _IFS4_SPI2RXIF_MASK; /* clear SPI2RX flag */
-	DCH2DSAbits.CHDSA = physDestDma;
+	DCH2DSA = physDestDma;
 	DCH2DSIZbits.CHDSIZ = len;
 	DCH2CONbits.CHEN = 1; /* Channel enable. */
 }
@@ -288,10 +196,8 @@ void spi_irq_enable(spi_t bus)
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
 		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
-		//Init_Dma_Chan(1, EIC_IRQ_SPI_1_TX);
-		Init_Bus_Dma_Tx1();
-		//Init_Dma_Chan(0, EIC_IRQ_SPI_1_RX);
-		Init_Bus_Dma_Rx1();
+		Init_Dma_Chan(1, _SPI1_TX_VECTOR);
+		Init_Dma_Chan(0, _SPI1_RX_VECTOR);
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
@@ -301,8 +207,8 @@ void spi_irq_enable(spi_t bus)
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI2RXIE_MASK;
-		Init_Bus_Dma_Tx2();
-		Init_Bus_Dma_Rx2();
+		Init_Dma_Chan(3, _SPI2_TX_VECTOR);
+		Init_Dma_Chan(2, _SPI2_RX_VECTOR);
 	}
 	if (bus == 3) {
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
@@ -409,8 +315,6 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	const uint8_t *out_buffer = (const uint8_t *) out;
-	uint8_t *in_buffer = (uint8_t *) in;
-	uint32_t physSourceDma, physDestDma;
 
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
@@ -419,23 +323,21 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 #endif
 	(void) cs;
 	(void) cont;
-	/* Translate a kernel (KSEG) virtual address to a physical address. */
-	physSourceDma = KVA_TO_PA(out_buffer);
-	physDestDma = KVA_TO_PA(in_buffer);
 
-	/* set input buffer params */
-	pic_spi[bus].in = in_buffer;
+	/* set input buffer params for the non-dma isr mode */
+	pic_spi[bus].in = in;
 	pic_spi[bus].len = len;
 	pic_spi[bus].complete = false;
 
+	/* Translate a kernel (KSEG) virtual address to a physical address. */
 	switch (bus) {
 	case 1:
-		Trigger_Bus_DMA_Rx1(len, physDestDma);
-		Trigger_Bus_DMA_Tx1(len, physSourceDma);
+		Trigger_Bus_DMA_Rx1(len, KVA_TO_PA(in));
+		Trigger_Bus_DMA_Tx1(len, KVA_TO_PA(out_buffer));
 		break;
 	case 2:
-		Trigger_Bus_DMA_Rx2(len, physDestDma);
-		Trigger_Bus_DMA_Tx2(len, physSourceDma);
+		Trigger_Bus_DMA_Rx2(len, KVA_TO_PA(in));
+		Trigger_Bus_DMA_Tx2(len, KVA_TO_PA(out_buffer));
 		break;
 	default: /* non-dma mode for testing */
 		while (len--) {

@@ -211,7 +211,12 @@ extern "C" {
 		free(__PIC32_CACHED_PTR(ptr));
 	}
 
-
+/*******************************************************************/
+/** FlushCache - flush cache to RAM                               **/
+/** size - size of memory block to flush *MUST BE MULTIPLE OF 16* **/
+/** vaddr - start address of block to flush                        **/
+/*******************************************************************/
+/* void FlushCache(unsigned size, void *vaddr) */
 
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 		const void *out, void *in, size_t len);

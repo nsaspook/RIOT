@@ -39,7 +39,7 @@ int main(void)
 {
 	/* variable data[1..2] byte 4 has SPI id data for testing */
 	uint32_t data1 = 0x0f000000, data2 = 0xf0000000;
-	uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
+	const uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 	/* allocate buffer memory in kseg1 uncached */
 	uint8_t *td = __pic32_alloc_coherent(32);
 	uint8_t *rd = __pic32_alloc_coherent(32);
@@ -79,9 +79,9 @@ int main(void)
 		/* copy test-pattern data into DMA buffer */
 		memcpy(td, tdata, 18);
 		/* loop data for engine testing */
-		spi_transfer_bytes(SPI_DEV(1), 0, true, td, rd, 18);
-		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rd, td, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, td, bd, 18);
+		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rd, 8);
+		spi_transfer_bytes_async(SPI_DEV(1), 0, true, tdata, td, 8);
+		spi_transfer_bytes(SPI_DEV(2), 0, true, tdata, bd, 8);
 
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 100000; dd++) {

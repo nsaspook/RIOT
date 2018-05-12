@@ -117,7 +117,6 @@ extern "C" {
 		},
 	};
 
-
 #define SPI_NUMOF	(3)
 #define DMA_NUMOF	(8)
 	/** @} */
