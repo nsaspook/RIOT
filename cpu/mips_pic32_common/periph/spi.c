@@ -76,48 +76,23 @@ static mutex_t locks[SPI_NUMOF + 1];
 static PIC32_DMA_T pic_dma[DMA_NUMOF];
 
 int32_t spi_complete(spi_t);
-static void Init_Dma_Chan(uint8_t, uint32_t);
+static void Init_Dma_Chan(uint8_t, uint32_t, volatile unsigned int *, volatile unsigned int *);
 
-static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
+static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int * SourceDma, volatile unsigned int * DestDma)
 {
-	uint32_t physDestDma = 0, physSourceDma = 0;
 	assert(chan < DMA_NUMOF);
 
 	pic_dma[chan].regs = (volatile uint32_t *)(&DCH0CON + (chan * DMA_REGS_SPACING));
 
-	/* DMA channel configuration to device */
-	switch (chan) {
-	case 0:
-		IEC4bits.DMA0IE = 0; /* Disable the DMA interrupt. */
-		IFS4bits.DMA0IF = 0; /* Clear the DMA interrupt flag. */
-		physSourceDma = KVA_TO_PA(&SPI1BUF);
-		break;
-	case 1:
-		IEC4bits.DMA1IE = 0;
-		IFS4bits.DMA1IF = 0;
-		physDestDma = KVA_TO_PA(&SPI1BUF);
-		break;
-	case 2:
-		IEC4bits.DMA2IE = 0;
-		IFS4bits.DMA2IF = 0;
-		physSourceDma = KVA_TO_PA(&SPI2BUF);
-		break;
-	case 3:
-		IEC4CLR = _IEC4_DMA3IE_MASK;
-		IFS4CLR = _IFS4_DMA3IF_MASK;
-		physDestDma = KVA_TO_PA(&SPI2BUF);
-		break;
-	default:
-		break;
-	}
-
+	IEC4CLR = _IEC4_DMA0IE_MASK << chan; /* Disable the DMA interrupt. */
+	IFS4CLR = _IFS4_DMA0IF_MASK << chan; /* Clear the DMA interrupt flag. */
 	DCRCCON = 0;
 	DMACONSET = _DMACON_ON_MASK; /* Enable the DMA module. */
 	DCHxCON(pic_dma[chan]) = 0;
 	DCHxECON(pic_dma[chan]) = 0;
 	DCHxINT(pic_dma[chan]) = 0;
-	DCHxSSA(pic_dma[chan]) = physSourceDma; /* Source start address. */
-	DCHxDSA(pic_dma[chan]) = physDestDma; /* Destination start address. */
+	DCHxSSA(pic_dma[chan]) = KVA_TO_PA(SourceDma); /* Source start address. */
+	DCHxDSA(pic_dma[chan]) = KVA_TO_PA(DestDma); /* Destination start address. */
 	DCHxSSIZ(pic_dma[chan]) = 1; /* Source bytes. */
 	DCHxDSIZ(pic_dma[chan]) = 1; /* Destination bytes. */
 	DCHxCSIZ(pic_dma[chan]) = 1; /* Bytes to transfer per event. */
@@ -125,16 +100,18 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
 	DCHxECONSET(pic_dma[chan]) = _DCH0ECON_SIRQEN_MASK; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
 	DCHxINTSET(pic_dma[chan]) = _DCH0INT_CHBCIE_MASK; /* enable Channel block transfer complete interrupt. */
 
+	/*
+	 * set vector priority and receiver DMA trigger enables for the board hardware configuration 
+	 */
 	switch (chan) {
 	case 0:
 		IPC33bits.DMA0IP = SPIxPRI_SW0; /* DMA interrupt priority. */
 		IPC33bits.DMA0IS = SPIXSUBPRI_SW0; /* DMA sub-priority. */
-		IEC4SET = _IEC4_DMA0IE_MASK; /* DMA interrupt enable.  */
+		IEC4SET = _IEC4_DMA0IE_MASK; /* DMA interrupt enable for rx dma  */
 		break;
 	case 1:
 		IPC33bits.DMA1IP = SPIxPRI_SW0;
 		IPC33bits.DMA1IS = SPIXSUBPRI_SW0;
-		IEC4CLR = _IEC4_DMA1IE_MASK;
 		break;
 	case 2:
 		IPC34bits.DMA2IP = SPIxPRI_SW0;
@@ -144,21 +121,20 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num)
 	case 3:
 		IPC34bits.DMA3IP = SPIxPRI_SW0;
 		IPC34bits.DMA3IS = SPIXSUBPRI_SW0;
-		IEC4CLR = _IEC4_DMA3IE_MASK;
 		break;
 	default:
 		break;
 	}
 }
 
-static inline void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
+static void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
 {
 	DCH1SSA = physSourceDma;
 	DCH1SSIZbits.CHSSIZ = len;
 	DCH1CONbits.CHEN = 1; /* Channel enable. */
 }
 
-static inline void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
+static void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
 {
 	IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
 	SPI1CONbits.SRXISEL = 1; /* not empty */
@@ -168,14 +144,14 @@ static inline void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
 	DCH0CONbits.CHEN = 1; /* Channel enable. */
 }
 
-static inline void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
+static void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
 {
 	DCH3SSA = physSourceDma;
 	DCH3SSIZbits.CHSSIZ = len;
 	DCH3CONbits.CHEN = 1;
 }
 
-static inline void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
+static void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
 {
 	IEC4CLR = _IEC4_SPI2RXIE_MASK; /* disable SPI2RX interrupt */
 	SPI2CONbits.SRXISEL = 1; /* not empty */
@@ -186,8 +162,10 @@ static inline void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
 }
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
-void spi_irq_enable(spi_t bus)
+static void spi_irq_enable(spi_t bus)
 {
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
 		SPI1CONbits.SRXISEL = 1; /* interrupt when not full */
@@ -196,8 +174,8 @@ void spi_irq_enable(spi_t bus)
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
 		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
-		Init_Dma_Chan(1, _SPI1_TX_VECTOR);
-		Init_Dma_Chan(0, _SPI1_RX_VECTOR);
+		Init_Dma_Chan(1, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF);
+		Init_Dma_Chan(0, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF);
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
@@ -207,8 +185,8 @@ void spi_irq_enable(spi_t bus)
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI2RXIE_MASK;
-		Init_Dma_Chan(3, _SPI2_TX_VECTOR);
-		Init_Dma_Chan(2, _SPI2_RX_VECTOR);
+		Init_Dma_Chan(3, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF);
+		Init_Dma_Chan(2, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF);
 	}
 	if (bus == 3) {
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
@@ -220,8 +198,10 @@ void spi_irq_enable(spi_t bus)
 	}
 }
 
-void spi_irq_disable(spi_t bus)
+static void spi_irq_disable(spi_t bus)
 {
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK;
 	}
@@ -315,8 +295,6 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	const uint8_t *out_buffer = (const uint8_t *) out;
-
-	assert(bus != 0 && bus <= SPI_NUMOF);
 
 #ifdef _PORTS_P32MZ2048EFM100_H
 	PDEBUG3_ON;
@@ -474,5 +452,6 @@ void DMA_SPI_3_ISR_RX(void)
 
 int32_t spi_complete(spi_t bus)
 {
+	assert(bus != 0 && bus <= SPI_NUMOF);
 	return pic_spi[bus].complete;
 }
