@@ -56,3 +56,4 @@ Makefile.local
 
 # scan-build artifacts
 scan-build/
+/examples/rn4020_riot/test.X/nbproject/private/
