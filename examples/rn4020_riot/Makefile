@@ -1,4 +1,4 @@
-APPLICATION = serial_timer_periodic_wakeup
+APPLICATION = rn4020_riot
 RIOTBASE ?= $(CURDIR)/../..
 BOARD ?= native
 USEMODULE += xtimer

@@ -1,5 +1,5 @@
 /*
- * PIC32MZ EF Curiosity Development Board, RIOT-OS port testing example
+ * PIC32MZ EF Curiosity Development Board, RIOT-OS RN4020 BLE testing
  */
 
 #include <stdio.h>
@@ -9,21 +9,12 @@
 #include "periph/uart.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
+#include "config.h"
 
 /* set interval to 1 second */
 #define INTERVAL (1U * US_PER_SEC)
 
 extern void set_cache_policy(uint32_t);
-
-/* serial #1 interrupt received data callback processing */
-static void _rx_cb1(void *data, uint8_t c)
-{
-	uint8_t *recd = data, rdata[20] __attribute__((unused));
-
-	*recd = c;
-	/* write received data to TX and send SPI byte */
-	uart_write(1, &c, 1);
-}
 
 /* serial #2 interrupt received data callback processing */
 static void _rx_cb2(void *data, uint8_t c)
@@ -38,7 +29,7 @@ static void _rx_cb2(void *data, uint8_t c)
 int main(void)
 {
 	/* variable data[1..2] byte 4 has SPI id data for testing */
-	uint32_t data1 = 0x0f000000, data2 = 0xf0000000;
+	uint32_t data2 = 0xf0000000;
 	const uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 	/* allocate buffer memory in kseg1 uncached */
 	uint8_t *td = __pic32_alloc_coherent(32);
@@ -56,7 +47,7 @@ int main(void)
 	 * uart callback uses a 4 byte variable for data so SPI can
 	 * transfer 4 bytes in the callback
 	 */
-	uart_init(1, DEBUG_UART_BAUD, _rx_cb1, &data1);
+
 	uart_init(2, DEBUG_UART_BAUD, _rx_cb2, &data2);
 	uart_init(4, DEBUG_UART_BAUD, NULL, 0);
 	spi_init(SPI_DEV(1));

@@ -33,8 +33,8 @@ DEBUGGABLE_SUFFIX=null
 FINAL_IMAGE=dist/${CND_CONF}/${IMAGE_TYPE}/test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 else
 IMAGE_TYPE=production
-OUTPUT_SUFFIX=Hex
-DEBUGGABLE_SUFFIX=Hex
+OUTPUT_SUFFIX=Elf
+DEBUGGABLE_SUFFIX=Elf
 FINAL_IMAGE=dist/${CND_CONF}/${IMAGE_TYPE}/test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 endif
 
@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=../main.c
+SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/_ext/1472/main.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/_ext/1472/main.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/_ext/1472/main.o
+OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o
 
 # Source Files
-SOURCEFILES=../main.c
+SOURCEFILES=ble_main.c uart.c
 
 
 CFLAGS=
@@ -98,18 +98,30 @@ endif
 # ------------------------------------------------------------------------------------
 # Rules for buildStep: compile
 ifeq ($(TYPE_IMAGE), DEBUG_RUN)
-${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
-	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ../main.c 
+${OBJECTDIR}/ble_main.o: ble_main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ble_main.o.d 
+	@${RM} ${OBJECTDIR}/ble_main.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ble_main.c 
+	
+${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/uart.o.d 
+	@${RM} ${OBJECTDIR}/uart.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c 
 	
 else
-${OBJECTDIR}/_ext/1472/main.o: ../main.c  nbproject/Makefile-${CND_CONF}.mk
-	@${MKDIR} "${OBJECTDIR}/_ext/1472" 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o.d 
-	@${RM} ${OBJECTDIR}/_ext/1472/main.o 
-	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ../main.c 
+${OBJECTDIR}/ble_main.o: ble_main.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ble_main.o.d 
+	@${RM} ${OBJECTDIR}/ble_main.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ble_main.c 
+	
+${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/uart.o.d 
+	@${RM} ${OBJECTDIR}/uart.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c 
 	
 endif
 
