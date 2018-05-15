@@ -40,11 +40,12 @@
 #include "periph/gpio.h"
 #include "uart.h"
 #include "config.h"
+#include "tsrb.h"
 
 //UART receive buffer type
 
 typedef struct {
-	uint8_t buffer[SIZE_RxBuffer];
+	char buffer[SIZE_RxBuffer];
 	volatile uint8_t volatile *head;
 	volatile uint8_t *tail;
 	volatile uint16_t byteCount;
@@ -53,7 +54,7 @@ typedef struct {
 //UART transmit buffer type
 
 typedef struct {
-	volatile uint8_t buffer[SIZE_TxBuffer];
+	char buffer[SIZE_TxBuffer];
 	volatile uint8_t *head;
 	volatile uint8_t volatile *tail;
 	volatile uint16_t byteCount;
@@ -63,18 +64,14 @@ typedef struct {
 static UART_RX_BUFFER_T rxBuf;
 static UART_TX_BUFFER_T txBuf;
 
+tsrb_t rn4020_rx, rn4020_tx;
+
 /* serial #1 interrupt received data callback processing */
 void _rx_cb1(void *data, uint8_t c)
 {
 	(void) data;
-
-	*rxBuf.head++ = c; //Put received byte in the buffer
-	if (rxBuf.head > &rxBuf.buffer[SIZE_RxBuffer - 1]) { //Check if end of buffer
-		rxBuf.head = &rxBuf.buffer[0]; //Wrap pointer to beginning
-	}
-	if (rxBuf.byteCount < SIZE_RxBuffer) { //Increment byte count
-		rxBuf.byteCount++;
-	}
+	//Put received byte in the buffer
+	tsrb_add_one(&rn4020_rx, (char) c);
 }
 
 //**********************************************************************************************************************
@@ -82,11 +79,8 @@ void _rx_cb1(void *data, uint8_t c)
 
 void UART_Init(void)
 {
-	rxBuf.tail = &rxBuf.buffer[0]; //Initialize the pointers
-	rxBuf.head = &rxBuf.buffer[0];
-	txBuf.tail = &txBuf.buffer[0];
-	txBuf.head = &txBuf.buffer[0];
-	txBuf.byteCount = rxBuf.byteCount = 0;
+	tsrb_init(&rn4020_rx, rxBuf.buffer, SIZE_RxBuffer);
+	tsrb_init(&rn4020_tx, txBuf.buffer, SIZE_TxBuffer);
 
 	uart_init(1, 115200, _rx_cb1, &rxBuf.buffer[0]);
 	//	U1BRG = 34; //Baud rate 115,200 - actually 115,384 baud 0.16% error
@@ -107,7 +101,7 @@ void UART_Init(void)
 
 inline void UART_TxStart(void)
 {
-//	UART_TX_IE = 1; //Enable transmit interrupts
+	//	UART_TX_IE = 1; //Enable transmit interrupts
 }
 
 //**********************************************************************************************************************
@@ -115,13 +109,11 @@ inline void UART_TxStart(void)
 
 bool UART_IsNewRxData(void)
 {
-//	__builtin_disi(0x3FFF); //disable interrupts
-	if (rxBuf.byteCount == 0) { //Check if data in buffer
-//		__builtin_disi(0); //enable interrupts
-		return(false); //No bytes in the buffer so return false
+	if (tsrb_empty(&rn4020_rx)) {
+		return(false);
+	} else {
+		return(true); //There are bytes in the buffer
 	}
-//	__builtin_disi(0); //enable interrupts
-	return(true); //There are bytes in the buffer
 }
 
 //**********************************************************************************************************************
@@ -129,21 +121,7 @@ bool UART_IsNewRxData(void)
 
 uint8_t UART_ReadRxBuffer(void)
 {
-	uint8_t Temp;
-
-//	__builtin_disi(0x3FFF); //disable interrupts
-	if (rxBuf.byteCount == 0) { //For safety, do not allow read of empty buffer
-//		__builtin_disi(0); //enable interrupts
-		return(0); //Return zero if there is nothing in the buffer
-	}
-
-	rxBuf.byteCount--; //Decrement byte count
-//	__builtin_disi(0); //enable interrupts
-	Temp = *rxBuf.tail++; //Get the byte and increment the pointer
-	if (rxBuf.tail > &rxBuf.buffer[SIZE_RxBuffer - 1]) { //Check if at end of buffer
-		rxBuf.tail = &rxBuf.buffer[0]; //then wrap the pointer to beginning
-	}
-	return(Temp);
+	return(uint8_t) tsrb_get_one(&rn4020_rx);
 }
 
 //**********************************************************************************************************************
@@ -151,15 +129,7 @@ uint8_t UART_ReadRxBuffer(void)
 
 void UART_WriteTxBuffer(const uint8_t TxByte)
 {
-	*txBuf.head++ = TxByte; //Put the byte in the transmit buffer and increment the pointer
-	if (txBuf.head > &txBuf.buffer[SIZE_TxBuffer - 1]) { //Check if at end of buffer
-		txBuf.head = &txBuf.buffer[0]; //Wrap pointer to beginning
-	}
-//	__builtin_disi(0x3FFF); //disable interrupts
-	if (txBuf.byteCount < SIZE_TxBuffer) { //Increment byte count
-		txBuf.byteCount++;
-	}
-//	__builtin_disi(0); //enable interrupts
+	tsrb_add_one(&rn4020_tx, (char) TxByte);
 }
 
 //**********************************************************************************************************************
@@ -167,84 +137,15 @@ void UART_WriteTxBuffer(const uint8_t TxByte)
 
 uint16_t UART_GetTXBufferFreeSpace(void)
 {
-	uint16_t space;
-
-//	__builtin_disi(0x3FFF); //disable interrupts            
-	space = SIZE_TxBuffer - txBuf.byteCount;
-//	__builtin_disi(0); //enable interrupts
-	return space;
+	return(uint16_t) tsrb_free(&rn4020_tx);
 }
 
 //Peek at buffer tail
 
 uint8_t UART_PeekRxBuffer(void)
 {
-//	__builtin_disi(0x3FFF); //disable interrupts
-	if (rxBuf.byteCount == 0) { //Check if pointers are the same
-//		__builtin_disi(0); //enable interrupts
-		return(0); //No bytes in the buffer so return NULL
-	} else {
-//		__builtin_disi(0); //enable interrupts
-		return *rxBuf.tail;
-	}
+
+	return(0); //No bytes in the buffer so return NULL
+
 }
 
-//**********************************************************************************************************************
-// Interrupt routine for UART receive interrupts
-
-//void __attribute__((interrupt, no_auto_psv)) _U1RXInterrupt(void)
-//{
-//	UART_RX_IF = 0; //Clear UART Receive interrupt flag
-//	*rxBuf.head++ = UART_RX_BUF; //Put received byte in the buffer
-//	if (rxBuf.head > &rxBuf.buffer[SIZE_RxBuffer - 1]) { //Check if end of buffer
-//		rxBuf.head = &rxBuf.buffer[0]; //Wrap pointer to beginning
-//	}
-//	if (rxBuf.byteCount < SIZE_RxBuffer) { //Increment byte count
-//		rxBuf.byteCount++;
-//	}
-//}
-
-//**********************************************************************************************************************
-// Interrupt routine for UART transmit interrupts
-
-//void __attribute__((interrupt, no_auto_psv)) _U1TXInterrupt(void)
-//{
-//	if (txBuf.byteCount > 0) //Check if more data is in the buffer
-//	{
-//		//Only do anything if hardware buffer has space
-//		if (!UART_FULL) {
-//			UART_TX_IF = 0; //Clear UART 1 TX interrupt flag
-//			UART_TX_BUF = *txBuf.tail++; //Load next byte into the TX buffer
-//			if (txBuf.tail > &txBuf.buffer[SIZE_TxBuffer - 1]) { //Check if end of buffer
-//				txBuf.tail = &txBuf.buffer[0]; //Wrap pointer to beginning
-//			}
-//			txBuf.byteCount--; //Decrement byte count
-//		}
-//	} else {
-//		UART_TX_IE = 0; //No more data to transmit, so stop interrupts
-//	}
-//}
-
-//**********************************************************************************************************************
-// Interrupt routine for UART error interrupts
-
-//void __attribute__((interrupt, no_auto_psv)) _U1ErrInterrupt(void)
-//{
-//	IFS4bits.U1ERIF = 0; //Clear interrupt flag
-//
-//	//Handle an overflow error by reading next byte and clearing flag
-//	if (U1STAbits.OERR == 1) {
-//		*rxBuf.head++ = UART_RX_BUF; //Put received byte in the buffer
-//		if (rxBuf.head > &rxBuf.buffer[SIZE_RxBuffer - 1]) { //Check if end of buffer
-//			rxBuf.head = &rxBuf.buffer[0]; //Wrap pointer to beginning
-//		}
-//		if (rxBuf.byteCount < SIZE_RxBuffer) { //Increment byte count
-//			rxBuf.byteCount++;
-//		}
-//		U1STAbits.OERR = 0;
-//	}
-//
-//	//Clear any other error bits
-//	U1STAbits.FERR = 0;
-//	U1STAbits.PERR = 0;
-//}
