@@ -97,3 +97,7 @@ int main(void)
 
 	return 0;
 }
+
+void _T1Interrupt(void)
+{
+}

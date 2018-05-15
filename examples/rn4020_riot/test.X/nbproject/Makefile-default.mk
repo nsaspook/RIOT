@@ -33,8 +33,8 @@ DEBUGGABLE_SUFFIX=null
 FINAL_IMAGE=dist/${CND_CONF}/${IMAGE_TYPE}/test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 else
 IMAGE_TYPE=production
-OUTPUT_SUFFIX=Elf
-DEBUGGABLE_SUFFIX=Elf
+OUTPUT_SUFFIX=Hex
+DEBUGGABLE_SUFFIX=Hex
 FINAL_IMAGE=dist/${CND_CONF}/${IMAGE_TYPE}/test.X.${IMAGE_TYPE}.${OUTPUT_SUFFIX}
 endif
 
@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c
+SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c link.c switches.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/app.o.d ${OBJECTDIR}/automio.o.d ${OBJECTDIR}/bluetooth.o.d ${OBJECTDIR}/leds.o.d ${OBJECTDIR}/timers.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/link.o ${OBJECTDIR}/switches.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/app.o.d ${OBJECTDIR}/automio.o.d ${OBJECTDIR}/bluetooth.o.d ${OBJECTDIR}/leds.o.d ${OBJECTDIR}/timers.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/adc.o.d ${OBJECTDIR}/link.o.d ${OBJECTDIR}/switches.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o
+OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/link.o ${OBJECTDIR}/switches.o
 
 # Source Files
-SOURCEFILES=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c
+SOURCEFILES=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c link.c switches.c
 
 
 CFLAGS=
@@ -140,6 +140,30 @@ ${OBJECTDIR}/timers.o: timers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/timers.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  timers.c 
 	
+${OBJECTDIR}/spi.o: spi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/spi.o.d 
+	@${RM} ${OBJECTDIR}/spi.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  spi.c 
+	
+${OBJECTDIR}/adc.o: adc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/adc.o.d 
+	@${RM} ${OBJECTDIR}/adc.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  adc.c 
+	
+${OBJECTDIR}/link.o: link.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/link.o.d 
+	@${RM} ${OBJECTDIR}/link.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  link.c 
+	
+${OBJECTDIR}/switches.o: switches.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/switches.o.d 
+	@${RM} ${OBJECTDIR}/switches.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  switches.c 
+	
 else
 ${OBJECTDIR}/ble_main.o: ble_main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -182,6 +206,30 @@ ${OBJECTDIR}/timers.o: timers.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/timers.o.d 
 	@${RM} ${OBJECTDIR}/timers.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  timers.c 
+	
+${OBJECTDIR}/spi.o: spi.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/spi.o.d 
+	@${RM} ${OBJECTDIR}/spi.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  spi.c 
+	
+${OBJECTDIR}/adc.o: adc.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/adc.o.d 
+	@${RM} ${OBJECTDIR}/adc.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  adc.c 
+	
+${OBJECTDIR}/link.o: link.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/link.o.d 
+	@${RM} ${OBJECTDIR}/link.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  link.c 
+	
+${OBJECTDIR}/switches.o: switches.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/switches.o.d 
+	@${RM} ${OBJECTDIR}/switches.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  switches.c 
 	
 endif
 

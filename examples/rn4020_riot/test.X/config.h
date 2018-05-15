@@ -46,12 +46,13 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
-#define APP_VERSION_STR "3.2"       //This firmware version
+#define APP_VERSION_STR "4.0"       //This firmware version
 //	2.8	increase ADC sampling and message transmission rates
 //	2.9	minor spelling fixes
 //	3.0	Add some public service support
 //	3.1	heart rate service added (demo data) makes software version 1.33.4 firmware dependant
 //	3.2	add automation io service
+//	4.0	riot-os port
 
 /*******************************************************************************
  * Application settings - these will change application behavior

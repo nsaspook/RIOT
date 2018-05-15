@@ -55,31 +55,9 @@ void Timers_Init(void)
 	PR1 = TIMER_500US_PERIOD; //Set the period value for 500us
 	T1CON |= TIMER_ON_PRESCALE1; //using 1:1 prescaler and turn on timer 1
 	IFS0bits.T1IF = 0; //Clear the interrupt flag
+	IPC1bits.T1IP = 1; /* DMA interrupt priority. */
+	IPC1bits.T1IS = 0; /* DMA sub-priority. */
 	IEC0bits.T1IE = 1; //Enable the timer 1 interrupt
-
-#ifdef USE_SLEEP                //see config.h, Application setting section
-	//Timer 2/3 is used in 32-bit mode as inactivity timer to trigger sleep mode
-	T2CON = TIMER_OFF; //Timer 3 off
-	TMR3 = 0; //Clear timer 3
-	TMR2 = 0; //Clear timer 2
-	T2CONbits.T32 = 1; //Enable 32-bit mode
-	PR3 = (uint16_t) (SLEEP_TIME >> 16); //Set the period value - msw
-	PR2 = (uint16_t) (SLEEP_TIME | 0x0000FFFF); //lsw
-	T2CON |= TIMER_ON_PRESCALE256; //using 1:256 prescaler and turn on timer 3
-	IFS0bits.T3IF = 0; //Clear the interrupt flag
-	IEC0bits.T3IE = 1; //Enable the timer 3 interrupt
-
-#ifndef SLEEP_MODE_RTCC         //we'll be using Timer 1 for periodic wakeup
-	T1CON = 0x0000; //Timer 1 off
-	T1CONbits.T1ECS = 0b10; //Clock source LPRC
-	T1CONbits.TCS = 1;
-	T1CONbits.TCKPS = 0b11; //using 1:256 prescaler
-	TMR1 = 0; //Clear timer 1
-	PR1 = T1_SLEEP_PERIOD; //Set the period for sleep
-	IFS0bits.T1IF = 0; //Clear the interrupt flag
-	IEC0bits.T1IE = 1; //Enable the timer 1 interrupt
-#endif //not SLEEP_MODE_RTCC    
-#endif //USE_SLEEP
 }
 
 //**********************************************************************************************************************
@@ -113,15 +91,6 @@ void WaitMs(uint16_t numMilliseconds)
 	} //Enter idle mode to reduce power while waiting
 } //(timer interrupt will wake part from idle)
 
-#ifdef USE_SLEEP                //see config.h, Application setting section
-//Reset the inactivity sleep timer
-
-inline void SleepTimerReset(void)
-{
-	TMR3 = 0; //Clear timer 3
-	TMR2 = 0; //Clear timer 2
-}
-#endif
 
 //**********************************************************************************************************************
 // Timer 1 interrupt routine - software timers
@@ -130,6 +99,8 @@ void _T1Interrupt(void)
 {
 	uint8_t i;
 
+	//	IFS0bits.T1IF = 0; //Clear the interrupt flag
+	PDEBUG1_TOGGLE; // FIFO has data
 	//Decrement each software timer
 	for (i = 0; i < TMR_COUNT; i++) {
 		if (tickCount[i] != 0) {
@@ -138,23 +109,3 @@ void _T1Interrupt(void)
 	}
 }
 
-#ifdef USE_SLEEP                //see config.h, Application setting section
-//**********************************************************************************************************************
-// Timer 3 interrupt routine - inactivity timer
-
-void _ISR_NO_AUTO_PSV _T3Interrupt(void)
-{
-	IFS0bits.T3IF = 0; //Clear the interrupt flag    
-	appData.sleepFlag = true;
-}
-#ifndef SLEEP_MODE_RTCC
-//**********************************************************************************************************************
-// Timer 1 interrupt routine - periodic wakeup timer
-
-void _ISR_NO_AUTO_PSV _T1Interrupt(void)
-{
-	IFS0bits.T1IF = 0; //Clear the interrupt flag
-	appData.timer1Flag = true;
-}
-#endif //not SLEEP_MODE_RTCC
-#endif //USE_SLEEP

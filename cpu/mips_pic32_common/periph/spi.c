@@ -371,11 +371,11 @@ static void spi_rx_irq(spi_t bus)
 	uint8_t rdata __attribute__((unused));
 
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_ON; // FIFO has data
+//	PDEBUG1_ON; // FIFO has data
 #endif
 	while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK))) {
 #ifdef _PORTS_P32MZ2048EFM100_H
-		PDEBUG1_TOGGLE; // FIFO has data
+//		PDEBUG1_TOGGLE; // FIFO has data
 #endif
 		if (pic_spi[bus].in) {
 			*pic_spi[bus].in++ = SPIxBUF(pic_spi[bus]);
@@ -387,14 +387,14 @@ static void spi_rx_irq(spi_t bus)
 			pic_spi[bus].complete = true;
 		}
 #ifdef _PORTS_P32MZ2048EFM100_H
-		PDEBUG1_TOGGLE; // FIFO has data
+//		PDEBUG1_TOGGLE; // FIFO has data
 #endif
 	}
 	/* time ref toggle */
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_OFF; // FIFO has data
-	PDEBUG1_ON; // FIFO has data
-	PDEBUG1_OFF; // FIFO has data
+//	PDEBUG1_OFF; // FIFO has data
+//	PDEBUG1_ON; // FIFO has data
+//	PDEBUG1_OFF; // FIFO has data
 #endif
 }
 
