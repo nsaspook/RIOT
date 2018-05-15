@@ -25,24 +25,24 @@
  * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
  *
  *
- * File:        uart.h
+ * File:        adc.h
  * Date:        January 20, 2015
  * Compiler:    XC16 v1.23
  *
- * Uart functions
  *
  */
-#ifndef UART_H
-#define UART_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#ifndef ADC_H
+#define	ADC_H
 
-void UART_Init(void);
-bool UART_IsNewRxData(void);
-uint8_t UART_ReadRxBuffer(void);
-void UART_WriteTxBuffer(const uint8_t);
-uint16_t UART_GetTXBufferFreeSpace(void);
-uint8_t UART_PeekRxBuffer(void);
+// *****************************************************************************
+// Section: Functions
+// *****************************************************************************
 
-#endif
+void ADC_Init(void); //Initialize the ADC
+bool ADC_Tasks(void); //Update ADC reading
+void ADC_ProcAccum(void); //Process full accumulator
+void GetNewADC_Chan(void);
+
+#endif	/* ADC_H */
+

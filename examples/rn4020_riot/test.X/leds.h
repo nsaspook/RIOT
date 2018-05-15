@@ -25,24 +25,30 @@
  * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
  *
  *
- * File:        uart.h
+ * File:        leds.h
  * Date:        January 20, 2015
  * Compiler:    XC16 v1.23
  *
- * Uart functions
+ * Led functions
  *
  */
-#ifndef UART_H
-#define UART_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#ifndef LEDS_H
+#define	LEDS_H
 
-void UART_Init(void);
-bool UART_IsNewRxData(void);
-uint8_t UART_ReadRxBuffer(void);
-void UART_WriteTxBuffer(const uint8_t);
-uint16_t UART_GetTXBufferFreeSpace(void);
-uint8_t UART_PeekRxBuffer(void);
+//LED display states
 
-#endif
+typedef enum {
+    LED_IDLE,
+    LED_BTLE_ADVERTISING,
+    LED_BTLE_PAIRED,
+    LED_ERROR,
+    LED_SLEEP
+} LED_LIGHTSHOW_T;
+
+void LED_Tasks(void);
+void LED_SET_LightShow(LED_LIGHTSHOW_T setting);
+void GetNewLEDs(void);
+
+#endif	/* LEDS_H */
+

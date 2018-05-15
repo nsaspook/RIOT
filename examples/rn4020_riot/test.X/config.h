@@ -38,6 +38,13 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <stdio.h>
+#include <string.h>
+#include "xtimer.h"
+#include "timex.h"
+#include "periph/uart.h"
+#include "periph/gpio.h"
+#include "periph/spi.h"
 
 #define APP_VERSION_STR "3.2"       //This firmware version
 //	2.8	increase ADC sampling and message transmission rates
@@ -289,95 +296,51 @@ struct gatts_char_inst {
 #define FCY (16000000)                              //8MHz FRC, 4XPLL, /2 for Fcy
 
 //RN4020 BTLE
-#define BT_OTA_UPD	PORTBbits.RB3
-#define BT_OTA_UPD_TRIS	TRISBbits.TRISB3
+#define BT_OTA_UPD	PORTEbits.RE9			// update jumper on board, if pin is low start update routine., OK
+#define BT_OTA_UPD_TRIS	TRISEbits.TRISE9
 
-#define BT_WAKE_HW      LATBbits.LATB10                       //Hardware wake from dormant state; BT_WAKE_HW
-#define BT_WAKE_HW_TRIS TRISBbits.TRISB10
+#define BT_WAKE_HW      LATDbits.LATD1                       //Hardware wake from dormant state; BT_WAKE_HW, OK
+#define BT_WAKE_HW_TRIS TRISDbits.TRISD1
 
-#define BT_WAKE_SW      LATBbits.LATB11                       //Deep sleep wake; BT_WAKE_SW
-#define BT_WAKE_SW_TRIS TRISBbits.TRISB11
+#define BT_WAKE_SW      LATDbits.LATD14                       //Deep sleep wake; BT_WAKE_SW, OK
+#define BT_WAKE_SW_TRIS TRISDbits.TRISD14
 
-#define BT_CMD      LATAbits.LATA0                 //Place RN4020 module in command mode, low for MLDP mode
-#define BT_CMD_TRIS TRISAbits.TRISA0
+#define BT_CMD      LATEbits.LATE8                 //Place RN4020 module in command mode, low for MLDP mode, OK
+#define BT_CMD_TRIS TRISEbits.TRISE8
 
-#define BT_CONNECTED        PORTAbits.RA1                     //RN4020 module is connected to central device
-#define BT_CONNECTED_TRIS   TRISAbits.TRISA1
+#define BT_CONNECTED        PORTBbits.RB4                     //RN4020 module is connected to central device, OK
+#define BT_CONNECTED_TRIS   TRISBbits.TRISB4
 
-#define BT_WS       PORTAbits.RA2                         //RN4020 module is awake and active
-#define BT_WS_TRIS  TRISAbits.TRISA2
+#define BT_WS       PORTAbits.RA9                         //RN4020 module is awake and active, OK
+#define BT_WS_TRIS  TRISAbits.TRISA9
 
-#define BT_MLDP_EV      PORTAbits.RA4                         //RN4020 module in MLDP mode has a pending event
-#define BT_MLDP_EV_TRIS TRISAbits.TRISA4
+#define BT_MLDP_EV      PORTDbits.RD3                         //RN4020 module in MLDP mode has a pending event, NC, OK
+#define BT_MLDP_EV_TRIS TRISDbits.TRISD3
 
 //UART
 #define U1CTS_TRIS      TRISBbits.TRISB8
 #define U1CTS_PORT	PORTBbits.RB8
-#define U1CTS_RP_NUM    23
 
 #define U1RTS_TRIS      TRISBbits.TRISB9
 #define U1RTS_LAT       LATBbits.LATB9
-#define U1RTS_RP_REG    RPOR6bits.RP12R
-
-#define U1RX_TRIS   TRISBbits.TRISB2  //BT_RX
-#define U1RX_PORT   PORTBbits.RB2
-#define U1RX_RP_NUM 24
-
-#define U1TX_TRIS   TRISBbits.TRISB7  //BT_TX
-#define U1TX_LAT    LATBbits.LATB7
-#define U1TX_RP_REG RPOR5bits.RP11R
-
-#define UART_RX_IF      IFS0bits.U1RXIF
-#define UART_TX_IF      IFS0bits.U1TXIF
-#define UART_ER_IF      IFS4bits.U1ERIF
-
-#define UART_TX_IE      IEC0bits.U1TXIE
-#define UART_RX_IE      IEC0bits.U1RXIE
-#define UART_ER_IE      IEC4bits.U1ERIE
-#define UART_TX_EN      U1STAbits.UTXEN
-#define UART_EMPTY      U1STAbits.TRMT
-#define UART_FULL       U1STAbits.UTXBF
-
-#define UART_TX_BUF     U1TXREG
-#define UART_RX_BUF     U1RXREG
-
-#define SPI_X_IF      IFS3bits.SSP2IF
-#define SPI_E_IF      IFS3bits.BCL2IF
-
-#define SPI_X_IE      IEC3bits.SSP2IE
-#define SPI_E_IE      IEC3bits.BCL2IE
-
-#define SPI_BUF		SSP2BUF
-#define SPI_BUF_FULL	SSP2STATbits.BF
 
 // RELAY outputs
-#define RELAY1	LATBbits.LATB13 // output 0 (low) turns on relay
-#define RELAY2	LATBbits.LATB12
-#define RELAY3	LATBbits.LATB4
+#define RELAY1	LATBbits.LATB3 // output 0 (low) turns on relay
+#define RELAY2	LATBbits.LATB3
+#define RELAY3	LATBbits.LATB3
 #define RELAY4	LATBbits.LATB3
 
 // LED outputs
-#define LED5 LATBbits.LATB0
-#define LED6 LATBbits.LATB0
-#define LED7 LATBbits.LATB0
 
-#define SLED LATBbits.LATB14
-#define SLED_TRIS TRISBbits.TRISB14
+#define SLED LED4R_TOGGLE
+#define SLED_ON		LED4R_ON	
+#define SLED_OFF	LED4R_OFF
 
-#define LED_TRIS1 TRISBbits.TRISB13
-#define LED_TRIS2 TRISBbits.TRISB12
-#define LED_TRIS3 TRISBbits.TRISB4
-#define LED_TRIS4 TRISBbits.TRISB3
+#define SPI_CS0 LATDbits.LATD5
+#define SPI_CS1 LATAbits.LATA1
 
-// SPI
-#define SPI_CS0_TRIS	TRISAbits.TRISA3
-#define SPI_CS1_TRIS	TRISBbits.TRISB15
-#define SPI_SDO	TRISBbits.TRISB6
-#define SPI_SCK	TRISBbits.TRISB5
-#define SPI_SDI	TRISAbits.TRISA7
-
-#define SPI_CS0 LATAbits.LATA3
-#define SPI_CS1 LATBbits.LATB15
+#define SPI_CS0_TRIS	TRISDbits.TRISD5
+#define SPI_CS1_TRIS	TRISAbits.TRISA1
 
 //Timer initialization
 #define TIMER_OFF 0

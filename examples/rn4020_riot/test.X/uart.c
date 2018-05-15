@@ -97,14 +97,6 @@ void UART_Init(void)
 }
 
 //**********************************************************************************************************************
-// Start transmission by enabling the UART transmit interrupt
-
-inline void UART_TxStart(void)
-{
-	//	UART_TX_IE = 1; //Enable transmit interrupts
-}
-
-//**********************************************************************************************************************
 // See if there are one or more bytes in the receive buffer
 
 bool UART_IsNewRxData(void)

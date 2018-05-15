@@ -10,34 +10,25 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 #include "config.h"
+#include "app.h"
 
 /* set interval to 1 second */
 #define INTERVAL (1U * US_PER_SEC)
 
 extern void set_cache_policy(uint32_t);
 
-/* serial #2 interrupt received data callback processing */
-static void _rx_cb2(void *data, uint8_t c)
-{
-	uint8_t *recd = data, rdata[20] __attribute__((unused));
-
-	*recd = c;
-	/* write received data to TX and send SPI byte */
-	uart_write(2, &c, 1);
-}
-
 int main(void)
 {
-	/* variable data[1..2] byte 4 has SPI id data for testing */
-	uint32_t data2 = 0xf0000000;
+
 	const uint8_t tdata[20] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
 	/* allocate buffer memory in kseg1 uncached */
-	uint8_t *td = __pic32_alloc_coherent(32);
-	uint8_t *rd = __pic32_alloc_coherent(32);
-	uint8_t *bd = __pic32_alloc_coherent(32);
+	uint8_t *td = __pic32_alloc_coherent(256);
+	uint8_t *bd = __pic32_alloc_coherent(256);
 	char buffer[128];
 	int dd, times_count = 0;
 	xtimer_ticks32_t last_wakeup = xtimer_now();
+
+	void initBoard(void);
 
 	/* testing cache modes */
 	set_cache_policy(WB_WA);
@@ -48,12 +39,9 @@ int main(void)
 	 * transfer 4 bytes in the callback
 	 */
 
-	uart_init(2, DEBUG_UART_BAUD, _rx_cb2, &data2);
 	uart_init(4, DEBUG_UART_BAUD, NULL, 0);
-	spi_init(SPI_DEV(1));
 	spi_init(SPI_DEV(2));
-	spi_acquire(SPI_DEV(1), 0, SPI_MODE_0, SPI_CLK_25MHZ);
-	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_25MHZ);
+	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 
 	(void) bd;
 
@@ -70,9 +58,7 @@ int main(void)
 		/* copy test-pattern data into DMA buffer */
 		memcpy(td, tdata, 18);
 		/* loop data for engine testing */
-		spi_transfer_bytes(SPI_DEV(1), 0, true, tdata, rd, 18);
-		spi_transfer_bytes_async(SPI_DEV(1), 0, true, rd, td, 18);
-		spi_transfer_bytes(SPI_DEV(2), 0, true, rd, bd, 18);
+		spi_transfer_bytes_async(SPI_DEV(2), 0, true, tdata, bd, 18);
 
 		/* cpu busy loop delay */
 		for (dd = 0; dd < 50000; dd++) {
@@ -80,11 +66,43 @@ int main(void)
 		}
 
 		/* check for spi #1 async transfer complete */
-		while (!spi_complete(SPI_DEV(1))) {
+		while (!spi_complete(SPI_DEV(2))) {
 		}
 		LED3_OFF;
 		LED2_ON;
+		APP_Tasks();
 	}
 
 	return 0;
+}
+
+void initBoard(void)
+{
+	// LEDs are outputs and off
+	RELAY1 = 1;
+	RELAY2 = 1;
+	RELAY3 = 1;
+	RELAY4 = 1;
+
+	//RN4020 module - UART1
+	BT_WAKE_HW = 1; //Dormant line is set high
+	BT_WAKE_HW_TRIS = 0; //Dormant line is output
+
+	BT_WAKE_SW = 0; //keep low until after UART is initialized
+	BT_WAKE_SW_TRIS = 0;
+
+	BT_CMD = 0; //Command mode on
+	BT_CMD_TRIS = 0;
+
+	BT_WS_TRIS = 1;
+	BT_MLDP_EV_TRIS = 1;
+	BT_CONNECTED_TRIS = 1;
+
+	U1CTS_TRIS = 1;
+	U1RTS_LAT = 0;
+	U1RTS_TRIS = 0;
+
+	// SPI Master Devices
+	SPI_CS0_TRIS = 0;
+	SPI_CS1_TRIS = 0;
 }

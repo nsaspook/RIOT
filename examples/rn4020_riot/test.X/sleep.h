@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2014 Microchip Technology Inc. and its subsidiaries.  You may use this software and any derivatives
+ * Copyright (C) 2015 Microchip Technology Inc. and its subsidiaries.  You may use this software and any derivatives
  * exclusively with Microchip products.
  *
  * MICROCHIP SOFTWARE NOTICE AND DISCLAIMER:  You may use this software, and any derivatives created by any person or
@@ -25,24 +25,22 @@
  * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
  *
  *
- * File:        uart.h
- * Date:        January 20, 2015
+ * File:        sleep.h
+ * Date:        September 17, 2015
  * Compiler:    XC16 v1.23
  *
- * Uart functions
  *
  */
-#ifndef UART_H
-#define UART_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#ifndef SLEEP_H
+#define	SLEEP_H
 
-void UART_Init(void);
-bool UART_IsNewRxData(void);
-uint8_t UART_ReadRxBuffer(void);
-void UART_WriteTxBuffer(const uint8_t);
-uint16_t UART_GetTXBufferFreeSpace(void);
-uint8_t UART_PeekRxBuffer(void);
+#include "config.h"
 
-#endif
+#ifdef USE_SLEEP
+
+void APP_SleepNow(void);
+
+#endif //USE_SLEEP
+#endif	/* SLEEP_H */
+

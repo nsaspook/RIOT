@@ -25,24 +25,56 @@
  * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
  *
  *
- * File:        uart.h
+ * File:        timers.h
  * Date:        January 20, 2015
  * Compiler:    XC16 v1.23
  *
- * Uart functions
+ * Timer functions
  *
  */
-#ifndef UART_H
-#define UART_H
+
+#ifndef TIMERS_H
+#define TIMERS_H
 
 #include <stdint.h>
 #include <stdbool.h>
 
-void UART_Init(void);
-bool UART_IsNewRxData(void);
-uint8_t UART_ReadRxBuffer(void);
-void UART_WriteTxBuffer(const uint8_t);
-uint16_t UART_GetTXBufferFreeSpace(void);
-uint8_t UART_PeekRxBuffer(void);
+//Software timers - use these to refer to timers rather than
+//integers.  Add more as needed.
+//NOTE: 32767 ms max delay
 
+enum APP_TIMERS {
+    TMR_INTERNAL = 0, //Used in timers.c - do not remove or use elsewhere
+    TMR_LEDS,
+    TMR_RN_COMMS,
+    TMR_ADC,
+    TMR_POT,
+    TMR_SW1_DEBOUNCE,
+    TMR_SW2_DEBOUNCE,
+    TMR_SW3_DEBOUNCE,
+    TMR_SW4_DEBOUNCE,
+    TMR_BT_TX,
+    TMR_BAT_CHECK,
+    TMR_SPI,
+    TMR_HR,
+    TMR_BATT,
+    TMR_AIO_DIG,
+    TMR_AIO_ANA,
+    TMR_AIO_AGG,
+    //
+    //(Add timers here as needed)
+    //
+    TMR_COUNT //number of timers - always keep at end of enum!
+};
+
+void Timers_Init(void);
+void StartTimer(uint8_t timer, uint16_t count);
+bool TimerDone(uint8_t timer);
+void WaitMs(uint16_t numMilliseconds);
+void _T1Interrupt(void);
+
+#ifdef USE_SLEEP                //see config.h, Application setting section
+inline void SleepTimerReset(void);
 #endif
+
+#endif //TIMERS_H

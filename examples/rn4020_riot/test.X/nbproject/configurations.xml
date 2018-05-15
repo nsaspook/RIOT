@@ -6,6 +6,18 @@
                    projectFiles="true">
       <itemPath>config.h</itemPath>
       <itemPath>uart.h</itemPath>
+      <itemPath>app.h</itemPath>
+      <itemPath>link.h</itemPath>
+      <itemPath>bluetooth.h</itemPath>
+      <itemPath>automio.h</itemPath>
+      <itemPath>timers.h</itemPath>
+      <itemPath>adc.h</itemPath>
+      <itemPath>gplv2.h</itemPath>
+      <itemPath>leds.h</itemPath>
+      <itemPath>switches.h</itemPath>
+      <itemPath>rtcc.h</itemPath>
+      <itemPath>sleep.h</itemPath>
+      <itemPath>spi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -16,6 +28,11 @@
                    projectFiles="true">
       <itemPath>ble_main.c</itemPath>
       <itemPath>uart.c</itemPath>
+      <itemPath>app.c</itemPath>
+      <itemPath>automio.c</itemPath>
+      <itemPath>bluetooth.c</itemPath>
+      <itemPath>leds.c</itemPath>
+      <itemPath>timers.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

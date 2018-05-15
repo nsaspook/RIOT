@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c
+SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/app.o.d ${OBJECTDIR}/automio.o.d ${OBJECTDIR}/bluetooth.o.d ${OBJECTDIR}/leds.o.d ${OBJECTDIR}/timers.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o
+OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o
 
 # Source Files
-SOURCEFILES=ble_main.c uart.c
+SOURCEFILES=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c
 
 
 CFLAGS=
@@ -110,6 +110,36 @@ ${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/uart.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c 
 	
+${OBJECTDIR}/app.o: app.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/app.o.d 
+	@${RM} ${OBJECTDIR}/app.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  app.c 
+	
+${OBJECTDIR}/automio.o: automio.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/automio.o.d 
+	@${RM} ${OBJECTDIR}/automio.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  automio.c 
+	
+${OBJECTDIR}/bluetooth.o: bluetooth.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/bluetooth.o.d 
+	@${RM} ${OBJECTDIR}/bluetooth.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  bluetooth.c 
+	
+${OBJECTDIR}/leds.o: leds.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/leds.o.d 
+	@${RM} ${OBJECTDIR}/leds.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  leds.c 
+	
+${OBJECTDIR}/timers.o: timers.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/timers.o.d 
+	@${RM} ${OBJECTDIR}/timers.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  timers.c 
+	
 else
 ${OBJECTDIR}/ble_main.o: ble_main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -122,6 +152,36 @@ ${OBJECTDIR}/uart.o: uart.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/uart.o.d 
 	@${RM} ${OBJECTDIR}/uart.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  uart.c 
+	
+${OBJECTDIR}/app.o: app.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/app.o.d 
+	@${RM} ${OBJECTDIR}/app.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  app.c 
+	
+${OBJECTDIR}/automio.o: automio.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/automio.o.d 
+	@${RM} ${OBJECTDIR}/automio.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  automio.c 
+	
+${OBJECTDIR}/bluetooth.o: bluetooth.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/bluetooth.o.d 
+	@${RM} ${OBJECTDIR}/bluetooth.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  bluetooth.c 
+	
+${OBJECTDIR}/leds.o: leds.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/leds.o.d 
+	@${RM} ${OBJECTDIR}/leds.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  leds.c 
+	
+${OBJECTDIR}/timers.o: timers.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/timers.o.d 
+	@${RM} ${OBJECTDIR}/timers.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  timers.c 
 	
 endif
 

@@ -25,24 +25,43 @@
  * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
  *
  *
- * File:        uart.h
+ * File:        bluetooth.h
  * Date:        January 20, 2015
  * Compiler:    XC16 v1.23
  *
- * Uart functions
+ * Functions to communicate with a RN4020 Bluetooth LE module over a UART
  *
  */
-#ifndef UART_H
-#define UART_H
+
+#ifndef BLUETOOTH_H
+#define BLUETOOTH_H
 
 #include <stdint.h>
 #include <stdbool.h>
 
-void UART_Init(void);
-bool UART_IsNewRxData(void);
-uint8_t UART_ReadRxBuffer(void);
-void UART_WriteTxBuffer(const uint8_t);
-uint16_t UART_GetTXBufferFreeSpace(void);
-uint8_t UART_PeekRxBuffer(void);
+//List of message responses
 
+#define AOK "AOK\r\n"
+#define ERR "ERR\r\n"
+#define BLE_CMD "CMD\r\n"
+
+enum BluetoothDecodeState {
+    WaitForCR, WaitForLF
+};
+
+
+bool BT_ReceivePacket(char *message);
+bool BT_SendCommand(const char *data, bool wait);
+void BT_SendByte(char data);
+bool BT_GetResponse(char *data);
+bool BT_CompareResponse(const char *data1, const char *data2);
+bool BT_CheckResponse(const char *);
+bool BT_CheckResponseWithWildcard(const char *data, char Wildcard);
+bool BT_SetupModule(void);
+bool BT_RebootEnFlow(void);
+
+#ifdef VERIFY_RN_FW_VER
+uint16_t BT_CheckFwVer(void);
 #endif
+
+#endif //BLUETOOTH_H
