@@ -155,7 +155,6 @@ bool BT_ReceivePacket(char * Message)
 			{
 				Message[i] = 0; //Got a complete message!
 				i = 0;
-				printf(Message);
 				return true;
 			}
 			break;

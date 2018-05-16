@@ -7,7 +7,6 @@
       <itemPath>config.h</itemPath>
       <itemPath>uart.h</itemPath>
       <itemPath>app.h</itemPath>
-      <itemPath>link.h</itemPath>
       <itemPath>bluetooth.h</itemPath>
       <itemPath>automio.h</itemPath>
       <itemPath>timers.h</itemPath>
@@ -35,7 +34,6 @@
       <itemPath>timers.c</itemPath>
       <itemPath>spi.c</itemPath>
       <itemPath>adc.c</itemPath>
-      <itemPath>link.c</itemPath>
       <itemPath>switches.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"

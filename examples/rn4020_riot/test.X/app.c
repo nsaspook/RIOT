@@ -52,14 +52,13 @@
 #include "rtcc.h"
 #include "sleep.h"
 #include "spi.h"
-#include "link.h"
 #include "automio.h"
 
 APP_DATA appData;
 ADC_DATA adcData;
 AIO_DATA aioData;
 
-//Primary application state machine
+/* Primary application state machine */
 
 void APP_Tasks(void)
 {
@@ -178,11 +177,6 @@ void APP_Tasks(void)
 		//Process any new messages received from RN module
 		appData.got_packet = BT_ReceivePacket(appData.receive_packet); //Get new message if one has been received from the RN4020
 		if (appData.got_packet == true) { //true if new packet received
-
-//			appData.packet_data = Get_Link_Packet();
-//			appData.packet_data->dac1 = appData.potValue & 0xff;
-//			appData.packet_data->dac2 = appData.potValue >> 8;
-//			Write_Link_Packet((uint8_t *) appData.packet_data, true);
 
 			if (strstr(appData.receive_packet, "WV,001E,")) { //Check for LED update message 1.23
 				GetNewLEDs(); //Latch new LED values

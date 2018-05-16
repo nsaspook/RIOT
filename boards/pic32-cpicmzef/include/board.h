@@ -242,9 +242,11 @@ extern "C" {
 	/*******************************************************************/
 	/* void FlushCache(unsigned size, void *vaddr) */
 
+	/* spi driver extras */
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 		const void *out, void *in, size_t len);
 	int32_t spi_complete(spi_t bus);
+	void spi_speed_config(spi_t, spi_clk_t);
 	/**
 	 * @brief   Board level initialization
 	 */

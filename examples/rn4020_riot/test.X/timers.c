@@ -44,9 +44,6 @@ extern APP_DATA appData;
 
 static volatile uint16_t tickCount[TMR_COUNT] = {0};
 
-//**********************************************************************************************************************
-// Initialize the timers
-
 void Timers_Init(void)
 {
 	//Timer 1 is used for interrupt based software timers counting 1ms intervals to a resolution of 500us
@@ -60,16 +57,10 @@ void Timers_Init(void)
 	IEC0bits.T1IE = 1; //Enable the timer 1 interrupt
 }
 
-//**********************************************************************************************************************
-// Start one of the software timers
-
 void StartTimer(uint8_t timer, uint16_t count)
 {
 	tickCount[timer] = count << 1; //Interrupt is every 500us but StartTimer() takes multiple of 1ms so multiply by 2
 }
-
-//**********************************************************************************************************************
-// Check if one of the software software timers has timed out
 
 bool TimerDone(uint8_t timer)
 {
@@ -79,27 +70,19 @@ bool TimerDone(uint8_t timer)
 	return false; //else return false
 }
 
-//**********************************************************************************************************************
-// Simple delay for n milliseconds (blocking)
-
 void WaitMs(uint16_t numMilliseconds)
 {
 	StartTimer(TMR_INTERNAL, numMilliseconds); //Start software timer and wait for it to count down
 	while (!TimerDone(TMR_INTERNAL)) {
-//		thread_yield();
+	}
+}
 
-	} //Enter idle mode to reduce power while waiting
-} //(timer interrupt will wake part from idle)
-
-
-//**********************************************************************************************************************
-// Timer 1 interrupt routine - software timers
+/* Timer 1 interrupt routine for application software timers */
 
 void _T1Interrupt(void)
 {
 	uint8_t i;
 
-	PDEBUG1_TOGGLE; // period calibration trace
 	//Decrement each software timer
 	for (i = 0; i < TMR_COUNT; i++) {
 		if (tickCount[i] != 0) {

@@ -161,6 +161,15 @@ static void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
 	DCH2CONbits.CHEN = 1; /* Channel enable. */
 }
 
+/* adjust speed on the fly, these extra functions are prototyped in board.h */
+void spi_speed_config(spi_t bus, spi_clk_t clk)
+{
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
+	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
+	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
+}
+
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration */
 static void spi_irq_enable(spi_t bus)
 {
@@ -296,9 +305,6 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 {
 	const uint8_t *out_buffer = (const uint8_t *) out;
 
-#ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG3_ON;
-#endif
 	(void) cs;
 	(void) cont;
 
@@ -327,10 +333,6 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 			}
 		}
 	}
-
-#ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG3_OFF;
-#endif
 }
 
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
@@ -370,13 +372,7 @@ static void spi_rx_irq(spi_t bus)
 {
 	uint8_t rdata __attribute__((unused));
 
-#ifdef _PORTS_P32MZ2048EFM100_H
-//	PDEBUG1_ON; // FIFO has data
-#endif
 	while (!((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPIRBE_MASK))) {
-#ifdef _PORTS_P32MZ2048EFM100_H
-//		PDEBUG1_TOGGLE; // FIFO has data
-#endif
 		if (pic_spi[bus].in) {
 			*pic_spi[bus].in++ = SPIxBUF(pic_spi[bus]);
 		} else {
@@ -386,16 +382,7 @@ static void spi_rx_irq(spi_t bus)
 		if (!--pic_spi[bus].len) {
 			pic_spi[bus].complete = true;
 		}
-#ifdef _PORTS_P32MZ2048EFM100_H
-//		PDEBUG1_TOGGLE; // FIFO has data
-#endif
 	}
-	/* time ref toggle */
-#ifdef _PORTS_P32MZ2048EFM100_H
-//	PDEBUG1_OFF; // FIFO has data
-//	PDEBUG1_ON; // FIFO has data
-//	PDEBUG1_OFF; // FIFO has data
-#endif
 }
 
 void SPI_1_ISR_RX(void)
@@ -416,38 +403,17 @@ void SPI_3_ISR_RX(void)
 /* set transfer complete flag */
 void DMA_SPI_1_ISR_RX(void)
 {
-#ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_ON;
-#endif
 	pic_spi[1].complete = true;
-	/* time ref toggle */
-#ifdef _PORTS_P32MZ2048EFM100_H
-//	PDEBUG1_OFF; // FIFO has data
-#endif
 }
 
 void DMA_SPI_2_ISR_RX(void)
 {
-#ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_ON;
-#endif
 	pic_spi[2].complete = true;
-	/* time ref toggle */
-#ifdef _PORTS_P32MZ2048EFM100_H
-//	PDEBUG1_OFF; // FIFO has data
-#endif
 }
 
 void DMA_SPI_3_ISR_RX(void)
 {
-#ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_ON;
-#endif
 	pic_spi[3].complete = true;
-	/* time ref toggle */
-#ifdef _PORTS_P32MZ2048EFM100_H
-//	PDEBUG1_OFF; // FIFO has data
-#endif
 }
 
 int32_t spi_complete(spi_t bus)
