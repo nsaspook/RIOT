@@ -124,13 +124,13 @@
 //Application timers
 #define SLEEP_TIME          TIMER_5MIN_PERIOD_PS256     //inactivity timer for sleep - applies only when USE_SLEEP is defined
 #define DEBOUNCE_MS         75          //debounce time for switches 1 - 4
-#define ADC_REFRESH_MS      10           //delay between ADC reads, 10 nom value
-#define POT_TX_MS           50         //delay between transmitting new pot values, 10 min value
-#define BATT_TX_MS	    100 
-#define HR_TX_MS            80
-#define AIO_TX_MS           40 
+#define ADC_REFRESH_MS      50           //delay between ADC reads, 10 nom value
+#define POT_TX_MS           100         //delay between transmitting new pot values, 10 min value
+#define BATT_TX_MS	    500 
+#define HR_TX_MS            200
+#define AIO_TX_MS           150 
 #define LED_BLINK_MS        900         //LED blink rate for advertise mode
-#define BT_TX_MS            10         //minimum time between consecutive BTLE message transmissions
+#define BT_TX_MS            35         //minimum time between consecutive BTLE message transmissions
 #define BAT_CHK_DELAY_MS    30000       //delay between input voltage checks
 #define BAT_CHK_WAIT_MS     10          //CVref & CMP stabilization time
 //Periods for timer 1 sleep mode (for periodic sleep wakeup); 31KHz LPRC; 1:256 prescale
@@ -345,6 +345,9 @@ struct gatts_char_inst {
 #define SLED LED4R_TOGGLE
 #define SLED_ON		LED4R_ON	
 #define SLED_OFF	LED4R_OFF
+
+#define G_LED_ON	LED4G_ON
+#define G_LED_OFF	LED4G_OFF
 
 #define SPI_CS0 LATDbits.LATD5
 #define SPI_CS1 LATAbits.LATA1

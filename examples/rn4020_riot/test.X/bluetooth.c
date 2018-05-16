@@ -155,6 +155,7 @@ bool BT_ReceivePacket(char * Message)
 			{
 				Message[i] = 0; //Got a complete message!
 				i = 0;
+				printf(Message);
 				return true;
 			}
 			break;
@@ -528,7 +529,7 @@ bool BT_RebootEnFlow(void)
 
 	WaitMs(2);
 	if (SWITCH1 == 0) {
-		BT_OTA_UPD_TRIS = 0; // set back to output
+		LED4G_OFF;
 		BT_WAKE_SW = 1;
 		BT_WAKE_HW = 1;
 		BT_CMD = 0;

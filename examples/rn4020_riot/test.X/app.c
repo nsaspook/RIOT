@@ -98,6 +98,7 @@ void APP_Tasks(void)
 			appData.update_packet = false;
 			LED_SET_LightShow(LED_BTLE_ADVERTISING);
 			appData.state = APP_BLUETOOTH_ADVERTISE;
+			G_LED_OFF;
 			break;
 		}
 
@@ -178,10 +179,10 @@ void APP_Tasks(void)
 		appData.got_packet = BT_ReceivePacket(appData.receive_packet); //Get new message if one has been received from the RN4020
 		if (appData.got_packet == true) { //true if new packet received
 
-			appData.packet_data = Get_Link_Packet();
-			appData.packet_data->dac1 = appData.potValue & 0xff;
-			appData.packet_data->dac2 = appData.potValue >> 8;
-			Write_Link_Packet((uint8_t *) appData.packet_data, true);
+//			appData.packet_data = Get_Link_Packet();
+//			appData.packet_data->dac1 = appData.potValue & 0xff;
+//			appData.packet_data->dac2 = appData.potValue >> 8;
+//			Write_Link_Packet((uint8_t *) appData.packet_data, true);
 
 			if (strstr(appData.receive_packet, "WV,001E,")) { //Check for LED update message 1.23
 				GetNewLEDs(); //Latch new LED values

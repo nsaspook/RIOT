@@ -44,6 +44,9 @@
 extern APP_DATA appData;
 extern ADC_DATA adcData;
 
+uint8_t *td;
+uint8_t *rd;
+
 /******************************************************************************
  * Function:        void ADC_Init()
  *
@@ -70,6 +73,8 @@ void ADC_Init(void)
 	adcData.mcp3208_cmd.map.index = 0; // channel
 	appData.ADCcalFlag = true;
 	SPI_CS0 = 1;
+	td = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
+	rd = __pic32_alloc_coherent(32);
 }
 
 //State machine for restarting ADC and taking new readings from pot
@@ -77,43 +82,34 @@ void ADC_Init(void)
 
 bool ADC_Tasks(void)
 {
-	static uint8_t count = 0;
-
 	/* send the command sequence to the adc */
 	if (!adcData.mcp3208_cmd.map.in_progress) {
 		adcData.mcp3208_cmd.map.in_progress = true;
 		adcData.mcp3208_cmd.map.finish = false;
-		count = 0;
-		if (!SPI_IsTxData()) {
-			adcData.mcp3208_cmd.map.single_diff = 1;
-			adcData.mcp3208_cmd.map.index = adcData.chan;
-			SPI_ClearBufs(); // dump the spi buffers
-			SPI_WriteTxBuffer(adcData.mcp3208_cmd.bd[2]);
-			SPI_WriteTxBuffer(adcData.mcp3208_cmd.bd[1]);
-			SPI_WriteTxBuffer(adcData.mcp3208_cmd.bd[0]);
-			SPI_CS0 = 0; // select the ADC
-			SPI_Speed(0);
-			SPI_TxStart();
-		}
-		return false;
+		adcData.mcp3208_cmd.map.single_diff = 1;
+		adcData.mcp3208_cmd.map.index = adcData.chan;
+		td[0] = adcData.mcp3208_cmd.bd[2];
+		td[1] = adcData.mcp3208_cmd.bd[1];
+		td[2] = adcData.mcp3208_cmd.bd[0];
+		SPI_CS0 = 0; // select the ADC
+		spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
+		SPI_CS0 = 1; // deselect the ADC
 	}
 
 	/* read the returned spi data from the buffer and format it */
 	if (adcData.mcp3208_cmd.map.in_progress) {
-		while (SPI_IsNewRxData()) {
-			switch (count) {
-			case 1:
-				adcData.potValue = (SPI_ReadRxBuffer()&0x0f) << 8;
-				break;
-			case 2:
-				adcData.potValue += SPI_ReadRxBuffer();
-				adcData.mcp3208_cmd.map.finish = true;
-				break;
-			default:
-				SPI_ReadRxBuffer(); // eat extra bytes
-				break;
-			}
-			count++;
+		if (spi_complete(SPI_DEV(2))) {
+
+			/* fake data */
+			rd[1] = 3;
+			rd[0] = 255;
+			/* fake data */
+
+			adcData.potValue = (rd[1]&0x0f) << 8;
+			adcData.potValue += rd[0];
+			adcData.mcp3208_cmd.map.finish = true;
+		} else {
+			return false;
 		}
 	}
 
@@ -132,6 +128,7 @@ bool ADC_Tasks(void)
 
 void ADC_ProcAccum(void)
 {
+
 	appData.potValueOld = appData.potValue; //Save previous value
 	appData.potValue = adcData.potValue;
 }

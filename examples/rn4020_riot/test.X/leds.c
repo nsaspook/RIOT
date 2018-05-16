@@ -62,18 +62,17 @@ void LED_Tasks(void)
 		RELAY2 = !appData.led2;
 		RELAY3 = !appData.led3;
 		RELAY4 = !appData.led4;
-		SLED_ON;
+		SLED_OFF;
+		G_LED_ON;
 		break;
 
 	case LED_ERROR:
 		switch (appData.error_code) {
 		case ERROR_INITIALIZATION:
 			SLED_OFF;
-			printf("init error \n");
 			break;
 		case ERROR_RN_FW:
 			SLED_OFF;
-			printf("fw error \n");
 			break;
 		default:
 			SLED_OFF;

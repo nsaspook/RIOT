@@ -69,8 +69,7 @@ void board_init(void)
 	ANSELF = 0;
 	ANSELG = 0;
 
-	/* UART1 control signals to BLE */
-
+	/* mikro BUS #1 control signals to BLE2 click */
 	gpio_init(Ja5_1, GPIO_IN); // connect
 	gpio_init(Ja5_2, GPIO_OUT); // wake_sw
 	gpio_init(Ja5_4, GPIO_OUT); // wake_hw
