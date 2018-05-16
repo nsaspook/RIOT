@@ -103,6 +103,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        frdm-k22f \
                        frdm-k64f \
                        frdm-kw41z \
+                       ikea-tradfri \
                        iotlab-a8-m3 \
                        iotlab-m3 \
                        limifrog-v1 \
@@ -146,6 +147,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        nucleo-l152 \
                        nucleo-l433rc \
                        nucleo-l476 \
+                       nucleo-l496zg \
                        nz32-sc151 \
                        opencm904 \
                        openmote-cc2538 \
@@ -157,11 +159,15 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        saml21-xpro \
                        samr21-xpro \
                        seeeduino_arch-pro \
+                       slstk3401a \
                        sltb001a \
+                       slwstk6000b \
                        slwstk6220a \
                        sodaq-autonomo \
                        sodaq-explorer \
                        spark-core \
+                       stk3600 \
+                       stk3700 \
                        stm32f0discovery \
                        stm32f3discovery \
                        stm32f4discovery \
