@@ -1,5 +1,5 @@
 APPLICATION = rn4020_riot
-RIOTBASE ?= $(CURDIR)/../..
+RIOTBASE ?= $(CURDIR)/
 BOARD ?= pic32-cpicmzef
 USEMODULE += xtimer
 QUIET ?= 1

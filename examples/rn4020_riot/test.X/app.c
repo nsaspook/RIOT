@@ -286,6 +286,7 @@ bool APP_Initialize(void)
 #endif  //SLEEP_MODE_RTCC
 #endif  //USE_SLEEP
 
+	LED4B_ON;
 	BT_WAKE_SW = 1; //wake module
 	//Wait for WS status high
 	StartTimer(TMR_RN_COMMS, 4000); //Start 4s timeout
@@ -297,6 +298,8 @@ bool APP_Initialize(void)
 		}
 	}
 
+	LED4B_OFF;
+	LED4G_ON;
 	//Wait for end of "CMD\r\n" - we don't check for full "CMD\r\n" string because we may 
 	//miss some bits or bytes at the beginning while the UART starts up
 	StartTimer(TMR_RN_COMMS, 4000); //Start 4s timeout
@@ -307,6 +310,7 @@ bool APP_Initialize(void)
 			return false;
 		}
 	}
+	LED4G_OFF;
 
 	//Module is now in command mode and ready for input
 	if (!BT_SetupModule()) { //Setup RN4020 module

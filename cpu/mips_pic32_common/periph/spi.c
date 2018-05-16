@@ -422,7 +422,7 @@ void DMA_SPI_1_ISR_RX(void)
 	pic_spi[1].complete = true;
 	/* time ref toggle */
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_OFF; // FIFO has data
+//	PDEBUG1_OFF; // FIFO has data
 #endif
 }
 
@@ -434,7 +434,7 @@ void DMA_SPI_2_ISR_RX(void)
 	pic_spi[2].complete = true;
 	/* time ref toggle */
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_OFF; // FIFO has data
+//	PDEBUG1_OFF; // FIFO has data
 #endif
 }
 
@@ -446,7 +446,7 @@ void DMA_SPI_3_ISR_RX(void)
 	pic_spi[3].complete = true;
 	/* time ref toggle */
 #ifdef _PORTS_P32MZ2048EFM100_H
-	PDEBUG1_OFF; // FIFO has data
+//	PDEBUG1_OFF; // FIFO has data
 #endif
 }
 

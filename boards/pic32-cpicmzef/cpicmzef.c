@@ -55,10 +55,12 @@ void board_init(void)
 	RPC2R = OUTPUT_FUNC_U2TX; /* UART 2 TX */
 	U1RXR = INPUT_PIN_RPD10; /* RPD10 */
 	RPD15R = OUTPUT_FUNC_U1TX; /* UART 1 TX */
+	U1CTSR = INPUT_PIN_RPA14; /* UART CTS */
+	RPA15R = OUTPUT_FUNC_U1RTS; /* UART RTS */
 
-	/* init UART used for debug (printf) */
+		/* init UART used for debug (printf) */
 #ifdef DEBUG_VIA_UART
-	uart_init(DEBUG_VIA_UART, DEBUG_UART_BAUD, NULL, 0);
+		uart_init(DEBUG_VIA_UART, DEBUG_UART_BAUD, NULL, 0);
 #endif
 
 	/* init uart ports */

@@ -294,7 +294,7 @@ struct gatts_char_inst {
  ******************************************************************************/
 
 // Clock frequency
-#define FCY (16000000)                              //8MHz FRC, 4XPLL, /2 for Fcy
+#define FCY (50000000)                              //8MHz FRC, 4XPLL, /2 for Fcy
 
 //RN4020 BTLE
 #define BT_OTA_UPD	PORTEbits.RE9			// update jumper on board, if pin is low start update routine., OK
@@ -303,8 +303,8 @@ struct gatts_char_inst {
 #define BT_WAKE_HW      LATDbits.LATD1                       //Hardware wake from dormant state; BT_WAKE_HW, OK
 #define BT_WAKE_HW_TRIS TRISDbits.TRISD1
 
-#define BT_WAKE_SW      LATDbits.LATD14                       //Deep sleep wake; BT_WAKE_SW, OK
-#define BT_WAKE_SW_TRIS TRISDbits.TRISD14
+#define BT_WAKE_SW      LATAbits.LATA9                       //Deep sleep wake; BT_WAKE_SW, OK
+#define BT_WAKE_SW_TRIS TRISAbits.TRISA9
 
 #define BT_CMD      LATEbits.LATE8                 //Place RN4020 module in command mode, low for MLDP mode, OK
 #define BT_CMD_TRIS TRISEbits.TRISE8
@@ -312,18 +312,18 @@ struct gatts_char_inst {
 #define BT_CONNECTED        PORTBbits.RB4                     //RN4020 module is connected to central device, OK
 #define BT_CONNECTED_TRIS   TRISBbits.TRISB4
 
-#define BT_WS       PORTAbits.RA9                         //RN4020 module is awake and active, OK
-#define BT_WS_TRIS  TRISAbits.TRISA9
+#define BT_WS       PORTDbits.RD14                         //RN4020 module is awake and active, OK
+#define BT_WS_TRIS  TRISDbits.TRISD14
 
 #define BT_MLDP_EV      PORTDbits.RD3                         //RN4020 module in MLDP mode has a pending event, NC, OK
 #define BT_MLDP_EV_TRIS TRISDbits.TRISD3
 
 //UART
-#define U1CTS_TRIS      TRISBbits.TRISB8
-#define U1CTS_PORT	PORTBbits.RB8
+#define U1CTS_TRIS      TRISAbits.TRISA14
+#define U1CTS_PORT	PORTAbits.RA14
 
-#define U1RTS_TRIS      TRISBbits.TRISB9
-#define U1RTS_LAT       LATBbits.LATB9
+#define U1RTS_TRIS      TRISAbits.TRISA15
+#define U1RTS_LAT       LATAbits.LATA15
 
 // RELAY outputs
 #define RELAY1	LATBbits.LATB3 // output 0 (low) turns on relay

@@ -108,7 +108,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
     UxBRG(pic_uart[uart]) = (pic_uart[uart].clock / (16 * baudrate)) - 1;
     UxSTA(pic_uart[uart]) = 0;
-    UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK;
+    UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK |0x00020000;
     UxSTASET(pic_uart[uart]) = _U1STA_URXEN_MASK;
     UxSTASET(pic_uart[uart]) = _U1STA_UTXEN_MASK;
     /* enable receive interrupt for ports with callbacks */

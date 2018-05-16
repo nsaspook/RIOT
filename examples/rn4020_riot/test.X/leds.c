@@ -69,9 +69,11 @@ void LED_Tasks(void)
 		switch (appData.error_code) {
 		case ERROR_INITIALIZATION:
 			SLED_OFF;
+			printf("init error \n");
 			break;
 		case ERROR_RN_FW:
 			SLED_OFF;
+			printf("fw error \n");
 			break;
 		default:
 			SLED_OFF;
