@@ -294,7 +294,7 @@ struct gatts_char_inst {
  ******************************************************************************/
 
 // Clock frequency
-#define FCY (50000000)                              //8MHz FRC, 4XPLL, /2 for Fcy
+#define FCY (100000000)                              // timer and module clock base
 
 //RN4020 BTLE
 #define BT_OTA_UPD	PORTEbits.RE9			// update jumper on board, if pin is low start update routine., OK

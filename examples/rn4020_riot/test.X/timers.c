@@ -99,8 +99,7 @@ void _T1Interrupt(void)
 {
 	uint8_t i;
 
-	//	IFS0bits.T1IF = 0; //Clear the interrupt flag
-	PDEBUG1_TOGGLE; // FIFO has data
+	PDEBUG1_TOGGLE; // period calibration trace
 	//Decrement each software timer
 	for (i = 0; i < TMR_COUNT; i++) {
 		if (tickCount[i] != 0) {

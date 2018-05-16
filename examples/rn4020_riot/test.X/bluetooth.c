@@ -113,7 +113,7 @@ uint16_t get_char_handle(struct gatts_char_inst *bt, char *rxbuf)
 					//                    sPortDebug->println(handle, HEX);
 					//#endif
 					free(tempBuf);
-					return (uint16_t) handle;
+					return(uint16_t) handle;
 
 				}
 				state = 0;
@@ -172,16 +172,10 @@ bool BT_ReceivePacket(char * Message)
 
 bool BT_SendCommand(const char *data, bool wait)
 {
-	uint16_t i;
 	//Only transmit a message if TX timer expired, or wait flag is set to false
 	//We limit transmission frequency to avoid overwhelming the BTLE link
 	if (TimerDone(TMR_BT_TX) || wait == false) {
-		for (i = 0; i < SIZE_TxBuffer; i++) {
-			if (*data != '\0') //Keep loading bytes until end of string
-				UART_WriteTxBuffer(*data++); //Load byte into the transmit buffer
-			else
-				break;
-		}
+		uart_write(1, (uint8_t *) data, strlen(data));
 		StartTimer(TMR_BT_TX, BT_TX_MS); //Restart transmit timer
 		return true;
 	}
@@ -327,6 +321,7 @@ bool BT_SetupModule(void)
 	//Check RN4020 module's firmware version for version specific setups
 	version_code = BT_CheckFwVer();
 
+	LED4G_ON;
 	BT_SendCommand("sf,2\r", false); //Get RN4020 module feature settings
 	if (!BT_CheckResponse(AOK)) {
 		return false;
@@ -334,9 +329,9 @@ bool BT_SetupModule(void)
 
 	//Send "GR" to get feature settings
 	BT_SendCommand("gr\r", false); //Get RN4020 module feature settings
-	if (!BT_CheckResponse("26060000\r\n")) //Check if features are set for auto advertise and flow control, No Input, no output, no direct advertisement
+	if (!BT_CheckResponse("24060000\r\n")) //Check if features are set for auto advertise and NO flow control, No Input, no output, no direct advertisement
 	{ //auto enable MLDP, suppress messages during MLDP
-		BT_SendCommand("sr,26060000\r", false); //Features not correct so set features
+		BT_SendCommand("sr,24060000\r", false); //Features not correct so set features
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
@@ -503,7 +498,7 @@ bool BT_SetupModule(void)
 
 bool BT_RebootEnFlow(void)
 {
-	bool do_ls = true, good_boot; // causes a control lockup if enabled
+	bool do_ls = false, do_upd = false, good_boot; // causes a control lockup if enabled
 	//Send "R,1" to save changes and reboot
 	BT_SendCommand("r,1\r", false); //Force reboot
 	if (!BT_CheckResponse("Reboot\r\n")) {
@@ -532,9 +527,9 @@ bool BT_RebootEnFlow(void)
 
 	/* Jumper on DFU OTA UPDATE */
 	BT_OTA_UPD_TRIS = 1; // set for jumper input
-//	CNPU1bits.CN7PUE = 1; // pullup for BT_OTA_UPD
+	//	CNPU1bits.CN7PUE = 1; // pullup for BT_OTA_UPD
 	WaitMs(2); // jumper pullup read delay, rise time is slow
-	if (BT_OTA_UPD == 0) {
+	if (do_upd && (BT_OTA_UPD == 0)) {
 		BT_OTA_UPD_TRIS = 0; // set back to output
 		BT_WAKE_SW = 1;
 		BT_WAKE_HW = 1;

@@ -88,7 +88,7 @@ void initBoard(void)
 	BT_CONNECTED_TRIS = 1;
 
 	U1CTS_TRIS = 1;
-	U1RTS_LAT = 0;
+	U1RTS_LAT = 1;
 	U1RTS_TRIS = 0;
 
 	// SPI Master Devices

@@ -46,18 +46,12 @@
 
 typedef struct {
 	char buffer[SIZE_RxBuffer];
-	volatile uint8_t volatile *head;
-	volatile uint8_t *tail;
-	volatile uint16_t byteCount;
 } UART_RX_BUFFER_T;
 
 //UART transmit buffer type
 
 typedef struct {
 	char buffer[SIZE_TxBuffer];
-	volatile uint8_t *head;
-	volatile uint8_t volatile *tail;
-	volatile uint16_t byteCount;
 } UART_TX_BUFFER_T;
 
 //Buffer instances
@@ -83,17 +77,6 @@ void UART_Init(void)
 	tsrb_init(&rn4020_tx, txBuf.buffer, SIZE_TxBuffer);
 
 	uart_init(1, 115200, _rx_cb1, &rxBuf.buffer[0]);
-	//	U1BRG = 34; //Baud rate 115,200 - actually 115,384 baud 0.16% error
-	//	U1BRG = 7;
-	//	U1MODE = 0x8008; //Enable UART, no flow control, BRGH = 1 for high speed baud mode
-	//	U1MODEbits.UEN0=0; //
-	//	U1MODEbits.UEN1=1; // enable RTS/CTS
-	//	U1MODEbits.RTSMD = 0; // pin is in flow control mode
-	//	U1STA = 0x0400; //Enable transmit
-	//	UART_RX_IF = 0; //Clear UART interrupt flags
-	//	UART_ER_IF = 0;
-	//	UART_RX_IE = 1; //Enable UART Receive and Error interrupt
-	//	UART_ER_IE = 1;
 }
 
 //**********************************************************************************************************************

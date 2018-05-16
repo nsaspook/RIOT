@@ -115,12 +115,6 @@ void APP_Tasks(void)
 		//Process ADC accumulator value if oversampling is complete
 		if (appData.accumReady) {
 			ADC_ProcAccum();
-#ifdef USE_SLEEP                //see config.h, Application setting section
-			potDiff = appData.potValue - appData.potValueOld; //Reset the inactivity sleep timer if pot has changed
-			if (potDiff > POT_KEEP_AWAKE_DELTA || potDiff < -POT_KEEP_AWAKE_DELTA) {
-				SleepTimerReset();
-			}
-#endif
 			appData.accumReady = false; //Clear app flags
 			appData.ADCinUse = false;
 		}
@@ -222,15 +216,6 @@ void APP_Tasks(void)
 		}
 		break;
 
-#ifdef USE_SLEEP                //see config.h, Application setting section        
-		//Put micro and RN module to sleep - any button press will cause wake up
-	case APP_SLEEP:
-		appData.sleepFlag = 0; //clear flag and call sleep function
-		APP_SleepNow();
-		appData.state = savedState; //Woken from sleep; restore state
-		break;
-#endif //USE_SLEEP
-
 	default:
 		break;
 	} //end switch(appData.state)
@@ -280,12 +265,6 @@ bool APP_Initialize(void)
 	Timers_Init(); //Initialize the timers
 	SPI_Init();
 
-#ifdef USE_SLEEP            //see config.h, Application settings section
-#ifdef SLEEP_MODE_RTCC
-	RTCC_Init();
-#endif  //SLEEP_MODE_RTCC
-#endif  //USE_SLEEP
-
 	LED4B_ON;
 	BT_WAKE_SW = 1; //wake module
 	//Wait for WS status high
@@ -300,6 +279,7 @@ bool APP_Initialize(void)
 
 	LED4B_OFF;
 	LED4G_ON;
+
 	//Wait for end of "CMD\r\n" - we don't check for full "CMD\r\n" string because we may 
 	//miss some bits or bytes at the beginning while the UART starts up
 	StartTimer(TMR_RN_COMMS, 4000); //Start 4s timeout
@@ -310,13 +290,13 @@ bool APP_Initialize(void)
 			return false;
 		}
 	}
-	LED4G_OFF;
 
 	//Module is now in command mode and ready for input
 	if (!BT_SetupModule()) { //Setup RN4020 module
 		appData.error_code = ERROR_INITIALIZATION;
 		return false;
 	}
+
 
 #ifdef VERIFY_RN_FW_VER
 	//Verify RN4020 module's firmware version
@@ -335,5 +315,6 @@ bool APP_Initialize(void)
 	}
 
 	SLED; // init completed
+	LED4G_OFF;
 	return true;
 }
