@@ -55,13 +55,30 @@ void board_init(void)
 	RPC2R = OUTPUT_FUNC_U2TX; /* UART 2 TX */
 	U1RXR = INPUT_PIN_RPD10; /* RPD10 */
 	RPD15R = OUTPUT_FUNC_U1TX; /* UART 1 TX */
-	U1CTSR = INPUT_PIN_RPA14; /* UART CTS */
-	RPA15R = OUTPUT_FUNC_U1RTS; /* UART RTS */
 
-		/* init UART used for debug (printf) */
+	/* init UART used for debug (printf) */
 #ifdef DEBUG_VIA_UART
-		uart_init(DEBUG_VIA_UART, DEBUG_UART_BAUD, NULL, 0);
+	uart_init(DEBUG_VIA_UART, DEBUG_UART_BAUD, NULL, 0);
 #endif
+	/* all analog off */
+	ANSELA = 0;
+	ANSELB = 0;
+	ANSELC = 0;
+	ANSELD = 0;
+	ANSELE = 0;
+	ANSELF = 0;
+	ANSELG = 0;
+
+	/* UART1 control signals to BLE */
+
+	gpio_init(Ja5_1, GPIO_IN); // connect
+	gpio_init(Ja5_2, GPIO_OUT); // wake_sw
+	gpio_init(Ja5_4, GPIO_OUT); // wake_hw
+	gpio_init(Ja5_5, GPIO_IN); // wake from rn4020
+	gpio_init(Ja5_6, GPIO_IN); // mldp event from rn4020
+	gpio_init(Ja5_11, GPIO_OUT); // RTS to RN4020
+	gpio_init(Ja5_12, GPIO_IN); // CTS from RN4020
+	gpio_init(Ja5_16, GPIO_OUT); // CMD to rn4020
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
@@ -107,8 +124,8 @@ void board_init(void)
 	hwrng_init();
 
 	/* Initialize all SPI modules */
-	for (unsigned i = 1; i <= SPI_NUMOF; i++)
-		spi_init(SPI_DEV(i));
+	//	for (unsigned i = 1; i <= SPI_NUMOF; i++)
+	//		spi_init(SPI_DEV(i));
 
 
 	/* Stop the linker from throwing away the PIC32 config register settings */

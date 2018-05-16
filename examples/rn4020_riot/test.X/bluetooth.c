@@ -322,56 +322,56 @@ bool BT_SetupModule(void)
 	version_code = BT_CheckFwVer();
 
 	LED4G_ON;
-	BT_SendCommand("sf,2\r", false); //Get RN4020 module feature settings
+	BT_SendCommand("sf,2\r\n", false); //Get RN4020 module feature settings
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
 
 	//Send "GR" to get feature settings
-	BT_SendCommand("gr\r", false); //Get RN4020 module feature settings
-	if (!BT_CheckResponse("24060000\r\n")) //Check if features are set for auto advertise and NO flow control, No Input, no output, no direct advertisement
+	BT_SendCommand("gr\r\n", false); //Get RN4020 module feature settings
+	if (!BT_CheckResponse("26060000\r\n")) //Check if features are set for auto advertise and NO flow control, No Input, no output, no direct advertisement
 	{ //auto enable MLDP, suppress messages during MLDP
-		BT_SendCommand("sr,24060000\r", false); //Features not correct so set features
+		BT_SendCommand("sr,26060000\r\n", false); //Features not correct so set features
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 	}
 
 	char macAddr[16];
-	BT_SendCommand("gds\r", false); // Get mac address
+	BT_SendCommand("gds\r\n", false); // Get mac address
 	while (!BT_ReceivePacket(macAddr));
 
 	char message[12];
 	macAddr[12] = '\0';
-	sprintf(message, "sn,%s_BT\r", &macAddr[8]);
+	sprintf(message, "sn,%s_BT\r\n", &macAddr[8]);
 
 	BT_SendCommand(message, false); //Set advertise name
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
 
-	BT_SendCommand("gs\r", false);
+	BT_SendCommand("gs\r\n", false);
 	if (!BT_CheckResponse("F0000001\r\n")) {
 		//Send "SS" to set user defined private profiles and ID/Battery in 1.33 firmware
-		BT_SendCommand("ss,F0000001\r", false);
+		BT_SendCommand("ss,F0000001\r\n", false);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 	}
 
-	BT_SendCommand("s-,FRC-\r", false); // set serialized name  Bluetooth-friendly name
+	BT_SendCommand("s-,FRC-\r\n", false); // set serialized name  Bluetooth-friendly name
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
 
 	//  initial connection parameters 
-	BT_SendCommand("st,003c,0000,0064\r", false);
+	BT_SendCommand("st,003c,0000,0064\r\n", false);
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
 
 	// Clear all settings of defined services and characteristics
-	BT_SendCommand("pz\r", false);
+	BT_SendCommand("pz\r\n", false);
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
@@ -429,13 +429,13 @@ bool BT_SetupModule(void)
 	}
 
 	// set power to max
-	BT_SendCommand("sp,7\r", false);
+	BT_SendCommand("sp,7\r\n", false);
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
 
 	// set software version
-	BT_SendCommand("sdr,"APP_VERSION_STR"\r", false);
+	BT_SendCommand("sdr,"APP_VERSION_STR"\r\n", false);
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
@@ -484,7 +484,7 @@ bool BT_SetupModule(void)
 		return false;
 	}
 
-	BT_SendCommand("wc\r", false); //Command to clear script, just in case there is a script
+	BT_SendCommand("wc\r\n", false); //Command to clear script, just in case there is a script
 	if (!BT_CheckResponse(AOK)) {
 		return false;
 	}
@@ -498,9 +498,9 @@ bool BT_SetupModule(void)
 
 bool BT_RebootEnFlow(void)
 {
-	bool do_ls = false, do_upd = false, good_boot; // causes a control lockup if enabled
+	bool do_ls = false, good_boot; // causes a control lockup if enabled
 	//Send "R,1" to save changes and reboot
-	BT_SendCommand("r,1\r", false); //Force reboot
+	BT_SendCommand("r,1\r\n", false); //Force reboot
 	if (!BT_CheckResponse("Reboot\r\n")) {
 		return false;
 	}
@@ -521,66 +521,63 @@ bool BT_RebootEnFlow(void)
 	good_boot = BT_CheckResponse("MD\r\n"); //Check that we received CMD indicating reboot is done
 
 	if (do_ls) {
-		BT_SendCommand("LS\r", false); // list services
+		BT_SendCommand("LS\r\n", false); // list services
 		WaitMs(1000);
 	}
 
-	/* Jumper on DFU OTA UPDATE */
-	BT_OTA_UPD_TRIS = 1; // set for jumper input
-	//	CNPU1bits.CN7PUE = 1; // pullup for BT_OTA_UPD
-	WaitMs(2); // jumper pullup read delay, rise time is slow
-	if (do_upd && (BT_OTA_UPD == 0)) {
+
+	WaitMs(2);
+	if (SWITCH1 == 0) {
 		BT_OTA_UPD_TRIS = 0; // set back to output
 		BT_WAKE_SW = 1;
 		BT_WAKE_HW = 1;
 		BT_CMD = 0;
 
-		WaitMs(100);
-		BT_SendCommand("SF,2\r", false); // perform complete factory reset
+		BT_SendCommand("SF,2\r\n", false); // perform complete factory reset
 		WaitMs(100);
 		BT_CheckResponse(AOK);
 
-		BT_SendCommand("SF,2\r", false); // perform complete factory reset again
+		BT_SendCommand("SF,2\r\n", false); // perform complete factory reset again
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 
-		BT_SendCommand("SDH,4.1\r", false); // defaults
+		BT_SendCommand("SDH,4.1\r\n", false); // defaults
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
-		BT_SendCommand("SDM,RN4020\r", false); // defaults
-		WaitMs(100);
-		if (!BT_CheckResponse(AOK)) {
-			return false;
-		}
-
-		BT_SendCommand("SDN,Microchip\r", false); // defaults
+		BT_SendCommand("SDM,RN4020\r\n", false); // defaults
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 
-		BT_SendCommand("SP,7\r", false); // defaults
+		BT_SendCommand("SDN,Microchip\r\n", false); // defaults
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 
-		BT_SendCommand("SS,C0000000\r", false); // add service
+		BT_SendCommand("SP,7\r\n", false); // defaults
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
 
-		BT_SendCommand("SR,32008000\r", false); // support MLDP, enable OTA (peripheral mode is enabled by default)
+		BT_SendCommand("SS,C0000000\r\n", false); // add service
 		WaitMs(100);
 		if (!BT_CheckResponse(AOK)) {
 			return false;
 		}
-		BT_SendCommand("R,1\r", false); //Force reboot
+
+		BT_SendCommand("SR,32008000\r\n", false); // support MLDP, enable OTA (peripheral mode is enabled by default)
+		WaitMs(100);
+		if (!BT_CheckResponse(AOK)) {
+			return false;
+		}
+		BT_SendCommand("R,1\r\n", false); //Force reboot
 
 		//Wait for WS status high
 		StartTimer(TMR_RN_COMMS, 4000); //Start 4s timeout
@@ -601,8 +598,8 @@ bool BT_RebootEnFlow(void)
 			}
 		}
 
-		BT_SendCommand("I\r", false); // MLDP mode
-		BT_SendCommand("A\r", false); // start advertising
+		BT_SendCommand("I\r\n", false); // MLDP mode
+		BT_SendCommand("A\r\n", false); // start advertising
 
 		/* wait loop controller for power cycle/reset */
 		while (true) {
@@ -620,7 +617,6 @@ bool BT_RebootEnFlow(void)
 		}
 
 	}
-	BT_OTA_UPD_TRIS = 0;
 
 	if (do_ls) {
 		//flush UART RX buffer as a precaution before starting app state machine

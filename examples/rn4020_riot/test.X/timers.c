@@ -86,7 +86,7 @@ void WaitMs(uint16_t numMilliseconds)
 {
 	StartTimer(TMR_INTERNAL, numMilliseconds); //Start software timer and wait for it to count down
 	while (!TimerDone(TMR_INTERNAL)) {
-		thread_yield();
+//		thread_yield();
 
 	} //Enter idle mode to reduce power while waiting
 } //(timer interrupt will wake part from idle)

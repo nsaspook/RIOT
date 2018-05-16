@@ -325,11 +325,20 @@ struct gatts_char_inst {
 #define U1RTS_TRIS      TRISAbits.TRISA15
 #define U1RTS_LAT       LATAbits.LATA15
 
+#define U1RX_TRIS   TRISDbits.TRISD10  //BT_RX
+#define U1RX_PORT   PORTDbits.RD10
+
+#define U1TX_TRIS   TRISDbits.TRISD15  //BT_TX
+#define U1TX_LAT    LATDbits.LATD15
+
 // RELAY outputs
 #define RELAY1	LATBbits.LATB3 // output 0 (low) turns on relay
 #define RELAY2	LATBbits.LATB3
 #define RELAY3	LATBbits.LATB3
 #define RELAY4	LATBbits.LATB3
+
+#define SWITCH1		PORTGbits.RG12
+#define SWITCH1_TRIS	TRISGbits.TRISG12
 
 // LED outputs
 

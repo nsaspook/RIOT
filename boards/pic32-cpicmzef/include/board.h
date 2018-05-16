@@ -124,6 +124,30 @@ extern "C" {
 #define PDEBUG3_TOGGLE      (LATEINV = PDEBUG3_MASK)
 	/** @} */
 
+	/**
+	 * @name    jack pin configuration
+	 * @{
+	 */
+
+#define Ja5_1            GPIO_PIN(PORT_B, 4)
+#define Ja5_2            GPIO_PIN(PORT_A, 9)
+#define Ja5_3            GPIO_PIN(PORT_D, 4)
+#define Ja5_4            GPIO_PIN(PORT_D, 1)
+#define Ja5_5            GPIO_PIN(PORT_D, 14)
+#define Ja5_6            GPIO_PIN(PORT_D, 3)
+#define Ja5_7            "+3.3v"
+#define Ja5_8            "gnd"
+#define Ja5_9            "gnd"
+#define Ja5_10	         "+5v"
+#define Ja5_11           GPIO_PIN(PORT_A, 15)
+#define Ja5_12           GPIO_PIN(PORT_A, 14)
+#define Ja5_13           GPIO_PIN(PORT_D, 15)
+#define Ja5_14           GPIO_PIN(PORT_D, 10)
+#define Ja5_15           GPIO_PIN(PORT_F, 13)
+#define Ja5_16           GPIO_PIN(PORT_E, 8)
+
+	/** @} */
+
 	/* L1 cache modes, boot code defaults to WB_WA, best performance
 	 * Uncached
 	 * Cacheable, non-coherent, write-back, write allocate
@@ -211,12 +235,12 @@ extern "C" {
 		free(__PIC32_CACHED_PTR(ptr));
 	}
 
-/*******************************************************************/
-/** FlushCache - flush cache to RAM                               **/
-/** size - size of memory block to flush *MUST BE MULTIPLE OF 16* **/
-/** vaddr - start address of block to flush                        **/
-/*******************************************************************/
-/* void FlushCache(unsigned size, void *vaddr) */
+	/*******************************************************************/
+	/** FlushCache - flush cache to RAM                               **/
+	/** size - size of memory block to flush *MUST BE MULTIPLE OF 16* **/
+	/** vaddr - start address of block to flush                        **/
+	/*******************************************************************/
+	/* void FlushCache(unsigned size, void *vaddr) */
 
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 		const void *out, void *in, size_t len);
