@@ -46,7 +46,7 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
-#define APP_VERSION_STR "4.0"       //This firmware version
+#define APP_VERSION_STR "4.0 RIOT-OS"       //This firmware version
 //	2.8	increase ADC sampling and message transmission rates
 //	2.9	minor spelling fixes
 //	3.0	Add some public service support
