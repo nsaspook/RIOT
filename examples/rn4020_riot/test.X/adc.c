@@ -82,6 +82,8 @@ void ADC_Init(void)
 
 bool ADC_Tasks(void)
 {
+	static uint8_t fd[32] = {0};
+
 	/* send the command sequence to the adc */
 	if (!adcData.mcp3208_cmd.map.in_progress) {
 		adcData.mcp3208_cmd.map.in_progress = true;
@@ -94,19 +96,56 @@ bool ADC_Tasks(void)
 		SPI_CS0 = 0; // select the ADC
 		spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
 		SPI_CS0 = 1; // deselect the ADC
+
+		/* fake data for testing */
+		switch (adcData.chan) {
+		case 0:
+			fd[1] = 0;
+			fd[2] = 0;
+			break;
+		case 1:
+			fd[1] = 1;
+			fd[2] = 10;
+			break;
+		case 2:
+			fd[1] = 2;
+			fd[2] = 20;
+			break;
+		case 3:
+			fd[1] = 3;
+			fd[2] = 30;
+			break;
+		case 4:
+			fd[1] = 4;
+			fd[2] = 40;
+			break;
+		case 5:
+			fd[1] = 5;
+			fd[2] = 50;
+			break;
+		case 6:
+			fd[1] = 9;
+			fd[2] = 60;
+			break;
+		case 7:
+			fd[1] = 0x0b;
+			fd[2] = 70;
+			break;
+		default:
+			fd[1] = 0;
+			fd[2] = 57;
+			break;
+		}
+		/* fake data */
 	}
 
 	/* read the returned spi data from the buffer and format it */
 	if (adcData.mcp3208_cmd.map.in_progress) {
 		if (spi_complete(SPI_DEV(2))) {
 
-			/* fake data */
-			rd[1] = 3;
-			rd[0] = 255;
-			/* fake data */
-
-			adcData.potValue = (rd[1]&0x0f) << 8;
-			adcData.potValue += rd[0];
+			/* lsb array index 2 */
+			adcData.potValue = (fd[1]&0x0f) << 8;
+			adcData.potValue += fd[2];
 			adcData.mcp3208_cmd.map.finish = true;
 		} else {
 			return false;

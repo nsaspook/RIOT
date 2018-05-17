@@ -15,7 +15,6 @@
       <itemPath>leds.h</itemPath>
       <itemPath>switches.h</itemPath>
       <itemPath>rtcc.h</itemPath>
-      <itemPath>sleep.h</itemPath>
       <itemPath>spi.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
