@@ -304,6 +304,7 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	const uint8_t *out_buffer = (const uint8_t *) out;
+	uint8_t dma_able = 8; /* default to NO DMA to trigger default method */
 
 	(void) cs;
 	(void) cont;
@@ -313,8 +314,12 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	pic_spi[bus].len = len;
 	pic_spi[bus].complete = false;
 
+	/* check of we have both buffers */
+	if (out && in)
+		dma_able = 0;
+
 	/* Translate a kernel (KSEG) virtual address to a physical address. */
-	switch (bus) {
+	switch (bus + dma_able) {
 	case 1:
 		Trigger_Bus_DMA_Rx1(len, KVA_TO_PA(in));
 		Trigger_Bus_DMA_Tx1(len, KVA_TO_PA(out_buffer));
@@ -323,10 +328,15 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 		Trigger_Bus_DMA_Rx2(len, KVA_TO_PA(in));
 		Trigger_Bus_DMA_Tx2(len, KVA_TO_PA(out_buffer));
 		break;
-	default: /* non-dma mode for testing */
+	default: /* non-dma mode */
 		while (len--) {
 			if (out_buffer) {
 				SPIxBUF(pic_spi[bus]) = *out_buffer++;
+				/* Wait until TX FIFO is empty */
+				while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
+				}
+			} else {
+				SPIxBUF(pic_spi[bus]) = 0;
 				/* Wait until TX FIFO is empty */
 				while ((SPIxSTAT(pic_spi[bus]) & _SPI1STAT_SPITBF_MASK)) {
 				}
@@ -339,6 +349,8 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF);
+	/* make sure at least one input or one output buffer is given */
+	assert(out || in);
 
 	if (cs != SPI_CS_UNDEF) {
 		gpio_clear((gpio_t) cs);
@@ -358,6 +370,8 @@ void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF);
+	/* make sure at least one input or one output buffer is given */
+	assert(out || in);
 
 	if (cs != SPI_CS_UNDEF) {
 		gpio_clear((gpio_t) cs);

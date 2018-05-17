@@ -95,7 +95,6 @@ bool ADC_Tasks(void)
 		td[2] = adcData.mcp3208_cmd.bd[0];
 		SPI_CS0 = 0; // select the ADC
 		spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
-		SPI_CS0 = 1; // deselect the ADC
 
 		/* fake data for testing */
 		switch (adcData.chan) {
@@ -142,6 +141,7 @@ bool ADC_Tasks(void)
 	/* read the returned spi data from the buffer and format it */
 	if (adcData.mcp3208_cmd.map.in_progress) {
 		if (spi_complete(SPI_DEV(2))) {
+			SPI_CS0 = 1; // deselect the ADC
 
 			/* lsb array index 2 */
 			adcData.potValue = (fd[1]&0x0f) << 8;

@@ -85,7 +85,6 @@ extern void _T1Interrupt(void);
 static timer_isr_ctx_t timer_isr_ctx;
 volatile unsigned int counter;
 volatile unsigned int compares[CHANNELS];
-// static volatile int spurious_int;
 
 /*
  * The mips toolchain C library does not implement gettimeofday()
@@ -294,32 +293,32 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	}
 
 #ifdef _PORTS_P32MZ2048EFM100_H
-	/* process spi receive interrupts here */
+	/* process all device interrupts here */
 
 	/* Bus TX - SPI1 DMA 1 Master */
 	if (IEC4bits.DMA1IE && IFS4bits.DMA1IF) {
-		DCH1INTCLR = 0xFF; // Clear interrupt events.
-		IFS4CLR = _IFS4_DMA1IF_MASK; // Clear the interrupt flag.
+		DCH1INTCLR = 0xFF;
+		IFS4CLR = _IFS4_DMA1IF_MASK;
 	}
 
 	/* Bus RX SPI1 DMA 0 */
 	if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
 		DMA_SPI_1_ISR_RX();
-		DCH0INTCLR = 0xFF; // Clear interrupt events.
-		IFS4CLR = _IFS4_DMA0IF_MASK; // Clear the interrupt flag.
+		DCH0INTCLR = 0xFF;
+		IFS4CLR = _IFS4_DMA0IF_MASK;
 	}
 
 	/* Bus TX - SPI2 DMA 3 Master */
 	if (IEC4bits.DMA3IE && IFS4bits.DMA3IF) {
-		DCH3INTCLR = 0xFF; // Clear interrupt events.
-		IFS4CLR = _IFS4_DMA3IF_MASK; // Clear the interrupt flag.
+		DCH3INTCLR = 0xFF;
+		IFS4CLR = _IFS4_DMA3IF_MASK;
 	}
 
 	/* Bus RX SPI2 DMA 2 */
 	if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
 		DMA_SPI_2_ISR_RX();
-		DCH2INTCLR = 0xFF; // Clear interrupt events.
-		IFS4CLR = _IFS4_DMA2IF_MASK; // Clear the interrupt flag.
+		DCH2INTCLR = 0xFF;
+		IFS4CLR = _IFS4_DMA2IF_MASK; 
 	}
 
 	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
@@ -353,9 +352,9 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 		UART_4_ISR_RX();
 	}
 	
-	/* Timer0 real interrupt */
+	/* Timer0 real interrupt for BLE state machine timers */
 	if (IEC0bits.T1IE && IFS0bits.T1IF) {
-		IFS0CLR = _IFS0_T1IF_MASK; //Clear the interrupt flag
+		IFS0CLR = _IFS0_T1IF_MASK;
 		_T1Interrupt();
 	}
 #endif

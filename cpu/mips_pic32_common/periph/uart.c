@@ -40,8 +40,8 @@
 /* PERIPHERAL_CLOCK must be defined in board file */
 
 typedef struct PIC32_UART_tag {
-    volatile uint32_t *regs;
-    uint32_t clock;
+	volatile uint32_t *regs;
+	uint32_t clock;
 } PIC32_UART_T;
 
 /* pic uarts are numbered 1 to 6 */
@@ -55,143 +55,128 @@ static uart_isr_ctx_t isr_ctx[UART_NUMOF + 1];
 /* 1,2,4 are the active uarts on the cpicmzef board configuration */
 void uart_irq_enable(uart_t uart)
 {
-    if (uart == 1) {
-        IEC3CLR = _IEC3_U1RXIE_MASK;    /* disable U1RX interrupt */
-        IFS3CLR = _IFS3_U1RXIF_MASK;    /* clear U1RX flag */
-        IEC3SET = _IEC3_U1RXIE_MASK;
-        IPC28bits.U1RXIP = UxPRI_SW0;   /* Set IRQ 0 to priority 1.x */
-        IPC28bits.U1RXIS = UXSUBPRI_SW0;
-    }
-    if (uart == 2) {
-        IEC4CLR = _IEC4_U2RXIE_MASK;
-        IFS4CLR = _IFS4_U2RXIF_MASK;
-        IEC4SET = _IEC4_U2RXIE_MASK;
-        IPC36bits.U2RXIP = UxPRI_SW0;
-        IPC36bits.U2RXIS = UXSUBPRI_SW0;
-    }
-    if (uart == 4) {
-        IEC5CLR = _IEC5_U4RXIE_MASK;
-        IFS5CLR = _IFS5_U4RXIF_MASK;
-        IEC5SET = _IEC5_U4RXIE_MASK;
-        IPC42bits.U4RXIP = UxPRI_SW0;
-        IPC42bits.U4RXIS = UXSUBPRI_SW0;
-    }
+	if (uart == 1) {
+		IEC3CLR = _IEC3_U1RXIE_MASK; /* disable U1RX interrupt */
+		IFS3CLR = _IFS3_U1RXIF_MASK; /* clear U1RX flag */
+		IEC3SET = _IEC3_U1RXIE_MASK;
+		IPC28bits.U1RXIP = UxPRI_SW0; /* Set IRQ 0 to priority 1.x */
+		IPC28bits.U1RXIS = UXSUBPRI_SW0;
+	}
+	if (uart == 2) {
+		IEC4CLR = _IEC4_U2RXIE_MASK;
+		IFS4CLR = _IFS4_U2RXIF_MASK;
+		IEC4SET = _IEC4_U2RXIE_MASK;
+		IPC36bits.U2RXIP = UxPRI_SW0;
+		IPC36bits.U2RXIS = UXSUBPRI_SW0;
+	}
+	if (uart == 4) {
+		IEC5CLR = _IEC5_U4RXIE_MASK;
+		IFS5CLR = _IFS5_U4RXIF_MASK;
+		IEC5SET = _IEC5_U4RXIE_MASK;
+		IPC42bits.U4RXIP = UxPRI_SW0;
+		IPC42bits.U4RXIS = UXSUBPRI_SW0;
+	}
 }
 
 void uart_irq_disable(uart_t uart)
 {
-    if (uart == 1) {
-        IEC3CLR = _IEC3_U1RXIE_MASK;
-    }
-    if (uart == 2) {
-        IEC4CLR = _IEC4_U2RXIE_MASK;
-    }
-    if (uart == 4) {
-        IEC5CLR = _IEC5_U4RXIE_MASK;
-    }
+	if (uart == 1) {
+		IEC3CLR = _IEC3_U1RXIE_MASK;
+	}
+	if (uart == 2) {
+		IEC4CLR = _IEC4_U2RXIE_MASK;
+	}
+	if (uart == 4) {
+		IEC5CLR = _IEC5_U4RXIE_MASK;
+	}
 }
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
 
-    assert(uart <= UART_NUMOF && uart != 0); /*No uart 0 on pic32*/
+	assert(uart <= UART_NUMOF && uart != 0); /*No uart 0 on pic32*/
 
-    /* save interrupt callback context */
-    isr_ctx[uart].rx_cb = rx_cb;
-    isr_ctx[uart].arg = arg;
+	/* save interrupt callback context */
+	isr_ctx[uart].rx_cb = rx_cb;
+	isr_ctx[uart].arg = arg;
 
-    /* Pin Mux should be setup in board file */
+	/* Pin Mux should be setup in board file */
 
-    pic_uart[uart].regs =
-        (volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
-    pic_uart[uart].clock = PERIPHERAL_CLOCK;
+	pic_uart[uart].regs =
+		(volatile uint32_t *)(_UART1_BASE_ADDRESS + (uart - 1) * REGS_SPACING);
+	pic_uart[uart].clock = PERIPHERAL_CLOCK;
 
-    UxBRG(pic_uart[uart]) = (pic_uart[uart].clock / (16 * baudrate)) - 1;
-    UxSTA(pic_uart[uart]) = 0;
-    UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK;
-    UxSTASET(pic_uart[uart]) = _U1STA_URXEN_MASK;
-    UxSTASET(pic_uart[uart]) = _U1STA_UTXEN_MASK;
-    /* enable receive interrupt for ports with callbacks */
-    if (rx_cb) {
-        uart_irq_enable(uart);
-    }
-    return 0;
+	UxBRG(pic_uart[uart]) = (pic_uart[uart].clock / (16 * baudrate)) - 1;
+	UxSTA(pic_uart[uart]) = 0;
+	UxMODE(pic_uart[uart]) = _U1MODE_ON_MASK;
+	UxSTASET(pic_uart[uart]) = _U1STA_URXEN_MASK;
+	UxSTASET(pic_uart[uart]) = _U1STA_UTXEN_MASK;
+	/* enable receive interrupt for ports with callbacks */
+	if (rx_cb) {
+		uart_irq_enable(uart);
+	}
+	return 0;
 }
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
-#ifdef _PORTS_P32MZ2048EFM100_H
-    PDEBUG2_TOGGLE;
-#endif
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    while (len--) {
-        while (UxSTA(pic_uart[uart]) & _U1STA_UTXBF_MASK) {
-        }
-        UxTXREG(pic_uart[uart]) = *data++;
-    }
-#ifdef _PORTS_P32MZ2048EFM100_H
-    //	PDEBUG2_OFF;
-#endif
+	while (len--) {
+		while (UxSTA(pic_uart[uart]) & _U1STA_UTXBF_MASK) {
+		}
+		UxTXREG(pic_uart[uart]) = *data++;
+	}
 }
 
 void uart_poweron(uart_t uart)
 {
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    UxMODESET(pic_uart[uart]) = _U1MODE_ON_MASK;
+	UxMODESET(pic_uart[uart]) = _U1MODE_ON_MASK;
 
 }
 
 void uart_poweroff(uart_t uart)
 {
-    assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF && uart != 0);
 
-    UxMODECLR(pic_uart[uart]) = _U1MODE_ON_MASK;
+	UxMODECLR(pic_uart[uart]) = _U1MODE_ON_MASK;
 }
 
 /* uart interrupt in single vector sw0 */
 static void rx_irq(uart_t uart)
 {
-#ifdef _PORTS_P32MZ2048EFM100_H
-    //	PDEBUG1_ON;
-#endif
-    if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
-        /* clear the FIFO */
-        while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
-            if (isr_ctx[uart].rx_cb) {
-                isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
-            }
-#ifdef _PORTS_P32MZ2048EFM100_H
-            //			PDEBUG1_TOGGLE; // receiver error
-#endif
-        }
-        UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
-        LED1_ON; /* red error led */
-    }
+	if (UxSTA(pic_uart[uart]) & _U1STA_OERR_MASK) {
+		/* clear the FIFO */
+		while ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+			if (isr_ctx[uart].rx_cb) {
+				isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+			}
+		}
+		UxSTACLR(pic_uart[uart]) = _U1STA_OERR_MASK;
+		LED1_ON; /* red error led */
+	}
 
-    if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
-        if (isr_ctx[uart].rx_cb) {
-            isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
-        }
-    }
-#ifdef _PORTS_P32MZ2048EFM100_H
-    //	PDEBUG1_OFF;
-#endif
+	if ((UxMODE(pic_uart[uart]) & _U1MODE_ON_MASK) && (UxSTA(pic_uart[uart]) & _U1STA_URXDA_MASK)) {
+		if (isr_ctx[uart].rx_cb) {
+			isr_ctx[uart].rx_cb(isr_ctx[uart].arg, UxRXREG(pic_uart[uart]));
+		}
+	}
 }
 
 void UART_1_ISR_RX(void)
 {
-    rx_irq(1);
+	rx_irq(1);
 }
 
 void UART_2_ISR_RX(void)
 {
-    rx_irq(2);
+	rx_irq(2);
 }
 
 void UART_4_ISR_RX(void)
 {
-    rx_irq(4);
+	rx_irq(4);
 }
 
