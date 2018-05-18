@@ -120,7 +120,12 @@ extern "C" {
 #define SPI_NUMOF	(3)
 #define DMA_NUMOF	(8)
 	/* DMA [0..3] used for SPI ports 1 and 2 */
-	
+#define	SPI1_DMA_RX	0
+#define	SPI1_DMA_TX	1
+#define	SPI2_DMA_RX	2
+#define	SPI2_DMA_TX	3
+
+
 	/** @} */
 
 #ifdef __cplusplus

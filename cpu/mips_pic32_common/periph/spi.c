@@ -69,6 +69,7 @@ typedef struct PIC32_SPI_tag {
 
 typedef struct PIC32_DMA_tag {
 	volatile uint32_t *regs;
+	spi_t bus;
 } PIC32_DMA_T;
 
 static PIC32_SPI_T pic_spi[SPI_NUMOF + 1];
@@ -76,13 +77,25 @@ static mutex_t locks[SPI_NUMOF + 1];
 static PIC32_DMA_T pic_dma[DMA_NUMOF];
 
 int32_t spi_complete(spi_t);
-static void Init_Dma_Chan(uint8_t, uint32_t, volatile unsigned int *, volatile unsigned int *);
+static void Init_Dma_Chan(uint8_t, uint32_t, volatile unsigned int *, volatile unsigned int *, spi_t);
 
-static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int * SourceDma, volatile unsigned int * DestDma)
+static void Release_Dma_Chan(uint8_t chan)
+{
+	assert(chan < DMA_NUMOF);
+
+	IEC4CLR = _IEC4_DMA0IE_MASK << chan; /* Disable the DMA interrupt. */
+	IFS4CLR = _IFS4_DMA0IF_MASK << chan; /* Clear the DMA interrupt flag. */
+	DCHxCON(pic_dma[chan]) = 0;
+	DCHxECON(pic_dma[chan]) = 0;
+	DCHxINT(pic_dma[chan]) = 0;
+}
+
+static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int * SourceDma, volatile unsigned int * DestDma, spi_t bus)
 {
 	assert(chan < DMA_NUMOF);
 
 	pic_dma[chan].regs = (volatile uint32_t *)(&DCH0CON + (chan * DMA_REGS_SPACING));
+	pic_dma[chan].bus = bus;
 
 	IEC4CLR = _IEC4_DMA0IE_MASK << chan; /* Disable the DMA interrupt. */
 	IFS4CLR = _IFS4_DMA0IF_MASK << chan; /* Clear the DMA interrupt flag. */
@@ -127,38 +140,44 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int 
 	}
 }
 
-static void Trigger_Bus_DMA_Tx1(size_t len, uint32_t physSourceDma)
+/* disable receive interrupts and set the UART buffer mode for DMA */
+static void spi_reset_dma_irq(spi_t bus)
 {
-	DCH1SSA = physSourceDma;
-	DCH1SSIZbits.CHSSIZ = len;
-	DCH1CONbits.CHEN = 1; /* Channel enable. */
+	assert(bus != 0 && bus <= SPI_NUMOF);
+
+	switch (bus) {
+	case 1:
+		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPIxRX interrupt */
+		SPI1CONbits.SRXISEL = 1; /* not empty */
+		IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPIxRX flag */
+		break;
+	case 2:
+		IEC4CLR = _IEC4_SPI2RXIE_MASK;
+		SPI2CONbits.SRXISEL = 1;
+		IFS4CLR = _IFS4_SPI2RXIF_MASK;
+		break;
+	default:
+		break;
+	}
 }
 
-static void Trigger_Bus_DMA_Rx1(size_t len, uint32_t physDestDma)
+static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 {
-	IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
-	SPI1CONbits.SRXISEL = 1; /* not empty */
-	IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
-	DCH0DSA = physDestDma;
-	DCH0DSIZbits.CHDSIZ = len;
-	DCH0CONbits.CHEN = 1; /* Channel enable. */
+	assert(chan < DMA_NUMOF);
+
+	DCHxSSA(pic_dma[chan]) = physSourceDma;
+	DCHxSSIZ(pic_dma[chan]) = (len & _DCH0SSIZ_CHSSIZ_MASK);
+	DCHxCONSET(pic_dma[chan]) = _DCH0CON_CHEN_MASK; /* Channel enable. */
 }
 
-static void Trigger_Bus_DMA_Tx2(size_t len, uint32_t physSourceDma)
+static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 {
-	DCH3SSA = physSourceDma;
-	DCH3SSIZbits.CHSSIZ = len;
-	DCH3CONbits.CHEN = 1;
-}
+	assert(chan < DMA_NUMOF);
 
-static void Trigger_Bus_DMA_Rx2(size_t len, uint32_t physDestDma)
-{
-	IEC4CLR = _IEC4_SPI2RXIE_MASK; /* disable SPI2RX interrupt */
-	SPI2CONbits.SRXISEL = 1; /* not empty */
-	IFS4CLR = _IFS4_SPI2RXIF_MASK; /* clear SPI2RX flag */
-	DCH2DSA = physDestDma;
-	DCH2DSIZbits.CHDSIZ = len;
-	DCH2CONbits.CHEN = 1; /* Channel enable. */
+	spi_reset_dma_irq(pic_dma[chan].bus);
+	DCHxDSA(pic_dma[chan]) = physDestDma;
+	DCHxDSIZ(pic_dma[chan]) = (len & _DCH0DSIZ_CHDSIZ_MASK);
+	DCHxCONSET(pic_dma[chan]) = _DCH0CON_CHEN_MASK; /* Channel enable. */
 }
 
 /* adjust speed on the fly, these extra functions are prototyped in board.h */
@@ -170,7 +189,9 @@ void spi_speed_config(spi_t bus, spi_clk_t clk)
 	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
 }
 
-/* 1,2,3 are the active spi devices on the cpicmzef board configuration */
+/* 1,2,3 are the active spi devices on the cpicmzef board configuration 
+ * DMA channels are allocated for 1&2 tx/rx
+ */
 static void spi_irq_enable(spi_t bus)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF);
@@ -183,8 +204,8 @@ static void spi_irq_enable(spi_t bus)
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
 		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
 		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
-		Init_Dma_Chan(1, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF);
-		Init_Dma_Chan(0, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF);
+		Init_Dma_Chan(SPI1_DMA_TX, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
+		Init_Dma_Chan(SPI1_DMA_RX, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
@@ -194,8 +215,8 @@ static void spi_irq_enable(spi_t bus)
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
 		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI2RXIE_MASK;
-		Init_Dma_Chan(3, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF);
-		Init_Dma_Chan(2, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF);
+		Init_Dma_Chan(SPI2_DMA_TX, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
+		Init_Dma_Chan(SPI2_DMA_RX, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
 	}
 	if (bus == 3) {
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
@@ -213,9 +234,13 @@ static void spi_irq_disable(spi_t bus)
 
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK;
+		Release_Dma_Chan(SPI1_DMA_RX);
+		Release_Dma_Chan(SPI1_DMA_TX);
 	}
 	if (bus == 2) {
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
+		Release_Dma_Chan(SPI2_DMA_RX);
+		Release_Dma_Chan(SPI2_DMA_TX);
 	}
 	if (bus == 3) {
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
@@ -321,12 +346,12 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	/* Translate a kernel (KSEG) virtual address to a physical address. */
 	switch (bus + dma_able) {
 	case 1:
-		Trigger_Bus_DMA_Rx1(len, KVA_TO_PA(in));
-		Trigger_Bus_DMA_Tx1(len, KVA_TO_PA(out_buffer));
+		Trigger_Bus_DMA_Rx(SPI1_DMA_RX, len, KVA_TO_PA(in));
+		Trigger_Bus_DMA_Tx(SPI1_DMA_TX, len, KVA_TO_PA(out_buffer));
 		break;
 	case 2:
-		Trigger_Bus_DMA_Rx2(len, KVA_TO_PA(in));
-		Trigger_Bus_DMA_Tx2(len, KVA_TO_PA(out_buffer));
+		Trigger_Bus_DMA_Rx(SPI2_DMA_RX, len, KVA_TO_PA(in));
+		Trigger_Bus_DMA_Tx(SPI2_DMA_TX, len, KVA_TO_PA(out_buffer));
 		break;
 	default: /* non-dma mode */
 		while (len--) {
