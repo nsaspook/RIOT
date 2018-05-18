@@ -318,7 +318,7 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
 		DMA_SPI_2_ISR_RX();
 		DCH2INTCLR = 0xFF;
-		IFS4CLR = _IFS4_DMA2IF_MASK; 
+		IFS4CLR = _IFS4_DMA2IF_MASK;
 	}
 
 	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
@@ -351,7 +351,7 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 		IFS5CLR = _IFS5_U4RXIF_MASK;
 		UART_4_ISR_RX();
 	}
-	
+
 	/* Timer0 real interrupt for BLE state machine timers */
 	if (IEC0bits.T1IE && IFS0bits.T1IF) {
 		IFS0CLR = _IFS0_T1IF_MASK;

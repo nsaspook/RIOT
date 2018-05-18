@@ -25,6 +25,10 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
+#include <stdio.h>
+#include <string.h>
+#include "periph/uart.h"
+
 #define SPIxCON(U)          ((U).regs[0x00 / 4])
 #define SPIxCONCLR(U)       ((U).regs[0x04 / 4])
 #define SPIxCONSET(U)       ((U).regs[0x08 / 4])
@@ -56,7 +60,7 @@
 #define DMA_REGS_SPACING    (&DCH1CON - &DCH0CON)
 
 #define SPIxPRI_SW0 1
-#define SPIXSUBPRI_SW0  0
+#define SPIxSUBPRI_SW0  1
 
 /* PERIPHERAL_CLOCK must be defined in board file */
 
@@ -97,47 +101,26 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int 
 	pic_dma[chan].regs = (volatile uint32_t *)(&DCH0CON + (chan * DMA_REGS_SPACING));
 	pic_dma[chan].bus = bus;
 
-	IEC4CLR = _IEC4_DMA0IE_MASK << chan; /* Disable the DMA interrupt. */
-	IFS4CLR = _IFS4_DMA0IF_MASK << chan; /* Clear the DMA interrupt flag. */
-	DCRCCON = 0;
+	IEC4CLR = _IEC4_DMA0IE_MASK << chan; /* Disable the DMA chan interrupt. */
+	IFS4CLR = _IFS4_DMA0IF_MASK << chan; /* Clear the DMA chan interrupt flag. */
 	DMACONSET = _DMACON_ON_MASK; /* Enable the DMA module. */
 	DCHxCON(pic_dma[chan]) = 0;
 	DCHxECON(pic_dma[chan]) = 0;
 	DCHxINT(pic_dma[chan]) = 0;
 	DCHxSSA(pic_dma[chan]) = KVA_TO_PA(SourceDma); /* Source start address. */
 	DCHxDSA(pic_dma[chan]) = KVA_TO_PA(DestDma); /* Destination start address. */
-	DCHxSSIZ(pic_dma[chan]) = 1; /* Source bytes. */
-	DCHxDSIZ(pic_dma[chan]) = 1; /* Destination bytes. */
+	DCHxSSIZ(pic_dma[chan]) = 1; /* default Source bytes. */
+	DCHxDSIZ(pic_dma[chan]) = 1; /* default Destination bytes. */
 	DCHxCSIZ(pic_dma[chan]) = 1; /* Bytes to transfer per event. */
 	DCHxECON(pic_dma[chan]) = irq_num << _DCH0ECON_CHSIRQ_POSITION; /* cell trigger interrupt */
 	DCHxECONSET(pic_dma[chan]) = _DCH0ECON_SIRQEN_MASK; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
 	DCHxINTSET(pic_dma[chan]) = _DCH0INT_CHBCIE_MASK; /* enable Channel block transfer complete interrupt. */
-
 	/*
 	 * set vector priority and receiver DMA trigger enables for the board hardware configuration 
 	 */
-	switch (chan) {
-	case 0:
-		IPC33bits.DMA0IP = SPIxPRI_SW0; /* DMA interrupt priority. */
-		IPC33bits.DMA0IS = SPIXSUBPRI_SW0; /* DMA sub-priority. */
-		IEC4SET = _IEC4_DMA0IE_MASK; /* DMA interrupt enable for rx dma  */
-		break;
-	case 1:
-		IPC33bits.DMA1IP = SPIxPRI_SW0;
-		IPC33bits.DMA1IS = SPIXSUBPRI_SW0;
-		break;
-	case 2:
-		IPC34bits.DMA2IP = SPIxPRI_SW0;
-		IPC34bits.DMA2IS = SPIXSUBPRI_SW0;
-		IEC4SET = _IEC4_DMA2IE_MASK;
-		break;
-	case 3:
-		IPC34bits.DMA3IP = SPIxPRI_SW0;
-		IPC34bits.DMA3IS = SPIXSUBPRI_SW0;
-		break;
-	default:
-		break;
-	}
+	*(dma_config[chan].ipc_regset) = dma_config[chan].ipc_mask_p & (SPIxPRI_SW0 << dma_config[chan].ipc_mask_pos_p);
+	*(dma_config[chan].ipc_regset) = dma_config[chan].ipc_mask_s & (SPIxSUBPRI_SW0 << dma_config[chan].ipc_mask_pos_s);
+	IEC4SET = dma_config[chan].iec_mask << chan; /* DMA interrupt enable if needed */
 }
 
 /* disable receive interrupts and set the UART buffer mode for DMA */
@@ -155,6 +138,7 @@ static void spi_reset_dma_irq(spi_t bus)
 		IEC4CLR = _IEC4_SPI2RXIE_MASK;
 		SPI2CONbits.SRXISEL = 1;
 		IFS4CLR = _IFS4_SPI2RXIF_MASK;
+
 		break;
 	default:
 		break;
@@ -163,6 +147,7 @@ static void spi_reset_dma_irq(spi_t bus)
 
 static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 {
+
 	assert(chan < DMA_NUMOF);
 
 	DCHxSSA(pic_dma[chan]) = physSourceDma;
@@ -172,6 +157,7 @@ static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 
 static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 {
+
 	assert(chan < DMA_NUMOF);
 
 	spi_reset_dma_irq(pic_dma[chan].bus);
@@ -183,6 +169,7 @@ static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 /* adjust speed on the fly, these extra functions are prototyped in board.h */
 void spi_speed_config(spi_t bus, spi_clk_t clk)
 {
+
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
@@ -202,7 +189,7 @@ static void spi_irq_enable(spi_t bus)
 		SPI1CONbits.STXISEL = 0; /*  last transfer is shifted out */
 		IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
 		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
-		IPC27bits.SPI1RXIS = SPIXSUBPRI_SW0;
+		IPC27bits.SPI1RXIS = SPIxSUBPRI_SW0;
 		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
 		Init_Dma_Chan(SPI1_DMA_TX, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
 		Init_Dma_Chan(SPI1_DMA_RX, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
@@ -213,17 +200,18 @@ static void spi_irq_enable(spi_t bus)
 		SPI2CONbits.STXISEL = 0;
 		IFS4CLR = _IFS4_SPI2RXIF_MASK;
 		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
-		IPC35bits.SPI2RXIS = SPIXSUBPRI_SW0;
+		IPC35bits.SPI2RXIS = SPIxSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI2RXIE_MASK;
 		Init_Dma_Chan(SPI2_DMA_TX, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
 		Init_Dma_Chan(SPI2_DMA_RX, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
 	}
 	if (bus == 3) {
+
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
 		SPI3CONbits.SRXISEL = 1;
 		IFS4CLR = _IFS4_SPI3RXIF_MASK;
 		IPC38bits.SPI3RXIP = SPIxPRI_SW0;
-		IPC38bits.SPI3RXIS = SPIXSUBPRI_SW0;
+		IPC38bits.SPI3RXIS = SPIxSUBPRI_SW0;
 		IEC4SET = _IEC4_SPI3RXIE_MASK;
 	}
 }
@@ -243,12 +231,14 @@ static void spi_irq_disable(spi_t bus)
 		Release_Dma_Chan(SPI2_DMA_TX);
 	}
 	if (bus == 3) {
+
 		IEC4CLR = _IEC4_SPI3RXIE_MASK;
 	}
 }
 
 void spi_init(spi_t bus)
 {
+
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	mutex_init(&locks[bus]);
@@ -259,6 +249,7 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
+
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	gpio_init(spi_config[bus].mosi_pin, GPIO_OUT);
@@ -311,11 +302,13 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 	SPIxSTATCLR(pic_spi[bus]) = _SPI1STAT_SPIROV_MASK;
 	spi_irq_enable(bus);
 	SPIxCONSET(pic_spi[bus]) = (_SPI1CON_ON_MASK | _SPI1CON_MSTEN_MASK);
+
 	return SPI_OK;
 }
 
 void spi_release(spi_t bus)
 {
+
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	spi_irq_disable(bus);
@@ -387,6 +380,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	}
 
 	if (!cont && cs != SPI_CS_UNDEF) {
+
 		gpio_set((gpio_t) cs);
 	}
 }
@@ -399,6 +393,7 @@ void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	assert(out || in);
 
 	if (cs != SPI_CS_UNDEF) {
+
 		gpio_clear((gpio_t) cs);
 	}
 
@@ -419,6 +414,7 @@ static void spi_rx_irq(spi_t bus)
 			rdata = SPIxBUF(pic_spi[bus]);
 		}
 		if (!--pic_spi[bus].len) {
+
 			pic_spi[bus].complete = true;
 		}
 	}
@@ -426,32 +422,38 @@ static void spi_rx_irq(spi_t bus)
 
 void SPI_1_ISR_RX(void)
 {
+
 	spi_rx_irq(1);
 }
 
 void SPI_2_ISR_RX(void)
 {
+
 	spi_rx_irq(2);
 }
 
 void SPI_3_ISR_RX(void)
 {
+
 	spi_rx_irq(3);
 }
 
 /* set transfer complete flag */
 void DMA_SPI_1_ISR_RX(void)
 {
+
 	pic_spi[1].complete = true;
 }
 
 void DMA_SPI_2_ISR_RX(void)
 {
+
 	pic_spi[2].complete = true;
 }
 
 void DMA_SPI_3_ISR_RX(void)
 {
+
 	pic_spi[3].complete = true;
 }
 

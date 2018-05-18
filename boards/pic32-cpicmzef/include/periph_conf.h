@@ -63,6 +63,7 @@ extern "C" {
 	 *
 	 * @{
 	 */
+#define SPI_NUMOF	(3)
 
 	static const spi_conf_t spi_config[] = {
 		{
@@ -116,8 +117,14 @@ extern "C" {
 			.miso_af = INPUT_PIN_RPB10,
 		},
 	};
+	/** @} */
 
-#define SPI_NUMOF	(3)
+	/**
+	 * @name    DMA device configuration
+	 *
+	 * @{
+	 */
+
 #define DMA_NUMOF	(8)
 	/* DMA [0..3] used for SPI ports 1 and 2 */
 #define	SPI1_DMA_RX	0
@@ -125,7 +132,52 @@ extern "C" {
 #define	SPI2_DMA_RX	2
 #define	SPI2_DMA_TX	3
 
-
+	static const dma_conf_t dma_config[] = {
+		{
+			.iec_mask = _IEC4_DMA0IE_MASK, /* enable */
+			.ipc_regset = (volatile uint32_t*) & IPC33SET, /* IPC SFR */
+			.ipc_mask_p = _IPC33_DMA0IP_MASK, /* priority data mask */
+			.ipc_mask_pos_p = _IPC33_DMA0IP_POSITION, /* priority in SFR */
+			.ipc_mask_s = _IPC33_DMA0IS_MASK, /* sub-priority */
+			.ipc_mask_pos_s = _IPC33_DMA0IS_POSITION, /* sub-priority */
+		},
+		{
+			.iec_mask = 0, /* DON'T enable */
+			.ipc_regset = (volatile uint32_t*) & IPC33SET,
+			.ipc_mask_p = _IPC33_DMA1IP_MASK,
+			.ipc_mask_pos_p = _IPC33_DMA1IP_POSITION,
+			.ipc_mask_s = _IPC33_DMA1IS_MASK,
+			.ipc_mask_pos_s = _IPC33_DMA1IS_POSITION,
+		},
+		{
+			.iec_mask = _IEC4_DMA0IE_MASK,
+			.ipc_regset = (volatile uint32_t*) & IPC34SET,
+			.ipc_mask_p = _IPC34_DMA2IP_MASK,
+			.ipc_mask_pos_p = _IPC34_DMA2IP_POSITION,
+			.ipc_mask_s = _IPC34_DMA2IS_MASK,
+			.ipc_mask_pos_s = _IPC34_DMA2IS_POSITION,
+		},
+		{
+			.iec_mask = 0,
+			.ipc_regset = (volatile uint32_t*) & IPC34SET,
+			.ipc_mask_p = _IPC34_DMA3IP_MASK,
+			.ipc_mask_pos_p = _IPC34_DMA3IP_POSITION,
+			.ipc_mask_s = _IPC34_DMA3IS_MASK,
+			.ipc_mask_pos_s = _IPC34_DMA3IS_POSITION,
+		},
+		{
+			.iec_mask = 0,
+		},
+		{
+			.iec_mask = 0,
+		},
+		{
+			.iec_mask = 0,
+		},
+		{
+			.iec_mask = 0,
+		},
+	};
 	/** @} */
 
 #ifdef __cplusplus

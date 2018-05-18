@@ -29,90 +29,95 @@ extern "C" {
 #endif
 
 #ifndef HAVE_GPIO_T
-/**
- * @brief   GPIO type identifier
- */
-typedef unsigned int gpio_t;
+	/**
+	 * @brief   GPIO type identifier
+	 */
+	typedef unsigned int gpio_t;
 #endif	
-	
-/**
- * @name    Power management configuration
- * @{
- */
-#define PROVIDES_PM_SET_LOWEST
-/** @} */
 
-/**
- * @brief   Length of the CPU_ID in bytes
- */
+	/**
+	 * @name    Power management configuration
+	 * @{
+	 */
+#define PROVIDES_PM_SET_LOWEST
+	/** @} */
+
+	/**
+	 * @brief   Length of the CPU_ID in bytes
+	 */
 #define CPUID_LEN           (4U)
 
-/**
- * @brief   Override GPIO pin selection macro
- */
+	/**
+	 * @brief   Override GPIO pin selection macro
+	 */
 #define GPIO_PIN(x,y)       ((x << 4) | (y & 0xf))
 
-/**
- * @brief   Available ports on the PIC32 family
- */
-enum {
-    PORT_A = 0,             /**< port A */
-    PORT_B = 1,             /**< port B */
-    PORT_C = 2,             /**< port C */
-    PORT_D = 3,             /**< port D */
-    PORT_E = 4,             /**< port E */
-    PORT_F = 5,             /**< port F */
-    PORT_G = 6,             /**< port G */
-};
+	/**
+	 * @brief   Available ports on the PIC32 family
+	 */
+	enum {
+		PORT_A = 0, /**< port A */
+		PORT_B = 1, /**< port B */
+		PORT_C = 2, /**< port C */
+		PORT_D = 3, /**< port D */
+		PORT_E = 4, /**< port E */
+		PORT_F = 5, /**< port F */
+		PORT_G = 6, /**< port G */
+	};
 
-/**
- * @brief   Prevent shared timer functions from being used
- */
+	/**
+	 * @brief   Prevent shared timer functions from being used
+	 */
 #define PERIPH_TIMER_PROVIDES_SET
 
-/**
- * @brief   Use some common SPI functions
- * @{
- */
+	/**
+	 * @brief   Use some common SPI functions
+	 * @{
+	 */
 #define PERIPH_SPI_NEEDS_INIT_CS
 #define PERIPH_SPI_NEEDS_TRANSFER_BYTE
 #define PERIPH_SPI_NEEDS_TRANSFER_REG
 #define PERIPH_SPI_NEEDS_TRANSFER_REGS
-/** @} */
+	/** @} */
 
-/**
- * @brief   Override SPI clock speed values
- * @{
- */
+	/**
+	 * @brief   Override SPI clock speed values
+	 * @{
+	 */
 #define HAVE_SPI_CLK_T
+
 typedef enum {
-    SPI_CLK_100KHZ =   100000U, /**< drive the SPI bus with 100KHz */
-    SPI_CLK_400KHZ =   400000U, /**< drive the SPI bus with 400KHz */
-    SPI_CLK_1MHZ   =  1000000U, /**< drive the SPI bus with 1MHz */
-    SPI_CLK_5MHZ   =  5000000U, /**< drive the SPI bus with 5MHz */
-    SPI_CLK_10MHZ  = 10000000U,  /**< drive the SPI bus with 10MHz */
-    SPI_CLK_25MHZ  = 25000000U,  /**< drive the SPI bus with 25MHz */	    
-    SPI_CLK_50MHZ  = 50000000U  /**< drive the SPI bus with 50MHz */
-} spi_clk_t;
-/** @} */
+		SPI_CLK_100KHZ = 100000U, /**< drive the SPI bus with 100KHz */
+		SPI_CLK_400KHZ = 400000U, /**< drive the SPI bus with 400KHz */
+		SPI_CLK_1MHZ = 1000000U, /**< drive the SPI bus with 1MHz */
+		SPI_CLK_5MHZ = 5000000U, /**< drive the SPI bus with 5MHz */
+		SPI_CLK_10MHZ = 10000000U, /**< drive the SPI bus with 10MHz */
+		SPI_CLK_25MHZ = 25000000U, /**< drive the SPI bus with 25MHz */
+		SPI_CLK_50MHZ = 50000000U /**< drive the SPI bus with 50MHz */
+	} spi_clk_t;
+	/** @} */
 
-/**
- * @brief   SPI device configuration
- */
-typedef struct {
-    volatile uint32_t *mosi_reg;    /**< Output pin mux register address */
-    volatile uint32_t *miso_reg;    /**< MISO pin mux register address */
-    uint8_t mosi_af;                /**< Specify function of output pin */
-    uint8_t miso_af;                /**< Specify input pin for MISO */
-    gpio_t mosi_pin;                /**< GPIO pin for MOSI */
-    gpio_t miso_pin;                /**< GPIO pin for MISO */
-} spi_conf_t;
+	/**
+	 * @brief   SPI device configuration
+	 */
+	typedef struct {
+		volatile uint32_t *mosi_reg; /**< Output pin mux register address */
+		volatile uint32_t *miso_reg; /**< MISO pin mux register address */
+		uint8_t mosi_af; /**< Specify function of output pin */
+		uint8_t miso_af; /**< Specify input pin for MISO */
+		gpio_t mosi_pin; /**< GPIO pin for MOSI */
+		gpio_t miso_pin; /**< GPIO pin for MISO */
+	} spi_conf_t;
 
-typedef struct {
-    volatile uint32_t physSourceDma;
-    volatile uint32_t physDestDma;
-
-} dma_conf_t;
+	typedef struct {
+		volatile uint32_t *ipc_regset;
+		uint32_t iec_mask;
+		uint32_t ifs_mask;
+		uint32_t ipc_mask_p;
+		uint32_t ipc_mask_s;
+		uint32_t ipc_mask_pos_p;
+		uint32_t ipc_mask_pos_s;
+	} dma_conf_t;
 
 #ifdef __cplusplus
 }

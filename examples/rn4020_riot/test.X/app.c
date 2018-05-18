@@ -177,7 +177,7 @@ void APP_Tasks(void)
 			}
 			/*
 			//Other message handling can be added here
-			*/
+			 */
 			/* receive new SPI ADC channel */
 			if (strstr(appData.receive_packet, "WV,"PRIVATE_CHAR_ADC_CHAN_H",")) {
 				GetNewADC_Chan(); /* new ADC config data */
@@ -252,8 +252,7 @@ bool APP_Initialize(void)
 	/* Wait for WS status high */
 	StartTimer(TMR_RN_COMMS, 4000);
 	while (BT_WS == 0) {
-		if (TimerDone(TMR_RN_COMMS))
-		{
+		if (TimerDone(TMR_RN_COMMS)) {
 			appData.error_code = ERROR_INITIALIZATION;
 			return false;
 		}
@@ -266,8 +265,7 @@ bool APP_Initialize(void)
 	//miss some bits or bytes at the beginning while the UART starts up */
 	StartTimer(TMR_RN_COMMS, 4000);
 	while (UART_ReadRxBuffer() != '\n') {
-		if (TimerDone(TMR_RN_COMMS))
-		{
+		if (TimerDone(TMR_RN_COMMS)) {
 			appData.error_code = ERROR_INITIALIZATION;
 			return false;
 		}

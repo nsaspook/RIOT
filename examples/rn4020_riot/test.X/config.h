@@ -96,10 +96,10 @@
 #define ADC_REFRESH_MS      50           //delay between ADC reads, 10 nom value
 #define POT_TX_MS           100         //delay between transmitting new pot values, 10 min value
 #define BATT_TX_MS	    500 
-#define HR_TX_MS            200
-#define AIO_TX_MS           150 
+#define HR_TX_MS            100
+#define AIO_TX_MS           50 
 #define LED_BLINK_MS        900         //LED blink rate for advertise mode
-#define BT_TX_MS            35         //minimum time between consecutive BTLE message transmissions
+#define BT_TX_MS            10         //minimum time between consecutive BTLE message transmissions
 #define BAT_CHK_DELAY_MS    30000       //delay between input voltage checks
 #define BAT_CHK_WAIT_MS     10          //CVref & CMP stabilization time
 
@@ -296,6 +296,7 @@ struct gatts_char_inst {
 
 #define B_LED_ON	LED4B_ON
 #define B_LED_OFF	LED4B_OFF
+#define B_LED_TOGGLE	LED4B_TOGGLE 
 
 #define SPI_CS0 LATDbits.LATD5
 #define SPI_CS1 LATAbits.LATA1

@@ -124,11 +124,6 @@ void board_init(void)
 
 	hwrng_init();
 
-	/* Initialize all SPI modules */
-	//	for (unsigned i = 1; i <= SPI_NUMOF; i++)
-	//		spi_init(SPI_DEV(i));
-
-
 	/* Stop the linker from throwing away the PIC32 config register settings */
 	dummy();
 }

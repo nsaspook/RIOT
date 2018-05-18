@@ -137,6 +137,7 @@ bool BT_ReceivePacket(char * Message)
 
 	if (UART_IsNewRxData()) //Check if new data byte from BT module and return if nothing new
 	{
+		PDEBUG2_ON;
 		Message[i++] = UART_ReadRxBuffer();
 		if (i == BT_RX_PKT_SZ) {
 			i = 0;
@@ -155,6 +156,7 @@ bool BT_ReceivePacket(char * Message)
 			{
 				Message[i] = 0; //Got a complete message!
 				i = 0;
+				PDEBUG2_OFF;
 				return true;
 			}
 			break;
@@ -175,8 +177,10 @@ bool BT_SendCommand(const char *data, bool wait)
 	//Only transmit a message if TX timer expired, or wait flag is set to false
 	//We limit transmission frequency to avoid overwhelming the BTLE link
 	if (TimerDone(TMR_BT_TX) || wait == false) {
+		PDEBUG1_ON;
 		uart_write(1, (uint8_t *) data, strlen(data));
 		StartTimer(TMR_BT_TX, BT_TX_MS); //Restart transmit timer
+		PDEBUG1_OFF;
 		return true;
 	}
 	return false;
@@ -611,7 +615,7 @@ bool BT_RebootEnFlow(void)
 					}
 				}
 				WaitMs(200);
-				SLED;
+				B_LED_TOGGLE;
 			}
 
 		}
