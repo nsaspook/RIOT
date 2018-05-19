@@ -48,6 +48,7 @@ void board_init(void)
 {
 	/*
 	 * Setup default pin mux for UARTS 
+	 * done early and static for debug output during boot
 	 */
 	U4RXR = INPUT_PIN_RPB2; /* connect pin RPB2 to UART 4 RX */
 	RPF8R = OUTPUT_FUNC_U4TX; /* connect pin RPF8 to UART 4 TX */

@@ -64,16 +64,12 @@ extern "C" {
 	 *
 	 * @{
 	 */
-#define SPI_NUMOF	(3)
+#define SPI_NUMOF	(6)
+#define SPI_NUMOF_USED	(3)
 
 	static const spi_conf_t spi_config[] = {
 		{
 			.mosi_pin = 0,
-			.mosi_reg = 0,
-			.mosi_af = 0,
-			.miso_pin = 0,
-			.miso_reg = 0,
-			.miso_af = 0
 		}, /* No SPI0 on PIC32, dummy to compile */
 
 		{ /*
@@ -116,6 +112,15 @@ extern "C" {
 			.miso_pin = GPIO_PIN(PORT_B, 10),
 			.miso_reg = (volatile uint32_t*) & SDI3R,
 			.miso_af = INPUT_PIN_RPB10,
+		},
+		{
+			.mosi_pin = 0,
+		},
+		{
+			.mosi_pin = 0,
+		},
+		{
+			.mosi_pin = 0,
 		},
 	};
 	/** @} */

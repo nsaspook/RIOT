@@ -97,6 +97,7 @@ static void Release_Dma_Chan(uint8_t chan)
 static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int * SourceDma, volatile unsigned int * DestDma, spi_t bus)
 {
 	assert(chan < DMA_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	pic_dma[chan].regs = (volatile uint32_t *)(&DCH0CON + (chan * DMA_REGS_SPACING));
 	pic_dma[chan].bus = bus;
@@ -126,7 +127,7 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int 
 /* disable receive interrupts and set the UART buffer mode for DMA */
 static void spi_reset_dma_irq(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	switch (bus) {
 	case 1:
@@ -167,7 +168,7 @@ static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 /* adjust speed on the fly, these extra functions are prototyped in board.h */
 void spi_speed_config(spi_t bus, spi_clk_t clk)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
 	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
@@ -178,7 +179,7 @@ void spi_speed_config(spi_t bus, spi_clk_t clk)
  */
 static void spi_irq_enable(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
@@ -215,7 +216,7 @@ static void spi_irq_enable(spi_t bus)
 
 static void spi_irq_disable(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	if (bus == 1) {
 		IEC3CLR = _IEC3_SPI1RXIE_MASK;
@@ -235,7 +236,7 @@ static void spi_irq_disable(spi_t bus)
 
 void spi_init(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	mutex_init(&locks[bus]);
 
@@ -245,7 +246,7 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	gpio_init(spi_config[bus].mosi_pin, GPIO_OUT);
 	gpio_init(spi_config[bus].miso_pin, GPIO_IN);
@@ -258,7 +259,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 	volatile int rdata __attribute__((unused));
 
 	(void) cs;
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
 
@@ -303,7 +304,7 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
 void spi_release(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	spi_irq_disable(bus);
 	/* SPI module must be turned off before powering it down */
@@ -360,7 +361,7 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 	/* make sure at least one input or one output buffer is given */
 	assert(out || in);
 
@@ -382,7 +383,7 @@ void spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF);
+	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 	/* make sure at least one input or one output buffer is given */
 	assert(out || in);
 

@@ -86,7 +86,7 @@ extern "C" {
 	 */
 #define HAVE_SPI_CLK_T
 
-typedef enum {
+	typedef enum {
 		SPI_CLK_100KHZ = 100000U, /**< drive the SPI bus with 100KHz */
 		SPI_CLK_400KHZ = 400000U, /**< drive the SPI bus with 400KHz */
 		SPI_CLK_1MHZ = 1000000U, /**< drive the SPI bus with 1MHz */
@@ -107,6 +107,16 @@ typedef enum {
 		uint8_t miso_af; /**< Specify input pin for MISO */
 		gpio_t mosi_pin; /**< GPIO pin for MOSI */
 		gpio_t miso_pin; /**< GPIO pin for MISO */
+		volatile uint32_t *ipc_regset; /* interrupt controller register */
+		volatile uint32_t *iec_regset;
+		volatile uint32_t *iec_regclr;
+		volatile uint32_t *ifs_regset;
+		volatile uint32_t *ifs_regclr;
+		uint32_t int_mask; /* enables and flags */
+		uint32_t ipc_mask_p; /* vector pri/sub-pri SFR masks and offsets */
+		uint32_t ipc_mask_s;
+		uint32_t ipc_mask_pos_p;
+		uint32_t ipc_mask_pos_s;
 	} spi_conf_t;
 
 	typedef struct {
@@ -117,7 +127,7 @@ typedef enum {
 		uint32_t ipc_mask_pos_p;
 		uint32_t ipc_mask_pos_s;
 	} dma_conf_t;
-	
+
 	typedef struct {
 		volatile uint32_t *ipc_regset; /* interrupt controller register */
 		volatile uint32_t *iec_regset;
