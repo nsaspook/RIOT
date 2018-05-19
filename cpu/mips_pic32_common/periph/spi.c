@@ -179,59 +179,58 @@ void spi_speed_config(spi_t bus, spi_clk_t clk)
  */
 static void spi_irq_enable(spi_t bus)
 {
+	uint32_t mask;
+
 	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
-	if (bus == 1) {
-		IEC3CLR = _IEC3_SPI1RXIE_MASK; /* disable SPI1RX interrupt */
-		SPI1CONbits.SRXISEL = 1; /* interrupt when not full */
-		SPI1CONbits.STXISEL = 0; /*  last transfer is shifted out */
-		IFS3CLR = _IFS3_SPI1RXIF_MASK; /* clear SPI1RX flag */
-		IPC27bits.SPI1RXIP = SPIxPRI_SW0; /* Set IRQ 0 to priority 1.x */
-		IPC27bits.SPI1RXIS = SPIxSUBPRI_SW0;
-		IEC3SET = _IEC3_SPI1RXIE_MASK; /* enable SPI1RX interrupt */
+	/* set enable and flag mask */
+	mask = spi_config[bus].int_mask;
+	*(spi_config[bus].iec_regclr) = mask; /* disable SPIxRX interrupt */
+
+	switch (bus) {
+	case 1:
 		Init_Dma_Chan(SPI1_DMA_TX, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
 		Init_Dma_Chan(SPI1_DMA_RX, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
-	}
-	if (bus == 2) {
-		IEC4CLR = _IEC4_SPI2RXIE_MASK;
-		SPI2CONbits.SRXISEL = 1;
-		SPI2CONbits.STXISEL = 0;
-		IFS4CLR = _IFS4_SPI2RXIF_MASK;
-		IPC35bits.SPI2RXIP = SPIxPRI_SW0;
-		IPC35bits.SPI2RXIS = SPIxSUBPRI_SW0;
-		IEC4SET = _IEC4_SPI2RXIE_MASK;
+		break;
+	case 2:
 		Init_Dma_Chan(SPI2_DMA_TX, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
 		Init_Dma_Chan(SPI2_DMA_RX, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
+		break;
+	default:
+		break;
 	}
-	if (bus == 3) {
 
-		IEC4CLR = _IEC4_SPI3RXIE_MASK;
-		SPI3CONbits.SRXISEL = 1;
-		IFS4CLR = _IFS4_SPI3RXIF_MASK;
-		IPC38bits.SPI3RXIP = SPIxPRI_SW0;
-		IPC38bits.SPI3RXIS = SPIxSUBPRI_SW0;
-		IEC4SET = _IEC4_SPI3RXIE_MASK;
-	}
+	SPIxCONCLR(pic_spi[bus]) = _SPI1CON_SRXISEL_MASK & (3 << _SPI1CON_SRXISEL_POSITION); /* clear all */
+	/* interrupt when not full */
+	SPIxCONSET(pic_spi[bus]) = _SPI1CON_SRXISEL_MASK & (1 << _SPI1CON_SRXISEL_POSITION); /* set mode */
+	/*  last transfer is shifted out */
+	SPIxCONCLR(pic_spi[bus]) = _SPI1CON_STXISEL_MASK & (3 << _SPI1CON_STXISEL_POSITION); /* clear all */
+	/*
+	 * set vector priority and receiver interrupt enables for the board hardware configuration 
+	 */
+	*(spi_config[bus].ifs_regclr) = mask; /* clear SPIxRX flag */
+	*(spi_config[bus].ipc_regset) = spi_config[bus].ipc_mask_p & (SPIxPRI_SW0 << spi_config[bus].ipc_mask_pos_p);
+	*(spi_config[bus].ipc_regset) = spi_config[bus].ipc_mask_s & (SPIxSUBPRI_SW0 << spi_config[bus].ipc_mask_pos_s);
+	*(spi_config[bus].iec_regset) = mask; /* enable SPIxRX interrupt */
 }
 
 static void spi_irq_disable(spi_t bus)
 {
-	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
-	if (bus == 1) {
-		IEC3CLR = _IEC3_SPI1RXIE_MASK;
+	switch (bus) {
+	case 1:
 		Release_Dma_Chan(SPI1_DMA_RX);
 		Release_Dma_Chan(SPI1_DMA_TX);
-	}
-	if (bus == 2) {
-		IEC4CLR = _IEC4_SPI2RXIE_MASK;
+		break;
+	case 2:
 		Release_Dma_Chan(SPI2_DMA_RX);
 		Release_Dma_Chan(SPI2_DMA_TX);
+		break;
+	default:
+		break;
 	}
-	if (bus == 3) {
 
-		IEC4CLR = _IEC4_SPI3RXIE_MASK;
-	}
+	*(spi_config[bus].iec_regclr) = spi_config[bus].int_mask; /* disable SPIxRX interrupt */
 }
 
 void spi_init(spi_t bus)

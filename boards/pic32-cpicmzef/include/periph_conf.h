@@ -84,6 +84,15 @@ extern "C" {
 			.miso_pin = GPIO_PIN(PORT_D, 14),
 			.miso_reg = (volatile uint32_t*) & SDI1R,
 			.miso_af = INPUT_PIN_RPD14,
+			.int_mask = _IEC3_SPI1RXIE_MASK, /* enable & flag mask */
+			.iec_regclr = (volatile uint32_t*) & IEC3CLR,
+			.iec_regset = (volatile uint32_t*) & IEC3SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS3CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC27SET, /* IPC SFR */
+			.ipc_mask_p = _IPC27_SPI1RXIP_MASK, /* priority data mask */
+			.ipc_mask_pos_p = _IPC27_SPI1RXIP_POSITION, /* priority in SFR */
+			.ipc_mask_s = _IPC27_SPI1RXIS_MASK, /* sub-priority */
+			.ipc_mask_pos_s = _IPC27_SPI1RXIS_POSITION, /* sub-priority */
 		},
 
 		{ /*
@@ -98,6 +107,15 @@ extern "C" {
 			.miso_pin = GPIO_PIN(PORT_G, 0),
 			.miso_reg = (volatile uint32_t*) & SDI2R,
 			.miso_af = INPUT_PIN_RPG0,
+			.int_mask = _IEC4_SPI2RXIE_MASK, /* enable & flag mask */
+			.iec_regclr = (volatile uint32_t*) & IEC4CLR,
+			.iec_regset = (volatile uint32_t*) & IEC4SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS4CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC35SET, /* IPC SFR */
+			.ipc_mask_p = _IPC35_SPI2RXIP_MASK, /* priority data mask */
+			.ipc_mask_pos_p = _IPC35_SPI2RXIP_POSITION, /* priority in SFR */
+			.ipc_mask_s = _IPC35_SPI2RXIS_MASK, /* sub-priority */
+			.ipc_mask_pos_s = _IPC35_SPI2RXIS_POSITION, /* sub-priority */
 		},
 
 		{ /*
@@ -112,6 +130,15 @@ extern "C" {
 			.miso_pin = GPIO_PIN(PORT_B, 10),
 			.miso_reg = (volatile uint32_t*) & SDI3R,
 			.miso_af = INPUT_PIN_RPB10,
+			.int_mask = _IEC4_SPI3RXIE_MASK, /* enable & flag mask */
+			.iec_regclr = (volatile uint32_t*) & IEC4CLR,
+			.iec_regset = (volatile uint32_t*) & IEC4SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS4CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC38SET, /* IPC SFR */
+			.ipc_mask_p = _IPC38_SPI3RXIP_MASK, /* priority data mask */
+			.ipc_mask_pos_p = _IPC38_SPI3RXIP_POSITION, /* priority in SFR */
+			.ipc_mask_s = _IPC38_SPI3RXIS_MASK, /* sub-priority */
+			.ipc_mask_pos_s = _IPC38_SPI3RXIS_POSITION, /* sub-priority */
 		},
 		{
 			.mosi_pin = 0,

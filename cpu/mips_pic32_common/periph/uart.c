@@ -64,9 +64,9 @@ static void uart_irq_enable(uart_t uart)
 	 */
 	*(uart_config[uart].iec_regclr) = mask; /* disable UxRX interrupt */
 	*(uart_config[uart].ifs_regclr) = mask; /* clear UxRX flag */
-	*(uart_config[uart].iec_regset) = mask; /* enable UxRX interrupt */
 	*(uart_config[uart].ipc_regset) = uart_config[uart].ipc_mask_p & (UxPRI_SW0 << uart_config[uart].ipc_mask_pos_p);
 	*(uart_config[uart].ipc_regset) = uart_config[uart].ipc_mask_s & (UxSUBPRI_SW0 << uart_config[uart].ipc_mask_pos_s);
+	*(uart_config[uart].iec_regset) = mask; /* enable UxRX interrupt */
 }
 
 void uart_irq_disable(uart_t uart)
