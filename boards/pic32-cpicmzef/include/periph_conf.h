@@ -9,13 +9,13 @@
  */
 
 /**
- * @defgroup    boards_pic32-wifire Digilent PIC32 WiFire
+ * @defgroup    boards_pic32-cpicmzef PIC32MZ EF Curiosity Development Board
  * @ingroup     boards
- * @brief       peripheral configuration for the Digilent PIC32 WiFire
+ * @brief       Support for the PIC32MZ EF Curiosity Development Board
  * @{
  *
  * @file
- * @brief       peripheral configuration for the Digilent PIC32 WiFire
+ * @brief       Support for the PIC32MZ EF Curiosity Development Board
  *
  * @author       Neil Jones <Neil.Jones@imgtec.com>
  */
@@ -50,10 +50,11 @@ extern "C" {
 	 *          We route debug via UART4 on this board,
 	 *          this is the UART connected to the pic32 I/O header.
 	 *
-	 *          Note Microchip number the UARTS 1->4.
+	 *          Note Microchip number the UARTS 1->6.
 	 * @{
 	 */
 #define UART_NUMOF          (6)
+#define UART_NUMOF_USED     (4)	
 #define DEBUG_VIA_UART      (4)
 #define DEBUG_UART_BAUD     (115200)
 	/** @} */
@@ -176,6 +177,69 @@ extern "C" {
 		},
 		{
 			.iec_mask = 0,
+		},
+	};
+	/** @} */
+
+	/**
+	 * @name    UART device configuration
+	 *
+	 * @{
+	 */
+
+	static const uart_conf_t uart_config[] = {
+		{
+			.int_mask = 0,
+		},
+		{
+			.int_mask = _IEC3_U1RXIE_MASK, /* enable & flag mask */
+			.iec_regclr = (volatile uint32_t*) & IEC3CLR,
+			.iec_regset = (volatile uint32_t*) & IEC3SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS3CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC28SET, /* IPC SFR */
+			.ipc_mask_p = _IPC28_U1RXIP_MASK, /* priority data mask */
+			.ipc_mask_pos_p = _IPC28_U1RXIP_POSITION, /* priority in SFR */
+			.ipc_mask_s = _IPC28_U1RXIS_MASK, /* sub-priority */
+			.ipc_mask_pos_s = _IPC28_U1RXIS_POSITION, /* sub-priority */
+		},
+		{
+			.int_mask = _IEC4_U2RXIE_MASK,
+			.iec_regclr = (volatile uint32_t*) & IEC4CLR,
+			.iec_regset = (volatile uint32_t*) & IEC4SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS4CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC36SET,
+			.ipc_mask_p = _IPC36_U2RXIP_MASK,
+			.ipc_mask_pos_p = _IPC36_U2RXIP_POSITION,
+			.ipc_mask_s = _IPC36_U2RXIS_MASK,
+			.ipc_mask_pos_s = _IPC36_U2RXIS_POSITION,
+		},
+		{
+			.int_mask = _IEC4_U3RXIE_MASK,
+			.iec_regclr = (volatile uint32_t*) & IEC4CLR,
+			.iec_regset = (volatile uint32_t*) & IEC4SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS4CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC39SET,
+			.ipc_mask_p = _IPC39_U3RXIP_MASK,
+			.ipc_mask_pos_p = _IPC39_U3RXIP_POSITION,
+			.ipc_mask_s = _IPC39_U3RXIS_MASK,
+			.ipc_mask_pos_s = _IPC39_U3RXIS_POSITION,
+		},
+		{
+			.int_mask = _IEC5_U4RXIE_MASK,
+			.iec_regclr = (volatile uint32_t*) & IEC5CLR,
+			.iec_regset = (volatile uint32_t*) & IEC5SET,
+			.ifs_regclr = (volatile uint32_t*) & IFS5CLR,
+			.ipc_regset = (volatile uint32_t*) & IPC42SET,
+			.ipc_mask_p = _IPC42_U4RXIP_MASK,
+			.ipc_mask_pos_p = _IPC42_U4RXIP_POSITION,
+			.ipc_mask_s = _IPC42_U4RXIS_MASK,
+			.ipc_mask_pos_s = _IPC42_U4RXIS_POSITION,
+		},
+		{
+			.int_mask = 0,
+		},
+		{
+			.int_mask = 0,
 		},
 	};
 	/** @} */

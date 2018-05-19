@@ -52,8 +52,8 @@ void Timers_Init(void)
 	PR1 = TIMER_500US_PERIOD; //Set the period value for 500us
 	T1CON |= TIMER_ON_PRESCALE1; //using 1:1 prescaler and turn on timer 1
 	IFS0bits.T1IF = 0; //Clear the interrupt flag
-	IPC1bits.T1IP = 1; /* DMA interrupt priority. */
-	IPC1bits.T1IS = 0; /* DMA sub-priority. */
+	IPC1bits.T1IP = 3; /* DMA interrupt priority. */
+	IPC1bits.T1IS = 1; /* DMA sub-priority. */
 	IEC0bits.T1IE = 1; //Enable the timer 1 interrupt
 }
 

@@ -104,7 +104,7 @@
 #define BAT_CHK_WAIT_MS     10          //CVref & CMP stabilization time
 
 /* Buffer sizes */
-#define SIZE_RxBuffer   256               //UART RX software buffer size in bytes
+#define SIZE_RxBuffer   1024              //UART RX software buffer size in bytes
 #define SIZE_TxBuffer   256               //UART TX software buffer size in bytes
 #define SIZE_SPI_Buffer 64
 

@@ -98,7 +98,7 @@ typedef enum {
 	/** @} */
 
 	/**
-	 * @brief   SPI device configuration
+	 * @brief   device configuration structures
 	 */
 	typedef struct {
 		volatile uint32_t *mosi_reg; /**< Output pin mux register address */
@@ -110,14 +110,26 @@ typedef enum {
 	} spi_conf_t;
 
 	typedef struct {
-		volatile uint32_t *ipc_regset;
-		uint32_t iec_mask;
-		uint32_t ifs_mask;
-		uint32_t ipc_mask_p;
+		volatile uint32_t *ipc_regset; /* interrupt controller register */
+		uint32_t iec_mask; /* enables, needed to disable if set to zero */
+		uint32_t ipc_mask_p; /* vector pri/sub-pri SFR masks and offsets */
 		uint32_t ipc_mask_s;
 		uint32_t ipc_mask_pos_p;
 		uint32_t ipc_mask_pos_s;
 	} dma_conf_t;
+	
+	typedef struct {
+		volatile uint32_t *ipc_regset; /* interrupt controller register */
+		volatile uint32_t *iec_regset;
+		volatile uint32_t *iec_regclr;
+		volatile uint32_t *ifs_regset;
+		volatile uint32_t *ifs_regclr;
+		uint32_t int_mask; /* enables and flags */
+		uint32_t ipc_mask_p; /* vector pri/sub-pri SFR masks and offsets */
+		uint32_t ipc_mask_s;
+		uint32_t ipc_mask_pos_p;
+		uint32_t ipc_mask_pos_s;
+	} uart_conf_t;
 
 #ifdef __cplusplus
 }

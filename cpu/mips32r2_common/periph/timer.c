@@ -54,6 +54,7 @@
 
 extern void UART_1_ISR_RX(void);
 extern void UART_2_ISR_RX(void);
+extern void UART_3_ISR_RX(void);
 extern void UART_4_ISR_RX(void);
 
 extern void SPI_1_ISR_RX(void);
@@ -345,6 +346,11 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
 		IFS4CLR = _IFS4_U2RXIF_MASK;
 		UART_2_ISR_RX();
+	}
+
+	if (IEC4bits.U3RXIE && IFS4bits.U3RXIF) {
+		IFS4CLR = _IFS4_U3RXIF_MASK;
+		UART_3_ISR_RX();
 	}
 
 	if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {

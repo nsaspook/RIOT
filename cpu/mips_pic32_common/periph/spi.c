@@ -59,7 +59,7 @@
 #define DCHxDAT(U)          ((U).regs[0xB0 / 4])
 #define DMA_REGS_SPACING    (&DCH1CON - &DCH0CON)
 
-#define SPIxPRI_SW0 1
+#define SPIxPRI_SW0 2
 #define SPIxSUBPRI_SW0  1
 
 /* PERIPHERAL_CLOCK must be defined in board file */
@@ -147,7 +147,6 @@ static void spi_reset_dma_irq(spi_t bus)
 
 static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 {
-
 	assert(chan < DMA_NUMOF);
 
 	DCHxSSA(pic_dma[chan]) = physSourceDma;
@@ -157,7 +156,6 @@ static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 
 static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 {
-
 	assert(chan < DMA_NUMOF);
 
 	spi_reset_dma_irq(pic_dma[chan].bus);
@@ -169,7 +167,6 @@ static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 /* adjust speed on the fly, these extra functions are prototyped in board.h */
 void spi_speed_config(spi_t bus, spi_clk_t clk)
 {
-
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
@@ -238,7 +235,6 @@ static void spi_irq_disable(spi_t bus)
 
 void spi_init(spi_t bus)
 {
-
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	mutex_init(&locks[bus]);
@@ -249,7 +245,6 @@ void spi_init(spi_t bus)
 
 void spi_init_pins(spi_t bus)
 {
-
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	gpio_init(spi_config[bus].mosi_pin, GPIO_OUT);
@@ -308,7 +303,6 @@ int spi_acquire(spi_t bus, spi_cs_t cs, spi_mode_t mode, spi_clk_t clk)
 
 void spi_release(spi_t bus)
 {
-
 	assert(bus != 0 && bus <= SPI_NUMOF);
 
 	spi_irq_disable(bus);
@@ -422,38 +416,32 @@ static void spi_rx_irq(spi_t bus)
 
 void SPI_1_ISR_RX(void)
 {
-
 	spi_rx_irq(1);
 }
 
 void SPI_2_ISR_RX(void)
 {
-
 	spi_rx_irq(2);
 }
 
 void SPI_3_ISR_RX(void)
 {
-
 	spi_rx_irq(3);
 }
 
 /* set transfer complete flag */
 void DMA_SPI_1_ISR_RX(void)
 {
-
 	pic_spi[1].complete = true;
 }
 
 void DMA_SPI_2_ISR_RX(void)
 {
-
 	pic_spi[2].complete = true;
 }
 
 void DMA_SPI_3_ISR_RX(void)
 {
-
 	pic_spi[3].complete = true;
 }
 

@@ -47,13 +47,15 @@ void set_cache_policy(uint32_t cc)
 void board_init(void)
 {
 	/*
-	 * Setup pin mux for UARTS 
+	 * Setup default pin mux for UARTS 
 	 */
 	U4RXR = INPUT_PIN_RPB2; /* connect pin RPB2 to UART 4 RX */
 	RPF8R = OUTPUT_FUNC_U4TX; /* connect pin RPF8 to UART 4 TX */
-	U2RXR = INPUT_PIN_RPC3; /* RPC3 */
+	U3RXR = INPUT_PIN_RPF5; /* RPF5 RX */
+	RPG1R = OUTPUT_FUNC_U3TX; /* UART 3 TX */
+	U2RXR = INPUT_PIN_RPC3; /* RPC3 RX */
 	RPC2R = OUTPUT_FUNC_U2TX; /* UART 2 TX */
-	U1RXR = INPUT_PIN_RPD10; /* RPD10 */
+	U1RXR = INPUT_PIN_RPD10; /* RPD10 RX */
 	RPD15R = OUTPUT_FUNC_U1TX; /* UART 1 TX */
 
 	/* init UART used for debug (printf) */
@@ -78,16 +80,18 @@ void board_init(void)
 	gpio_init(Ja5_11, GPIO_OUT); // RTS to RN4020
 	gpio_init(Ja5_12, GPIO_IN); // CTS from RN4020
 	gpio_init(Ja5_16, GPIO_OUT); // CMD to rn4020
-	
+
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_C, 2), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_D, 15), GPIO_OUT);
+	gpio_init(GPIO_PIN(PORT_G, 1), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_B, 2), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_C, 3), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_D, 10), GPIO_IN);
+	gpio_init(GPIO_PIN(PORT_F, 5), GPIO_IN);
 	/* Turn off all LED's */
 	gpio_init(LED1_PIN, GPIO_OUT);
 	gpio_init(LED2_PIN, GPIO_OUT);

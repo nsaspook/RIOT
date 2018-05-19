@@ -502,7 +502,7 @@ bool BT_SetupModule(void)
 
 bool BT_RebootEnFlow(void)
 {
-	bool do_ls = false, good_boot; // causes a control lockup if enabled
+	bool do_ls = true, good_boot; // causes a control lockup if enabled
 	//Send "R,1" to save changes and reboot
 	BT_SendCommand("r,1\r\n", false); //Force reboot
 	if (!BT_CheckResponse("Reboot\r\n")) {

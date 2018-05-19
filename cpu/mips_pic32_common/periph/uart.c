@@ -35,7 +35,7 @@
 #define REGS_SPACING (_UART2_BASE_ADDRESS - _UART1_BASE_ADDRESS)
 
 #define UxPRI_SW0   1
-#define UXSUBPRI_SW0    0
+#define UxSUBPRI_SW0    1
 
 /* PERIPHERAL_CLOCK must be defined in board file */
 
@@ -52,49 +52,33 @@ static PIC32_UART_T pic_uart[UART_NUMOF + 1];
  */
 static uart_isr_ctx_t isr_ctx[UART_NUMOF + 1];
 
-/* 1,2,4 are the active uarts on the cpicmzef board configuration */
-void uart_irq_enable(uart_t uart)
+/* 1,2,3,4 are the active uarts on the cpicmzef board configuration */
+static void uart_irq_enable(uart_t uart)
 {
-	if (uart == 1) {
-		IEC3CLR = _IEC3_U1RXIE_MASK; /* disable U1RX interrupt */
-		IFS3CLR = _IFS3_U1RXIF_MASK; /* clear U1RX flag */
-		IEC3SET = _IEC3_U1RXIE_MASK;
-		IPC28bits.U1RXIP = UxPRI_SW0; /* Set IRQ 0 to priority 1.x */
-		IPC28bits.U1RXIS = UXSUBPRI_SW0;
-	}
-	if (uart == 2) {
-		IEC4CLR = _IEC4_U2RXIE_MASK;
-		IFS4CLR = _IFS4_U2RXIF_MASK;
-		IEC4SET = _IEC4_U2RXIE_MASK;
-		IPC36bits.U2RXIP = UxPRI_SW0;
-		IPC36bits.U2RXIS = UXSUBPRI_SW0;
-	}
-	if (uart == 4) {
-		IEC5CLR = _IEC5_U4RXIE_MASK;
-		IFS5CLR = _IFS5_U4RXIF_MASK;
-		IEC5SET = _IEC5_U4RXIE_MASK;
-		IPC42bits.U4RXIP = UxPRI_SW0;
-		IPC42bits.U4RXIS = UXSUBPRI_SW0;
-	}
+	uint32_t mask;
+
+	/* set enable and flag mask */
+	mask = uart_config[uart].int_mask;
+	/*
+	 * set vector priority and receiver interrupt enables for the board hardware configuration 
+	 */
+	*(uart_config[uart].iec_regclr) = mask; /* disable UxRX interrupt */
+	*(uart_config[uart].ifs_regclr) = mask; /* clear UxRX flag */
+	*(uart_config[uart].iec_regset) = mask; /* enable UxRX interrupt */
+	*(uart_config[uart].ipc_regset) = uart_config[uart].ipc_mask_p & (UxPRI_SW0 << uart_config[uart].ipc_mask_pos_p);
+	*(uart_config[uart].ipc_regset) = uart_config[uart].ipc_mask_s & (UxSUBPRI_SW0 << uart_config[uart].ipc_mask_pos_s);
 }
 
 void uart_irq_disable(uart_t uart)
 {
-	if (uart == 1) {
-		IEC3CLR = _IEC3_U1RXIE_MASK;
-	}
-	if (uart == 2) {
-		IEC4CLR = _IEC4_U2RXIE_MASK;
-	}
-	if (uart == 4) {
-		IEC5CLR = _IEC5_U4RXIE_MASK;
-	}
+	assert(uart <= UART_NUMOF_USED && uart != 0); /*No uart 0 on pic32*/
+	
+	*(uart_config[uart].iec_regclr) = uart_config[uart].int_mask; /* disable UxRX interrupt */
 }
 
 int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 {
-
-	assert(uart <= UART_NUMOF && uart != 0); /*No uart 0 on pic32*/
+	assert(uart <= UART_NUMOF_USED && uart != 0); /*No uart 0 on pic32*/
 
 	/* save interrupt callback context */
 	isr_ctx[uart].rx_cb = rx_cb;
@@ -120,7 +104,7 @@ int uart_init(uart_t uart, uint32_t baudrate, uart_rx_cb_t rx_cb, void *arg)
 
 void uart_write(uart_t uart, const uint8_t *data, size_t len)
 {
-	assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF_USED && uart != 0);
 
 	while (len--) {
 		while (UxSTA(pic_uart[uart]) & _U1STA_UTXBF_MASK) {
@@ -131,7 +115,7 @@ void uart_write(uart_t uart, const uint8_t *data, size_t len)
 
 void uart_poweron(uart_t uart)
 {
-	assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF_USED && uart != 0);
 
 	UxMODESET(pic_uart[uart]) = _U1MODE_ON_MASK;
 
@@ -139,7 +123,7 @@ void uart_poweron(uart_t uart)
 
 void uart_poweroff(uart_t uart)
 {
-	assert(uart <= UART_NUMOF && uart != 0);
+	assert(uart <= UART_NUMOF_USED && uart != 0);
 
 	UxMODECLR(pic_uart[uart]) = _U1MODE_ON_MASK;
 }
@@ -173,6 +157,11 @@ void UART_1_ISR_RX(void)
 void UART_2_ISR_RX(void)
 {
 	rx_irq(2);
+}
+
+void UART_3_ISR_RX(void)
+{
+	rx_irq(3);
 }
 
 void UART_4_ISR_RX(void)
