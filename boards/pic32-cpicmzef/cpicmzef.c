@@ -92,7 +92,13 @@ void board_init(void)
 	gpio_init(GPIO_PIN(PORT_B, 2), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_C, 3), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_D, 10), GPIO_IN);
+	gpio_init(GPIO_PIN(PORT_F, 4), GPIO_IN);
+	
+	/* init mf24f pins */
 	gpio_init(GPIO_PIN(PORT_F, 5), GPIO_IN);
+	gpio_init(GPIO_PIN(PORT_B, 8), GPIO_OUT);
+	gpio_init(GPIO_PIN(PORT_A, 0), GPIO_OUT);
+	
 	/* Turn off all LED's */
 	gpio_init(LED1_PIN, GPIO_OUT);
 	gpio_init(LED2_PIN, GPIO_OUT);

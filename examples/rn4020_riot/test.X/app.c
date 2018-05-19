@@ -53,6 +53,7 @@
 #include "sleep.h"
 #include "spi.h"
 #include "automio.h"
+#include "mrf24.h"
 
 APP_DATA appData;
 ADC_DATA adcData;
@@ -246,6 +247,7 @@ bool APP_Initialize(void)
 	UART_Init();
 	Timers_Init();
 	SPI_Init();
+	Mrf24_Init();
 
 	B_LED_ON;
 	BT_WAKE_SW = 1; //wake module

@@ -276,6 +276,16 @@ struct gatts_char_inst {
 #define U1TX_TRIS   TRISDbits.TRISD15  /* BT_TX */
 #define U1TX_LAT    LATDbits.LATD15
 
+/* RF24F */
+#define RF24F_INT	PORTFbits.RF4
+#define RF24F_INT_TRIS	TRISFbits.TRISF4
+
+#define RF24F_CS	LATBbits.LATB8
+#define RF24F_CS_TRIS	TRISBbits.TRISB8
+
+#define RF24F_SLEEP		LATAbits.LATA0
+#define RF24F_SLEEP_TRIS	TRISAbits.TRISA0
+
 /* RELAY outputs */
 #define RELAY1	LATBbits.LATB3 /* output 0 (low) turns on relay */
 #define RELAY2	LATBbits.LATB3

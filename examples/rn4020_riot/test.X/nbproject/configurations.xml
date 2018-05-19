@@ -16,6 +16,7 @@
       <itemPath>switches.h</itemPath>
       <itemPath>rtcc.h</itemPath>
       <itemPath>spi.h</itemPath>
+      <itemPath>mrf24.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -34,6 +35,7 @@
       <itemPath>spi.c</itemPath>
       <itemPath>adc.c</itemPath>
       <itemPath>switches.c</itemPath>
+      <itemPath>mrf24.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

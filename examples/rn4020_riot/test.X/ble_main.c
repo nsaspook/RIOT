@@ -8,6 +8,7 @@
 #include "periph/gpio.h"
 #include "config.h"
 #include "app.h"
+#include "mrf24.h"
 
 extern void set_cache_policy(uint32_t);
 
@@ -27,6 +28,7 @@ int main(void)
 		APP_Tasks();
 		LED3_OFF;
 		LED2_ON;
+		mrf24f_testing();
 	}
 
 	return 0;
@@ -65,4 +67,11 @@ void initBoard(void)
 	// SPI Master Devices
 	SPI_CS0_TRIS = 0;
 	SPI_CS1_TRIS = 0;
+
+	RF24F_INT_TRIS = 1; /* slave interrupt request */
+	RF24F_CS = 1; /* device select */
+	RF24F_CS_TRIS = 0;
+
+	RF24F_SLEEP = 1; /* doze off */
+	RF24F_SLEEP_TRIS = 0;
 }
