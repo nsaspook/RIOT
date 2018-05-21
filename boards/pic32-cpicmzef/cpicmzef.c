@@ -82,6 +82,8 @@ void board_init(void)
 	gpio_init(Ja5_12, GPIO_IN); // CTS from RN4020
 	gpio_init(Ja5_16, GPIO_OUT); // CMD to rn4020
 
+	gpio_init(Ja10_1, GPIO_OUT); // CS2
+	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
 
 	/* init uart ports */

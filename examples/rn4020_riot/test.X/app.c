@@ -54,6 +54,7 @@
 #include "spi.h"
 #include "automio.h"
 #include "mrf24.h"
+#include "ads1220.h"
 
 APP_DATA appData;
 ADC_DATA adcData;
@@ -243,11 +244,12 @@ bool APP_Initialize(void)
 	/****************************************************************************
 	 * Peripherals Init
 	 ***************************************************************************/
+	SPI_Init();
 	ADC_Init();
 	UART_Init();
 	Timers_Init();
-	SPI_Init();
 	Mrf24_Init();
+	ads1220_init();
 
 	B_LED_ON;
 	BT_WAKE_SW = 1; //wake module

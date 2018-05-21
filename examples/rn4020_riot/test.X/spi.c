@@ -7,6 +7,7 @@ void SPI_Init(void)
 {
 	SPI_CS0 = 1;
 	SPI_CS1 = 1;
+	SPI_CS2 = 1;
 	spi_init(SPI_DEV(2));
 	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 }

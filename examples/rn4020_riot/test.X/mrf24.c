@@ -5,6 +5,7 @@
 #include "app.h"
 #include "config.h"
 #include "timers.h"
+#include "ads1220.h"
 
 extern APP_DATA appData;
 extern ADC_DATA adcData;
@@ -14,8 +15,8 @@ uint8_t *mr24f_txb;
 
 void Mrf24_Init(void)
 {
-	mr24f_rxb = __pic32_alloc_coherent(256); /* uncached memory for spi transfers */
-	mr24f_txb = __pic32_alloc_coherent(256);
+	mr24f_rxb = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
+	mr24f_txb = __pic32_alloc_coherent(32);
 
 	spi_init(SPI_DEV(3));
 	spi_acquire(SPI_DEV(3), 0, SPI_MODE_0, SPI_CLK_1MHZ);
@@ -34,4 +35,5 @@ void mrf24f_testing(void)
 		spi_transfer_bytes(SPI_DEV(3), 0, true, mr24f_txb, mr24f_rxb, 3);
 		RF24F_CS = 1;
 	}
+	ads1220_testing();
 }

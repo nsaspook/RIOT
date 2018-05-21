@@ -40,6 +40,7 @@
 #include "app.h"
 #include "config.h"
 #include "timers.h"
+#include "ads1220.h"
 
 extern APP_DATA appData;
 extern ADC_DATA adcData;

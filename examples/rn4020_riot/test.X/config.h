@@ -309,10 +309,12 @@ struct gatts_char_inst {
 #define B_LED_TOGGLE	LED4B_TOGGLE 
 
 #define SPI_CS0 LATDbits.LATD5
-#define SPI_CS1 LATAbits.LATA1
+#define SPI_CS1 LATAbits.LATA5
+#define SPI_CS2 LATAbits.LATA1
 
 #define SPI_CS0_TRIS	TRISDbits.TRISD5
-#define SPI_CS1_TRIS	TRISAbits.TRISA1
+#define SPI_CS1_TRIS	TRISAbits.TRISA5
+#define SPI_CS2_TRIS	TRISAbits.TRISA1
 
 /* Timer initialization */
 #define TIMER_OFF 0

@@ -57,17 +57,17 @@ OBJECTDIR=build/${CND_CONF}/${IMAGE_TYPE}
 DISTDIR=dist/${CND_CONF}/${IMAGE_TYPE}
 
 # Source Files Quoted if spaced
-SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c switches.c mrf24.c
+SOURCEFILES_QUOTED_IF_SPACED=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c switches.c mrf24.c ads1220.c
 
 # Object Files Quoted if spaced
-OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/switches.o ${OBJECTDIR}/mrf24.o
-POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/app.o.d ${OBJECTDIR}/automio.o.d ${OBJECTDIR}/bluetooth.o.d ${OBJECTDIR}/leds.o.d ${OBJECTDIR}/timers.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/adc.o.d ${OBJECTDIR}/switches.o.d ${OBJECTDIR}/mrf24.o.d
+OBJECTFILES_QUOTED_IF_SPACED=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/switches.o ${OBJECTDIR}/mrf24.o ${OBJECTDIR}/ads1220.o
+POSSIBLE_DEPFILES=${OBJECTDIR}/ble_main.o.d ${OBJECTDIR}/uart.o.d ${OBJECTDIR}/app.o.d ${OBJECTDIR}/automio.o.d ${OBJECTDIR}/bluetooth.o.d ${OBJECTDIR}/leds.o.d ${OBJECTDIR}/timers.o.d ${OBJECTDIR}/spi.o.d ${OBJECTDIR}/adc.o.d ${OBJECTDIR}/switches.o.d ${OBJECTDIR}/mrf24.o.d ${OBJECTDIR}/ads1220.o.d
 
 # Object Files
-OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/switches.o ${OBJECTDIR}/mrf24.o
+OBJECTFILES=${OBJECTDIR}/ble_main.o ${OBJECTDIR}/uart.o ${OBJECTDIR}/app.o ${OBJECTDIR}/automio.o ${OBJECTDIR}/bluetooth.o ${OBJECTDIR}/leds.o ${OBJECTDIR}/timers.o ${OBJECTDIR}/spi.o ${OBJECTDIR}/adc.o ${OBJECTDIR}/switches.o ${OBJECTDIR}/mrf24.o ${OBJECTDIR}/ads1220.o
 
 # Source Files
-SOURCEFILES=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c switches.c mrf24.c
+SOURCEFILES=ble_main.c uart.c app.c automio.c bluetooth.c leds.c timers.c spi.c adc.c switches.c mrf24.c ads1220.c
 
 
 CFLAGS=
@@ -164,6 +164,12 @@ ${OBJECTDIR}/mrf24.o: mrf24.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/mrf24.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  mrf24.c 
 	
+${OBJECTDIR}/ads1220.o: ads1220.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ads1220.o.d 
+	@${RM} ${OBJECTDIR}/ads1220.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ads1220.c 
+	
 else
 ${OBJECTDIR}/ble_main.o: ble_main.c  nbproject/Makefile-${CND_CONF}.mk
 	@${MKDIR} "${OBJECTDIR}" 
@@ -230,6 +236,12 @@ ${OBJECTDIR}/mrf24.o: mrf24.c  nbproject/Makefile-${CND_CONF}.mk
 	@${RM} ${OBJECTDIR}/mrf24.o.d 
 	@${RM} ${OBJECTDIR}/mrf24.o 
 	 ${MP_CC} $(MP_EXTRA_CC_PRE)  mrf24.c 
+	
+${OBJECTDIR}/ads1220.o: ads1220.c  nbproject/Makefile-${CND_CONF}.mk
+	@${MKDIR} "${OBJECTDIR}" 
+	@${RM} ${OBJECTDIR}/ads1220.o.d 
+	@${RM} ${OBJECTDIR}/ads1220.o 
+	 ${MP_CC} $(MP_EXTRA_CC_PRE)  ads1220.c 
 	
 endif
 

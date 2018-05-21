@@ -67,6 +67,7 @@ void initBoard(void)
 	// SPI Master Devices
 	SPI_CS0_TRIS = 0;
 	SPI_CS1_TRIS = 0;
+	SPI_CS2_TRIS = 0;
 
 	RF24F_INT_TRIS = 1; /* slave interrupt request */
 	RF24F_CS = 1; /* device select */
