@@ -23,8 +23,8 @@ OS_CURRENT="$(shell uname -s)"
 MP_CC="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin/mips-mti-elf-gcc"
 # MP_CPPC is not defined
 # MP_BC is not defined
-MP_AS="/usr/local/bin/riot_as"
-MP_LD="/usr/local/bin/riot_ld"
+MP_AS="/usr/local/bin/riot-os"
+MP_LD="/usr/local/bin/riot-os"
 # MP_AR is not defined
 DEP_GEN=${MP_JAVA_PATH}java -jar "/opt/microchip/mplabx/v4.15/mplab_ide/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
 MP_CC_DIR="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin"
