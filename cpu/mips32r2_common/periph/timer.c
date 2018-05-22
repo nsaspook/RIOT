@@ -39,6 +39,19 @@
 #include "eic_irq.h"
 #endif
 
+/* core timer blocking delay
+ * example: 	ShortDelay(50 * US_TO_CT_TICKS);
+ * 50us delay time
+ */
+void ShortDelay(uint32_t DelayCount)
+{
+	uint32_t StartTime;
+
+	StartTime = _mips_mfc0(9); // Get CoreTimer value for StartTime 
+	while ((uint32_t) (_mips_mfc0(9) - StartTime) < DelayCount) {
+	}
+}
+
 /*
  * setting TIMER_ACCURACY_SHIFT lower will improve accuracy
  * at the cost of more regular interrupts (hence less power efficient).

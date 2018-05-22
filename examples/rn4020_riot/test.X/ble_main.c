@@ -23,6 +23,7 @@ int main(void)
 	 * setup debug serial ports #4 @115200 bps
 	 */
 	uart_init(4, DEBUG_UART_BAUD, NULL, 0);
+	printf("\r\n rn4020 app\r\n");
 
 	while (1) {
 		APP_Tasks();

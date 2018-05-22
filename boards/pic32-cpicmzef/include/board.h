@@ -264,6 +264,9 @@ extern "C" {
 		const void *out, void *in, size_t len);
 	int32_t spi_complete(spi_t bus);
 	void spi_speed_config(spi_t, spi_mode_t, spi_clk_t);
+	
+	/* timer extras */
+	void ShortDelay(uint32_t);
 	/**
 	 * @brief   Board level initialization
 	 */
