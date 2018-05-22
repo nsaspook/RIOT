@@ -16,7 +16,7 @@ extern "C" {
 #include "config.h"
 
 	void SPI_Init(void);
-	void SPI_Speed(spi_t, spi_clk_t);
+	void SPI_Speed(spi_t, spi_mode_t, spi_clk_t);
 
 #ifdef	__cplusplus
 }

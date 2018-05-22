@@ -166,12 +166,33 @@ static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
 }
 
 /* adjust speed on the fly, these extra functions are prototyped in board.h */
-void spi_speed_config(spi_t bus, spi_clk_t clk)
+void spi_speed_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 {
 	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
-	SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
+	
+	if (clk)
+		SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
+
+	switch (mode) {
+	case SPI_MODE_0:
+		SPIxCONCLR(pic_spi[bus]) = (_SPI1CON_CKP_MASK | _SPI1CON_CKE_MASK);
+		break;
+	case SPI_MODE_1:
+		SPIxCONCLR(pic_spi[bus]) = _SPI1CON_CKP_MASK;
+		SPIxCONSET(pic_spi[bus]) = _SPI1CON_CKE_MASK;
+		break;
+	case SPI_MODE_2:
+		SPIxCONCLR(pic_spi[bus]) = _SPI1CON_CKE_MASK;
+		SPIxCONSET(pic_spi[bus]) = _SPI1CON_CKP_MASK;
+		break;
+	case SPI_MODE_3:
+		SPIxCONSET(pic_spi[bus]) = (_SPI1CON_CKP_MASK | _SPI1CON_CKE_MASK);
+		break;
+	default:
+		break;
+	}
 }
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration 

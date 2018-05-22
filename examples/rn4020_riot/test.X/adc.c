@@ -78,6 +78,13 @@ void ADC_Init(void)
 	rd = __pic32_alloc_coherent(32);
 }
 
+static void mcp_spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
+	const void *out, void *in, size_t len)
+{
+	spi_speed_config(bus, 0, 0); /* mode 0, no speed change */
+	spi_transfer_bytes_async(bus, cs, cont, out, in, len);
+}
+
 //State machine for restarting ADC and taking new readings from pot
 //Returns true when SPI data has been returned from the mpc3208; false otherwise
 
@@ -94,7 +101,7 @@ bool ADC_Tasks(void)
 		td[1] = adcData.mcp3208_cmd.bd[1];
 		td[2] = adcData.mcp3208_cmd.bd[0];
 		SPI_CS0 = 0; // select the ADC
-		spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
+		mcp_spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
 	}
 
 	/* read the returned spi data from the buffer and format it */

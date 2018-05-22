@@ -12,7 +12,8 @@ void SPI_Init(void)
 	spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
 }
 
-void SPI_Speed(spi_t bus, spi_clk_t clk)
+void SPI_Speed(spi_t bus, spi_mode_t mode, spi_clk_t clk)
+
 {
-	spi_speed_config(bus, clk);
+	spi_speed_config(bus, mode, clk);
 }

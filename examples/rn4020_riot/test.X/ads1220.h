@@ -26,8 +26,8 @@ extern "C" {
 
 	/* ADS1220 Register Definitions */
 #define ADS1220_0_REGISTER 0x00
-#define ADS1220_1_REGISTER      0x01
-#define ADS1220_2_REGISTER      0x02
+#define ADS1220_1_REGISTER 0x01
+#define ADS1220_2_REGISTER 0x02
 #define ADS1220_3_REGISTER 0x03
 
 	/* ADS1220 Register 0 Definition */

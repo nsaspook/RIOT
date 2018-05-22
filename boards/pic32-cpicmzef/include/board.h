@@ -145,7 +145,7 @@ extern "C" {
 #define Ja5_14           GPIO_PIN(PORT_D, 10)
 #define Ja5_15           GPIO_PIN(PORT_F, 13)
 #define Ja5_16           GPIO_PIN(PORT_E, 8)
-	
+
 #define Ja10_1            GPIO_PIN(PORT_A, 1)
 #define Ja10_2            GPIO_PIN(PORT_A, 5)
 #define Ja10_3            GPIO_PIN(PORT_D, 5)
@@ -263,7 +263,7 @@ extern "C" {
 	void spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 		const void *out, void *in, size_t len);
 	int32_t spi_complete(spi_t bus);
-	void spi_speed_config(spi_t, spi_clk_t);
+	void spi_speed_config(spi_t, spi_mode_t, spi_clk_t);
 	/**
 	 * @brief   Board level initialization
 	 */
