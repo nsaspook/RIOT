@@ -111,18 +111,30 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 
 		switch (chan) {
 		case 0:
-			cMux = ADS1220_MUX_0_G;
+			cMux = ADS1220_MUX_0_1;
 			break;
 		case 1:
-			cMux = ADS1220_MUX_1_G;
+			cMux = ADS1220_MUX_0_2;
 			break;
 		case 2:
-			cMux = ADS1220_MUX_2_G;
+			cMux = ADS1220_MUX_0_3;
 			break;
 		case 3:
+			cMux = ADS1220_MUX_1_2;
+			break;
+		case 8:
+			cMux = ADS1220_MUX_0_G;
+			break;
+		case 9:
+			cMux = ADS1220_MUX_1_G;
+			break;
+		case 10:
+			cMux = ADS1220_MUX_2_G;
+			break;
+		case 11:
 			cMux = ADS1220_MUX_3_G;
 			break;
-		case 4:
+		case 15:
 			cMux = ADS1220_MUX_DIV2;
 			break;
 		default:
