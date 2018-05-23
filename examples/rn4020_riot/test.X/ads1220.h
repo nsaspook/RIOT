@@ -154,11 +154,11 @@ extern "C" {
 	/*
 	 * ads1220 daq configuration
 	 */
-	static const uint8_t ads1220_r0 = ADS1220_MUX_0_1 | ADS1220_GAIN_1 | ADS1220_PGA_BYPASS;
+	static const uint8_t ads1220_r0 = ADS1220_MUX_0_G | ADS1220_GAIN_1 | ADS1220_PGA_BYPASS;
 	static const uint8_t ads1220_r0_for_mux_gain = ADS1220_PGA_BYPASS;
-	static const uint8_t ads1220_r1 = ADS1220_DR_20 | ADS1220_MODE_TURBO;
-	static const uint8_t ads1220_r2 = ADS1220_REJECT_OFF;
-	static const uint8_t ads1220_r3 = ADS1220_IDAC_OFF | ADS1220_DRDY_MODE;
+	static const uint8_t ads1220_r1 = ADS1220_DR_20 | ADS1220_MODE_NORMAL;
+	static const uint8_t ads1220_r2 = ADS1220_REJECT_BOTH;
+	static const uint8_t ads1220_r3 = ADS1220_IDAC_OFF;
 
 	int ads1220_init(void);
 	int ads1220_testing(void);

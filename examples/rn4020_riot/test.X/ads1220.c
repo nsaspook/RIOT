@@ -13,9 +13,13 @@ uint8_t *rx_buff;
 void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	spi_speed_config(bus, 0, 0); /* mode 0, no speed change */
+	spi_speed_config(bus, 0, 0); /* mode , no speed change */
 	SPI_CS1 = 0;
+	ShortDelay(75);
 	spi_transfer_bytes(bus, cs, cont, out, in, len);
+	tx_buff[0] = ADS1220_CMD_SYNC;
+	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
+	ShortDelay(25);
 	SPI_CS1 = 1;
 }
 
@@ -27,17 +31,19 @@ int ads1220_init(void)
 	/* 
 	 * setup ads1220 registers
 	 */
+	spi_speed_config(SPI_DEV(2), 1, 0); /* mode , no speed change */
+	SPI_CS1 = 0;
+	ShortDelay(50);
+	tx_buff[0] = ADS1220_CMD_RESET;
+	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
+	ShortDelay(250 * US_TO_CT_TICKS);
 	tx_buff[0] = ADS1220_CMD_WREG + 3;
 	tx_buff[1] = ads1220_r0;
-	tx_buff[2] = ads1220_r1;
+	tx_buff[2] = ads1220_r1 | ADS1220_TEMP_SENSOR;
 	tx_buff[3] = ads1220_r2;
 	tx_buff[4] = ads1220_r3;
-	spi_speed_config(SPI_DEV(2), 0, 0); /* mode 0, no speed change */
-	ShortDelay(50 * US_TO_CT_TICKS);
-	SPI_CS1 = 0;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 5);
 	ShortDelay(50 * US_TO_CT_TICKS);
-	//	usleep_range(40, 50);
 	tx_buff[0] = ADS1220_CMD_RREG + 3;
 	tx_buff[1] = 0;
 	tx_buff[2] = 0;
@@ -45,7 +51,6 @@ int ads1220_init(void)
 	tx_buff[4] = 0;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 5);
 	ShortDelay(50 * US_TO_CT_TICKS);
-	//	usleep_range(40, 50);
 	/*
 	 * Check to be sure we have a device
 	 */
@@ -78,39 +83,43 @@ static void ADS1220WriteRegister(int32_t StartAddress, int32_t NumRegs, uint32_t
 	return;
 }
 
-static void ai_set_chan_range_ads1220(void)
+static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 {
-	uint32_t range = 1;
-	uint32_t chan = 0;
+	static uint32_t range_last = 99;
+	static uint32_t chan_last = 99;
 	uint32_t cMux;
 
-	/*
-	 * convert chan/range to input MUX switches/gains if needed
-	 * we could just feed the raw bits to the Mux if needed
-	 */
+	if ((chan != chan_last) || (range != range_last)) {
+		chan_last = chan;
+		range_last = range;
+		/*
+		 * convert chan/range to input MUX switches/gains if needed
+		 * we could just feed the raw bits to the Mux if needed
+		 */
 
-	switch (chan) {
-	case 0:
-		cMux = ADS1220_MUX_0_1;
-		break;
-	case 1:
-		cMux = ADS1220_MUX_2_3;
-		break;
-	case 2:
-		cMux = ADS1220_MUX_2_G;
-		break;
-	case 3:
-		cMux = ADS1220_MUX_3_G;
-		break;
-	case 4:
-		cMux = ADS1220_MUX_DIV2;
-		break;
-	default:
-		cMux = ADS1220_MUX_0_1;
+		switch (chan) {
+		case 0:
+			cMux = ADS1220_MUX_0_G;
+			break;
+		case 1:
+			cMux = ADS1220_MUX_1_G;
+			break;
+		case 2:
+			cMux = ADS1220_MUX_2_G;
+			break;
+		case 3:
+			cMux = ADS1220_MUX_3_G;
+			break;
+		case 4:
+			cMux = ADS1220_MUX_DIV2;
+			break;
+		default:
+			cMux = ADS1220_MUX_0_1;
+		}
+		cMux |= ((range & 0x03) << 1); /* setup the gain bits for range with NO pga */
+		cMux |= ads1220_r0_for_mux_gain;
+		ADS1220WriteRegister(ADS1220_0_REGISTER, 0x01, &cMux);
 	}
-	cMux |= ((range & 0x03) << 1); /* setup the gain bits for range with NO pga */
-	cMux |= ads1220_r0_for_mux_gain;
-	ADS1220WriteRegister(ADS1220_0_REGISTER, 0x01, &cMux);
 }
 
 int ads1220_testing(void)
@@ -118,9 +127,9 @@ int ads1220_testing(void)
 	static int i = 0;
 	static int32_t val = 0;
 
-	if (i++ % 320 == 0) {
+	if (i++ % 90000 == 0) {
 
-		ai_set_chan_range_ads1220();
+		ai_set_chan_range_ads1220(1, 0);
 
 		/* read the ads1220 3 byte data result */
 		tx_buff[0] = ADS1220_CMD_RDATA;
@@ -134,11 +143,12 @@ int ads1220_testing(void)
 
 		/* mangle the data as necessary */
 		/* Bipolar Offset Binary */
-		val &= 0x0ffffff;
-		val ^= 0x0800000;
+		//		val &= 0x0ffffff;
+		//		val ^= 0x0800000;
 
-		tx_buff[0] = ADS1220_CMD_SYNC;
-		ads_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
+		if (SWITCH1 == 0) {
+			printf(" ADS1220 value: %x\r\n", (int) (val >> 10));
+		}
 	}
 	return val;
 }
