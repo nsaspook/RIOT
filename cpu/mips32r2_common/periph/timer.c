@@ -79,6 +79,7 @@ extern void DMA_SPI_2_ISR_RX(void);
 extern void DMA_SPI_3_ISR_RX(void);
 
 extern void _T1Interrupt(void);
+extern void INT_2_ISR_(void);
 
 /*
  * The base MIPS count / compare timer is fixed frequency at core clock / 2
@@ -375,6 +376,12 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 	if (IEC0bits.T1IE && IFS0bits.T1IF) {
 		IFS0CLR = _IFS0_T1IF_MASK;
 		_T1Interrupt();
+	}
+
+	/* ads1220 conversion done interrupt */
+	if (IEC0bits.INT2IE && IFS0bits.INT2IF) {
+		IFS0CLR = _IFS0_INT2IF_MASK;
+		INT_2_ISR_();
 	}
 #endif
 }

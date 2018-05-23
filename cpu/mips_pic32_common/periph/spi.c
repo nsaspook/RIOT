@@ -171,7 +171,8 @@ void spi_speed_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 	assert(bus != 0 && bus <= SPI_NUMOF_USED);
 
 	pic_spi[bus].regs = (volatile uint32_t *)(_SPI1_BASE_ADDRESS + (bus - 1) * SPI_REGS_SPACING);
-	
+
+	SPIxCONCLR(pic_spi[bus]) = (_SPI1CON_ON_MASK);
 	if (clk)
 		SPIxBRG(pic_spi[bus]) = (PERIPHERAL_CLOCK / (2 * clk)) - 1;
 
@@ -193,6 +194,7 @@ void spi_speed_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 	default:
 		break;
 	}
+	SPIxCONSET(pic_spi[bus]) = (_SPI1CON_ON_MASK);
 }
 
 /* 1,2,3 are the active spi devices on the cpicmzef board configuration 

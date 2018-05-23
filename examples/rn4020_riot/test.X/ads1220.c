@@ -23,15 +23,27 @@ void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	SPI_CS1 = 1;
 }
 
+void ads_int_setup(void)
+{
+	asm volatile("di"); // This is the "KEY" to Disable "Off" All Interrupts
+	asm volatile("ehb"); // This is the "KEY" to Disable "Off" All Interrupts
+	IEC0CLR = _IEC0_INT2IE_MASK; /* disable interrupt */
+	INTCONbits.INT2EP = 0;
+	IFS0CLR = _IFS0_INT2IF_MASK; /* clear flag */
+	IPC3bits.INT2IP = 1;
+	IPC3bits.INT2IS = 1;
+	IEC0SET = _IEC0_INT2IE_MASK; /* enable interrupt */
+	asm volatile("ei");
+}
+
 int ads1220_init(void)
 {
-	xtimer_init();
 	tx_buff = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
 	rx_buff = __pic32_alloc_coherent(32);
 	/* 
 	 * setup ads1220 registers
 	 */
-	spi_speed_config(SPI_DEV(2), 1, 0); /* mode , no speed change */
+	spi_speed_config(SPI_DEV(2), 0, 0); /* mode , no speed change */
 	SPI_CS1 = 0;
 	ShortDelay(50);
 	tx_buff[0] = ADS1220_CMD_RESET;
@@ -43,17 +55,17 @@ int ads1220_init(void)
 	tx_buff[3] = ads1220_r2;
 	tx_buff[4] = ads1220_r3;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 5);
-	ShortDelay(50 * US_TO_CT_TICKS);
 	tx_buff[0] = ADS1220_CMD_RREG + 3;
 	tx_buff[1] = 0;
 	tx_buff[2] = 0;
 	tx_buff[3] = 0;
 	tx_buff[4] = 0;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 5);
-	ShortDelay(50 * US_TO_CT_TICKS);
+	ShortDelay(10 * US_TO_CT_TICKS);
 	/*
 	 * Check to be sure we have a device
 	 */
+	ads_int_setup();
 	if ((rx_buff[1] != ads1220_r0) ||
 		(rx_buff[2] != ads1220_r1)) {
 		printf(
@@ -151,4 +163,10 @@ int ads1220_testing(void)
 		}
 	}
 	return val;
+}
+
+void INT_2_ISR_(void)
+{
+	PDEBUG3_TOGGLE;
+	printf("INT2 trigger\r\n");
 }

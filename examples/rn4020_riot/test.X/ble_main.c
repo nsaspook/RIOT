@@ -58,6 +58,7 @@ void initBoard(void)
 	BT_CONNECTED_TRIS = 1;
 
 	SWITCH1_TRIS = 1;
+	ADC_INT2_TRIS = 1;
 
 	U1RX_TRIS = 1;
 	U1TX_TRIS = 0;

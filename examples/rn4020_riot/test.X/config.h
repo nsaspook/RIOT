@@ -295,6 +295,10 @@ struct gatts_char_inst {
 #define SWITCH1		PORTGbits.RG12
 #define SWITCH1_TRIS	TRISGbits.TRISG12
 
+#define ADC_INT2	PORTFbits.RF12
+#define ADC_INT2_TRIS	TRISFbits.TRISF12
+
+
 /* LED outputs */
 
 #define SLED LED4R_TOGGLE

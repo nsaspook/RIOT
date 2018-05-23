@@ -76,6 +76,8 @@ extern "C" {
 #define C_SPI1_CS	    GPIO_PIN(PORT_D, 4)
 #define C_SPI2_CS	    GPIO_PIN(PORT_D, 5)
 #define C_SPI3_CS	    GPIO_PIN(PORT_B, 8)
+	
+#define C_INT2		    GPIO_PIN(PORT_F, 12)
 
 #define LED1_MASK           (1 << 3)
 #define LED2_MASK           (1 << 4)

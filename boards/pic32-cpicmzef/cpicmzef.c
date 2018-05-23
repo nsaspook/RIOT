@@ -58,6 +58,7 @@ void board_init(void)
 	RPC2R = OUTPUT_FUNC_U2TX; /* UART 2 TX */
 	U1RXR = INPUT_PIN_RPD10; /* RPD10 RX */
 	RPD15R = OUTPUT_FUNC_U1TX; /* UART 1 TX */
+	INT2R = INPUT_PIN_RPF12; /* mikro port #2 interrupt */
 
 	/* init UART used for debug (printf) */
 #ifdef DEBUG_VIA_UART
@@ -85,6 +86,7 @@ void board_init(void)
 	gpio_init(Ja10_1, GPIO_OUT); // CS2
 	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
+	gpio_init(Ja10_15, GPIO_IN); // INT2
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
@@ -95,12 +97,12 @@ void board_init(void)
 	gpio_init(GPIO_PIN(PORT_C, 3), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_D, 10), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_F, 4), GPIO_IN);
-	
+
 	/* init mf24f pins */
 	gpio_init(GPIO_PIN(PORT_F, 5), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_B, 8), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_A, 0), GPIO_OUT);
-	
+
 	/* Turn off all LED's */
 	gpio_init(LED1_PIN, GPIO_OUT);
 	gpio_init(LED2_PIN, GPIO_OUT);
@@ -134,6 +136,7 @@ void board_init(void)
 	CNPUGSET = (1 << 12);
 	gpio_init(C_USB_VBUS_SWITCH, GPIO_OUT);
 	LATGCLR = (1 << 13);
+	CNPUFSET = (1 << 12);
 
 	hwrng_init();
 
