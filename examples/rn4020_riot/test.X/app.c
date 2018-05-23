@@ -152,7 +152,7 @@ void APP_Tasks(void)
 		}
 
 		if (TimerDone(TMR_HR)) {
-			sprintf(appData.transmit_packet, "suw,"PUBLIC_HR_CHAR_HRM",%02x%02x%02x%02x\r", 0x08, (appData.potValue >> 4)&0xff, appData.hrmEnergy & 0x00ff, appData.hrmEnergy >> 8); // format mask and ADC data
+			sprintf(appData.transmit_packet, "suw,"PUBLIC_HR_CHAR_HRM",%02x%02x%02x%02x\r", 0x08, (appData.heatValue)&0xff, appData.hrmEnergy & 0x00ff, appData.hrmEnergy >> 8); // format mask and ADC data
 			if (BT_SendCommand(appData.transmit_packet, true)) {
 				StartTimer(TMR_HR, HR_TX_MS);
 				sprintf(appData.transmit_packet, "suw,"PUBLIC_HR_CHAR_BSL",%02x\r", 3);

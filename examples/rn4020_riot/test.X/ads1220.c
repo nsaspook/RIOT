@@ -9,6 +9,9 @@
 
 uint8_t *tx_buff;
 uint8_t *rx_buff;
+static int32_t val = 0, upd = false;
+
+extern APP_DATA appData;
 
 void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
@@ -25,15 +28,12 @@ void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 
 void ads_int_setup(void)
 {
-	asm volatile("di"); // This is the "KEY" to Disable "Off" All Interrupts
-	asm volatile("ehb"); // This is the "KEY" to Disable "Off" All Interrupts
 	IEC0CLR = _IEC0_INT2IE_MASK; /* disable interrupt */
 	INTCONbits.INT2EP = 0;
 	IFS0CLR = _IFS0_INT2IF_MASK; /* clear flag */
 	IPC3bits.INT2IP = 1;
 	IPC3bits.INT2IS = 1;
 	IEC0SET = _IEC0_INT2IE_MASK; /* enable interrupt */
-	asm volatile("ei");
 }
 
 int ads1220_init(void)
@@ -137,9 +137,8 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 int ads1220_testing(void)
 {
 	static int i = 0;
-	static int32_t val = 0;
 
-	if (i++ % 90000 == 0) {
+	if (upd || (i++ > 90000)) {
 
 		ai_set_chan_range_ads1220(1, 0);
 
@@ -161,12 +160,16 @@ int ads1220_testing(void)
 		if (SWITCH1 == 0) {
 			printf(" ADS1220 value: %x\r\n", (int) (val >> 10));
 		}
+		upd = false;
+		i = 0;
 	}
 	return val;
 }
 
 void INT_2_ISR_(void)
 {
-	PDEBUG3_TOGGLE;
-	printf("INT2 trigger\r\n");
+	PDEBUG3_ON;
+	appData.heatValue = (int16_t) ((val >> 10) - 0x02d0);
+	upd = true;
+	PDEBUG3_OFF;
 }

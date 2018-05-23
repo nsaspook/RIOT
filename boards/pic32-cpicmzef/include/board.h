@@ -76,8 +76,8 @@ extern "C" {
 #define C_SPI1_CS	    GPIO_PIN(PORT_D, 4)
 #define C_SPI2_CS	    GPIO_PIN(PORT_D, 5)
 #define C_SPI3_CS	    GPIO_PIN(PORT_B, 8)
-	
-#define C_INT2		    GPIO_PIN(PORT_F, 12)
+
+#define C_INT2		    GPIO_PIN(PORT_C, 3)
 
 #define LED1_MASK           (1 << 3)
 #define LED2_MASK           (1 << 4)
@@ -162,7 +162,7 @@ extern "C" {
 #define Ja10_12           GPIO_PIN(PORT_A, 14)
 #define Ja10_13           GPIO_PIN(PORT_C, 2)
 #define Ja10_14           GPIO_PIN(PORT_C, 3)
-#define Ja10_15           GPIO_PIN(PORT_F, 12)
+#define Ja10_15           GPIO_PIN(PORT_F, 12) /* INT2 not working on this pin */
 #define Ja10_16           GPIO_PIN(PORT_F, 2)
 
 	/** @} */
@@ -266,7 +266,7 @@ extern "C" {
 		const void *out, void *in, size_t len);
 	int32_t spi_complete(spi_t bus);
 	void spi_speed_config(spi_t, spi_mode_t, spi_clk_t);
-	
+
 	/* timer extras */
 	void ShortDelay(uint32_t);
 	/**

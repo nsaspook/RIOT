@@ -46,6 +46,9 @@ void set_cache_policy(uint32_t cc)
 
 void board_init(void)
 {
+	SYSKEY = 0xAA996655; //unlock sequence 
+	SYSKEY = 0x556699AA; //unlock sequence 
+	CFGCONbits.IOLOCK = 0; //unlock PPS registers
 	/*
 	 * Setup default pin mux for UARTS 
 	 * done early and static for debug output during boot
@@ -58,7 +61,13 @@ void board_init(void)
 	RPC2R = OUTPUT_FUNC_U2TX; /* UART 2 TX */
 	U1RXR = INPUT_PIN_RPD10; /* RPD10 RX */
 	RPD15R = OUTPUT_FUNC_U1TX; /* UART 1 TX */
-	INT2R = INPUT_PIN_RPF12; /* mikro port #2 interrupt */
+
+	//External interrupt
+	INT2R = INPUT_PIN_RPC3; /* mikro port #2 interrupt */
+
+	//	CFGCONbits.IOLOCK = 1; //lock PPS registers
+	//	SYSKEY = 0x33333333; //lock sequnace
+
 
 	/* init UART used for debug (printf) */
 #ifdef DEBUG_VIA_UART
@@ -86,7 +95,7 @@ void board_init(void)
 	gpio_init(Ja10_1, GPIO_OUT); // CS2
 	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
-	gpio_init(Ja10_15, GPIO_IN); // INT2
+	gpio_init(Ja10_14, GPIO_IN); // INT2
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
