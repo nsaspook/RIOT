@@ -24,7 +24,7 @@
 
 extern void dummy(void);
 
-/* L1 cache control 
+/* L1 cache control
  * CP0 Register 16, Select 0
  * bit 2-0 K0<2:0>: Kseg0 bits
  * Kseg0 coherency algorithm.
@@ -46,11 +46,11 @@ void set_cache_policy(uint32_t cc)
 
 void board_init(void)
 {
-	SYSKEY = 0xAA996655; //unlock sequence 
-	SYSKEY = 0x556699AA; //unlock sequence 
+	SYSKEY = 0xAA996655; //unlock sequence
+	SYSKEY = 0x556699AA; //unlock sequence
 	CFGCONbits.IOLOCK = 0; //unlock PPS registers
 	/*
-	 * Setup default pin mux for UARTS 
+	 * Setup default pin mux for UARTS
 	 * done early and static for debug output during boot
 	 */
 	U4RXR = INPUT_PIN_RPB2; /* connect pin RPB2 to UART 4 RX */

@@ -43,13 +43,13 @@ extern "C" {
 #define TIMER_NUMOF         (1)
 #define TIMER_0_CHANNELS    (3)
 	/** @} */
- 
-#define CPU_CLOCK_HZ             (200000000UL)    // CPU Clock Speed in Hz 
-#define CPU_CT_HZ            (CPU_CLOCK_HZ/2)    // CPU CoreTimer   in Hz 
-#define PERIPHERAL_CLOCK_HZ      (100000000UL)    // Peripheral Bus  in Hz 
 
-#define US_TO_CT_TICKS  (CPU_CT_HZ/1000000UL)    // uS to CoreTimer Ticks 
-	
+#define CPU_CLOCK_HZ             (200000000UL)    // CPU Clock Speed in Hz
+#define CPU_CT_HZ            (CPU_CLOCK_HZ/2)    // CPU CoreTimer   in Hz
+#define PERIPHERAL_CLOCK_HZ      (100000000UL)    // Peripheral Bus  in Hz
+
+#define US_TO_CT_TICKS  (CPU_CT_HZ/1000000UL)    // uS to CoreTimer Ticks
+
 	/**
 	 * @name    UART Definitions
 	 *          There are 6 UARTS available on this CPU.
@@ -60,7 +60,7 @@ extern "C" {
 	 * @{
 	 */
 #define UART_NUMOF          (6)
-#define UART_NUMOF_USED     (4)	
+#define UART_NUMOF_USED     (4)
 #define DEBUG_VIA_UART      (4)
 #define DEBUG_UART_BAUD     (115200)
 	/** @} */

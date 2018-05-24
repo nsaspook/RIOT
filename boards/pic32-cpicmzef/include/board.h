@@ -14,7 +14,7 @@
  * @brief       Support for the PIC32MZ EF Curiosity Development Board
  * @details
  * See:http://ww1.microchip.com/downloads/en/DeviceDoc/70005282B.pdf
- * 
+ *
  * for more information on the board.
  *
  * @{
@@ -59,9 +59,9 @@ extern "C" {
 #define LED2_PIN            GPIO_PIN(PORT_E, 4)
 #define LED3_PIN            GPIO_PIN(PORT_E, 6)
 #define LED4_PINR           GPIO_PIN(PORT_B, 5)
-#define LED4_PING           GPIO_PIN(PORT_B, 1)	
+#define LED4_PING           GPIO_PIN(PORT_B, 1)
 #define LED4_PINB           GPIO_PIN(PORT_B, 0)
-#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)	
+#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)
 #define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
 #define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
 
@@ -178,7 +178,7 @@ extern "C" {
 #define WT_WA		0x01
 #define WT_NWA		0x00
 
-	/* from the TABLE 7-2: INTERRUPT IRQ, VECTOR, AND BIT LOCATION 
+	/* from the TABLE 7-2: INTERRUPT IRQ, VECTOR, AND BIT LOCATION
 	 * PIC32MZ Embedded Connectivity with Floating Point Unit (EF) Family Data Sheet
 	 */
 #define EIC_IRQ_UART_1_RX	113 /* Persistent interrupts */
@@ -199,7 +199,7 @@ extern "C" {
 	typedef unsigned long _paddr_t; /* a physical address */
 	typedef unsigned long _vaddr_t; /* a virtual address */
 
-	/* 
+	/*
 	 * Translate a kernel virtual address in KSEG0 or KSEG1 to a real
 	 * physical address and back.
 	 * using compiler KVA_TO_PA macro
@@ -229,7 +229,7 @@ extern "C" {
 
 	/* Helper macros used by those above. */
 
-	/*  Convert a KSEG0 Virtual Address variable or pointer to a KSEG1 virtual 
+	/*  Convert a KSEG0 Virtual Address variable or pointer to a KSEG1 virtual
 	 *  address access.
 	 */
 #define __PIC32_KVA0_TO_KVA1_VAR(v) (*(__typeof__(v)*)((unsigned long)&(v) | 0x20000000u))

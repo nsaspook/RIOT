@@ -60,7 +60,7 @@ static void uart_irq_enable(uart_t uart)
 	/* set enable and flag mask */
 	mask = uart_config[uart].int_mask;
 	/*
-	 * set vector priority and receiver interrupt enables for the board hardware configuration 
+	 * set vector priority and receiver interrupt enables for the board hardware configuration
 	 */
 	*(uart_config[uart].iec_regclr) = mask; /* disable UxRX interrupt */
 	*(uart_config[uart].ifs_regclr) = mask; /* clear UxRX flag */
@@ -72,7 +72,7 @@ static void uart_irq_enable(uart_t uart)
 void uart_irq_disable(uart_t uart)
 {
 	assert(uart <= UART_NUMOF_USED && uart != 0); /*No uart 0 on pic32*/
-	
+
 	*(uart_config[uart].iec_regclr) = uart_config[uart].int_mask; /* disable UxRX interrupt */
 }
 

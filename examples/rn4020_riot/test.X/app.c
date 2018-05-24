@@ -265,7 +265,7 @@ bool APP_Initialize(void)
 	B_LED_OFF;
 	G_LED_ON;
 
-	/* Wait for end of "CMD\r\n" - we don't check for full "CMD\r\n" string because we may 
+	/* Wait for end of "CMD\r\n" - we don't check for full "CMD\r\n" string because we may
 	//miss some bits or bytes at the beginning while the UART starts up */
 	StartTimer(TMR_RN_COMMS, 4000);
 	while (UART_ReadRxBuffer() != '\n') {

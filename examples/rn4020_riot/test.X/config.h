@@ -30,7 +30,7 @@
  * Compiler:    XC16 v1.23
  *
  * General definitions for the project
- * 
+ *
  */
 
 #ifndef CONFIG_H
@@ -86,8 +86,8 @@
 #define RN_FW_VER_MINOR     23          //These values can be changed as needed
 #define RN_FW_VER_PATCH     5
 
-#define RN_FW_VER_MAJOR133     1 
-#define RN_FW_VER_MINOR133     33 
+#define RN_FW_VER_MAJOR133     1
+#define RN_FW_VER_MINOR133     33
 #define RN_FW_VER_PATCH133     4
 
 /* Application timers */
@@ -95,9 +95,9 @@
 #define DEBOUNCE_MS         75          //debounce time for switches 1 - 4
 #define ADC_REFRESH_MS      50           //delay between ADC reads, 10 nom value
 #define POT_TX_MS           100         //delay between transmitting new pot values, 10 min value
-#define BATT_TX_MS	    500 
+#define BATT_TX_MS	    500
 #define HR_TX_MS            100
-#define AIO_TX_MS           50 
+#define AIO_TX_MS           50
 #define LED_BLINK_MS        900         //LED blink rate for advertise mode
 #define BT_TX_MS            10         //minimum time between consecutive BTLE message transmissions
 #define BAT_CHK_DELAY_MS    30000       //delay between input voltage checks
@@ -151,7 +151,7 @@
 #define PUBLIC_HR_CHAR_HRM     "2A37" // Heart Rate Measurement
 #define PUBLIC_HR_CHAR_BSL     "2A38" // Heart body sensor location
 #define PUBLIC_HR_CHAR_RCP     "2A39" // Heart rate control point
-#define PUBLIC_AIO_UUID		"1815" // Automation IO service 
+#define PUBLIC_AIO_UUID		"1815" // Automation IO service
 #define PUBLIC_AIO_CHAR_DIG     "2A56" // Automation IO digital
 #define PUBLIC_AIO_CHAR_ANA     "2A58" // Automation IO analog
 #define PUBLIC_AIO_CHAR_AGG     "2A5A" // Automation IO Aggregate
@@ -163,7 +163,7 @@
 #define PUBLIC_HR_CHAR_HRM_C		"001C"
 #define PUBLIC_HR_CHAR_BSL_H		"001E"
 #define PUBLIC_HR_CHAR_RCP_H		"0020"
-#define PUBLIC_AIO_CHAR_DIG_H		"0023" 
+#define PUBLIC_AIO_CHAR_DIG_H		"0023"
 #define PUBLIC_AIO_CHAR_ANA_H		"0026"
 #define PUBLIC_AIO_CHAR_AGG_H		"0029"
 #define PUBLIC_AIO_CHAR_AGG_C		"002A"
@@ -302,7 +302,7 @@ struct gatts_char_inst {
 /* LED outputs */
 
 #define SLED LED4R_TOGGLE
-#define SLED_ON		LED4R_ON	
+#define SLED_ON		LED4R_ON
 #define SLED_OFF	LED4R_OFF
 
 #define G_LED_ON	LED4G_ON
@@ -310,7 +310,7 @@ struct gatts_char_inst {
 
 #define B_LED_ON	LED4B_ON
 #define B_LED_OFF	LED4B_OFF
-#define B_LED_TOGGLE	LED4B_TOGGLE 
+#define B_LED_TOGGLE	LED4B_TOGGLE
 
 #define SPI_CS0 LATDbits.LATD5
 #define SPI_CS1 LATAbits.LATA5

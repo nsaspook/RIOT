@@ -47,7 +47,7 @@ void ShortDelay(uint32_t DelayCount)
 {
 	uint32_t StartTime;
 
-	StartTime = _mips_mfc0(9); // Get CoreTimer value for StartTime 
+	StartTime = _mips_mfc0(9); // Get CoreTimer value for StartTime
 	while ((uint32_t) (_mips_mfc0(9) - StartTime) < DelayCount) {
 	}
 }
@@ -249,7 +249,7 @@ void timer_irq_disable(tim_t dev)
  * MCU-ASE) defaults to non vectored mode anyway with all interrupts coming via
  * vector 0 which is equivalent to 'sw0' in 'VI' mode.
  *
- * Thus all EIC interrupts should be decoded here 
+ * Thus all EIC interrupts should be decoded here
  *
  * When toolchain support is available we could move to full vector mode but
  * this does take up significant space (MCU-ASE provides 256 vectors at 32B

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   ads1220.h
  * Author: root
  *
@@ -14,7 +14,7 @@ extern "C" {
 
 	/* Error Return Values */
 #define ADS1220_NO_ERROR           0
-#define ADS1220_ERROR   
+#define ADS1220_ERROR
 
 	/* Command Definitions */
 #define ADS1220_CMD_RDATA 0x10
@@ -31,7 +31,7 @@ extern "C" {
 #define ADS1220_3_REGISTER 0x03
 
 	/* ADS1220 Register 0 Definition */
-	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0 
+	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
 	//--------------------------------------------------------------------------------------------
 	//                     MUX [3:0]                 |             GAIN[2:0]             | PGA_BYPASS
 	//
@@ -66,7 +66,7 @@ extern "C" {
 #define ADS1220_PGA_BYPASS  0x01
 
 	/* ADS1220 Register 1 Definition */
-	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0 
+	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
 	//--------------------------------------------------------------------------------------------
 	//                DR[2:0]            |      MODE[1:0]        |     CM    |     TS    |    BCS
 	//
@@ -95,7 +95,7 @@ extern "C" {
 #define ADS1220_BCS  0x01
 
 	/* ADS1220 Register 2 Definition */
-	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0 
+	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
 	//--------------------------------------------------------------------------------------------
 	//         VREF[1:0]     |        50/60[1:0]     |    PSW    |             IDAC[2:0]
 	//
@@ -125,7 +125,7 @@ extern "C" {
 #define ADS1220_IDAC_2000 0x07
 
 	/* ADS1220 Register 3 Definition */
-	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0 
+	//   Bit 7   |   Bit 6   |   Bit 5   |   Bit 4   |   Bit 3   |   Bit 2   |   Bit 1   |   Bit 0
 	//--------------------------------------------------------------------------------------------
 	//               I1MUX[2:0]          |               I2MUX[2:0]          |   DRDYM   | RESERVED
 	//
@@ -157,7 +157,7 @@ extern "C" {
 	static const uint8_t ads1220_r0 = ADS1220_MUX_0_G | ADS1220_GAIN_1 | ADS1220_PGA_BYPASS;
 	static const uint8_t ads1220_r0_for_mux_gain = ADS1220_PGA_BYPASS;
 	static const uint8_t ads1220_r1 = ADS1220_DR_20 | ADS1220_MODE_NORMAL;
-	static const uint8_t ads1220_r2 = ADS1220_REJECT_BOTH;
+	static const uint8_t ads1220_r2 = ADS1220_REJECT_60;
 	static const uint8_t ads1220_r3 = ADS1220_IDAC_OFF;
 
 	int ads1220_init(void);

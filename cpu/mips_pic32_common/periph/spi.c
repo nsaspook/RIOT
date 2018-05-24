@@ -117,7 +117,7 @@ static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int 
 	DCHxECONSET(pic_dma[chan]) = _DCH0ECON_SIRQEN_MASK; /* Start cell transfer if an interrupt matching CHSIRQ occurs */
 	DCHxINTSET(pic_dma[chan]) = _DCH0INT_CHBCIE_MASK; /* enable Channel block transfer complete interrupt. */
 	/*
-	 * set vector priority and receiver DMA trigger enables for the board hardware configuration 
+	 * set vector priority and receiver DMA trigger enables for the board hardware configuration
 	 */
 	*(dma_config[chan].ipc_regset) = dma_config[chan].ipc_mask_p & (SPIxPRI_SW0 << dma_config[chan].ipc_mask_pos_p);
 	*(dma_config[chan].ipc_regset) = dma_config[chan].ipc_mask_s & (SPIxSUBPRI_SW0 << dma_config[chan].ipc_mask_pos_s);
@@ -197,7 +197,7 @@ void spi_speed_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 	SPIxCONSET(pic_spi[bus]) = (_SPI1CON_ON_MASK);
 }
 
-/* 1,2,3 are the active spi devices on the cpicmzef board configuration 
+/* 1,2,3 are the active spi devices on the cpicmzef board configuration
  * DMA channels are allocated for 1&2 tx/rx
  */
 static void spi_irq_enable(spi_t bus)
@@ -229,7 +229,7 @@ static void spi_irq_enable(spi_t bus)
 	/*  last transfer is shifted out */
 	SPIxCONCLR(pic_spi[bus]) = _SPI1CON_STXISEL_MASK & (3 << _SPI1CON_STXISEL_POSITION); /* clear all */
 	/*
-	 * set vector priority and receiver interrupt enables for the board hardware configuration 
+	 * set vector priority and receiver interrupt enables for the board hardware configuration
 	 */
 	*(spi_config[bus].ifs_regclr) = mask; /* clear SPIxRX flag */
 	*(spi_config[bus].ipc_regset) = spi_config[bus].ipc_mask_p & (SPIxPRI_SW0 << spi_config[bus].ipc_mask_pos_p);

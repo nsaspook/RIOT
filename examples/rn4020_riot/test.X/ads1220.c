@@ -16,7 +16,7 @@ extern APP_DATA appData;
 void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	spi_speed_config(bus, 0, 0); /* mode , no speed change */
+	spi_speed_config(bus, 0, SPI_CLK_2MHZ); /* mode , no speed change */
 	SPI_CS1 = 0;
 	ShortDelay(75);
 	spi_transfer_bytes(bus, cs, cont, out, in, len);
@@ -40,10 +40,10 @@ int ads1220_init(void)
 {
 	tx_buff = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
 	rx_buff = __pic32_alloc_coherent(32);
-	/* 
+	/*
 	 * setup ads1220 registers
 	 */
-	spi_speed_config(SPI_DEV(2), 0, 0); /* mode , no speed change */
+	spi_speed_config(SPI_DEV(2), 0, SPI_CLK_2MHZ); /* mode , no speed change */
 	SPI_CS1 = 0;
 	ShortDelay(50);
 	tx_buff[0] = ADS1220_CMD_RESET;
@@ -151,8 +151,8 @@ int ads1220_testing(void)
 	static int i = 0;
 
 	if (upd || (i++ > 90000)) {
-
-		ai_set_chan_range_ads1220(1, 0);
+		PDEBUG3_OFF;
+		ai_set_chan_range_ads1220(8, 0);
 
 		/* read the ads1220 3 byte data result */
 		tx_buff[0] = ADS1220_CMD_RDATA;
@@ -181,7 +181,6 @@ int ads1220_testing(void)
 void INT_2_ISR_(void)
 {
 	PDEBUG3_ON;
-	appData.heatValue = (int16_t) ((val >> 10) - 0x02d0);
+	appData.heatValue = (int16_t) ((val >> 10) - 0x0390);
 	upd = true;
-	PDEBUG3_OFF;
 }
