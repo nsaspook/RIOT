@@ -45,8 +45,8 @@
 extern APP_DATA appData;
 extern ADC_DATA adcData;
 
-uint8_t *td;
-uint8_t *rd;
+static uint8_t *td;
+static uint8_t *rd;
 
 /******************************************************************************
  * Function:        void ADC_Init()
@@ -67,21 +67,26 @@ uint8_t *rd;
 
 void ADC_Init(void)
 {
-	adcData.mcp3208_cmd.ld = 0; // clear the command word
-	adcData.chan = 0;
-	adcData.mcp3208_cmd.map.start_bit = 1;
-	adcData.mcp3208_cmd.map.single_diff = 1;
-	adcData.mcp3208_cmd.map.index = 0; // channel
-	appData.ADCcalFlag = true;
-	SPI_CS0 = 1;
-	td = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
-	rd = __pic32_alloc_coherent(32);
+	static bool adc_is_init = false;
+
+	if (!adc_is_init) {
+		adcData.mcp3208_cmd.ld = 0; // clear the command word
+		adcData.chan = 0;
+		adcData.mcp3208_cmd.map.start_bit = 1;
+		adcData.mcp3208_cmd.map.single_diff = 1;
+		adcData.mcp3208_cmd.map.index = 0; // channel
+		appData.ADCcalFlag = true;
+		SPI_CS0_1_J10;
+		td = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
+		rd = __pic32_alloc_coherent(32);
+		adc_is_init = true;
+	}
 }
 
 static void mcp_spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	spi_speed_config(bus, 0, 0); /* mode 0, no speed change */
+	spi_speed_config(bus, 0, SPI_CLK_1MHZ); /* mode 0, speed */
 	spi_transfer_bytes_async(bus, cs, cont, out, in, len);
 }
 
@@ -100,14 +105,14 @@ bool ADC_Tasks(void)
 		td[0] = adcData.mcp3208_cmd.bd[2];
 		td[1] = adcData.mcp3208_cmd.bd[1];
 		td[2] = adcData.mcp3208_cmd.bd[0];
-		SPI_CS0 = 0; // select the ADC
+		SPI_CS0_0_J10; // select the ADC
 		mcp_spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
 	}
 
 	/* read the returned spi data from the buffer and format it */
 	if (adcData.mcp3208_cmd.map.in_progress) {
 		if (spi_complete(SPI_DEV(2))) {
-			SPI_CS0 = 1; // deselect the ADC
+			SPI_CS0_1_J10; // deselect the ADC
 
 			/* lsb array index 2 */
 			adcData.potValue = (rd[1]&0x0f) << 8;

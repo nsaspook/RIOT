@@ -17,13 +17,13 @@ void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
 	spi_speed_config(bus, 0, SPI_CLK_2MHZ); /* mode , no speed change */
-	SPI_CS1 = 0;
+	SPI_CS1_0;
 	ShortDelay(75);
 	spi_transfer_bytes(bus, cs, cont, out, in, len);
 	tx_buff[0] = ADS1220_CMD_SYNC;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
 	ShortDelay(25);
-	SPI_CS1 = 1;
+	SPI_CS1_1;
 }
 
 void ads_int_setup(void)
@@ -44,7 +44,7 @@ int ads1220_init(void)
 	 * setup ads1220 registers
 	 */
 	spi_speed_config(SPI_DEV(2), 0, SPI_CLK_2MHZ); /* mode , no speed change */
-	SPI_CS1 = 0;
+	SPI_CS1_0;
 	ShortDelay(50);
 	tx_buff[0] = ADS1220_CMD_RESET;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
@@ -72,12 +72,12 @@ int ads1220_init(void)
 			"\r\nADS1220 configuration error: %x,%x %x,%x %x %x\r\n",
 			ads1220_r0, rx_buff[1], ads1220_r1, rx_buff[2],
 			rx_buff[3], rx_buff[4]);
-		SPI_CS1 = 1;
+		SPI_CS1_1;
 		return(-1);
 	}
 	tx_buff[0] = ADS1220_CMD_SYNC;
 	spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
-	SPI_CS1 = 1;
+	SPI_CS1_1;
 	return 0;
 }
 

@@ -246,45 +246,16 @@ struct gatts_char_inst {
 /* RN4020 BTLE */
 
 #define BT_WAKE_HW      LATDbits.LATD1                       /* Hardware wake from dormant state; BT_WAKE_HW, OK */
-#define BT_WAKE_HW_TRIS TRISDbits.TRISD1
-
 #define BT_WAKE_SW      LATAbits.LATA9                       /* Deep sleep wake; BT_WAKE_SW, OK */
-#define BT_WAKE_SW_TRIS TRISAbits.TRISA9
-
 #define BT_CMD      LATEbits.LATE8                 /* Place RN4020 module in command mode, low for MLDP mode, OK */
-#define BT_CMD_TRIS TRISEbits.TRISE8
-
 #define BT_CONNECTED        PORTBbits.RB4                     /* RN4020 module is connected to central device, OK */
-#define BT_CONNECTED_TRIS   TRISBbits.TRISB4
-
 #define BT_WS       PORTDbits.RD14                         /* RN4020 module is awake and active, OK */
-#define BT_WS_TRIS  TRISDbits.TRISD14
-
 #define BT_MLDP_EV      PORTDbits.RD3                         /* RN4020 module in MLDP mode has a pending event, NC, OK */
-#define BT_MLDP_EV_TRIS TRISDbits.TRISD3
-
-/* UART */
-#define U1CTS_TRIS      TRISAbits.TRISA14
-#define U1CTS_PORT	PORTAbits.RA14
-
-#define U1RTS_TRIS      TRISAbits.TRISA15
-#define U1RTS_LAT       LATAbits.LATA15
-
-#define U1RX_TRIS   TRISDbits.TRISD10  /* BT_RX */
-#define U1RX_PORT   PORTDbits.RD10
-
-#define U1TX_TRIS   TRISDbits.TRISD15  /* BT_TX */
-#define U1TX_LAT    LATDbits.LATD15
 
 /* RF24F */
 #define RF24F_INT	PORTFbits.RF4
-#define RF24F_INT_TRIS	TRISFbits.TRISF4
-
 #define RF24F_CS	LATBbits.LATB8
-#define RF24F_CS_TRIS	TRISBbits.TRISB8
-
-#define RF24F_SLEEP		LATAbits.LATA0
-#define RF24F_SLEEP_TRIS	TRISAbits.TRISA0
+#define RF24F_SLEEP	LATAbits.LATA0
 
 /* RELAY outputs */
 #define RELAY1	LATBbits.LATB3 /* output 0 (low) turns on relay */
@@ -292,12 +263,7 @@ struct gatts_char_inst {
 #define RELAY3	LATBbits.LATB3
 #define RELAY4	LATBbits.LATB3
 
-#define SWITCH1		PORTGbits.RG12
-#define SWITCH1_TRIS	TRISGbits.TRISG12
-
-#define ADC_INT2	PORTCbits.RC3
-#define ADC_INT2_TRIS	TRISCbits.TRISC3
-
+#define SWITCH1		gpio_read(C_SWITCH_1)
 
 /* LED outputs */
 
@@ -312,13 +278,13 @@ struct gatts_char_inst {
 #define B_LED_OFF	LED4B_OFF
 #define B_LED_TOGGLE	LED4B_TOGGLE
 
-#define SPI_CS0 LATDbits.LATD5
-#define SPI_CS1 LATAbits.LATA5
-#define SPI_CS2 LATAbits.LATA1
+#define SPI_CS0_1_J10 gpio_set(C_SPI0_CS_J10)
+#define SPI_CS1_1 gpio_set(C_SPI1_CS)
+#define SPI_CS2_1 gpio_set(C_SPI2_CS)
 
-#define SPI_CS0_TRIS	TRISDbits.TRISD5
-#define SPI_CS1_TRIS	TRISAbits.TRISA5
-#define SPI_CS2_TRIS	TRISAbits.TRISA1
+#define SPI_CS0_0_J10 gpio_clear(C_SPI0_CS_J10)
+#define SPI_CS1_0 gpio_clear(C_SPI1_CS)
+#define SPI_CS2_0 gpio_clear(C_SPI2_CS)
 
 /* Timer initialization */
 #define TIMER_OFF 0

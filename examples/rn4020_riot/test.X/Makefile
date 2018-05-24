@@ -13,5 +13,6 @@ FEATURES_REQUIRED += periph_hwrng
 FEATURES_REQUIRED += periph_spi
 FEATURES_REQUIRED += periph_timer
 FEATURES_REQUIRED += periph_uart
+FEATURES_REQUIRED += periph_adc
 
 include $(RIOTBASE)/Makefile.include

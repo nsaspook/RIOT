@@ -66,64 +66,60 @@ extern "C" {
 #define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
 
 #define C_WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
+#define C_RF24F_CS	    GPIO_PIN(PORT_B, 8)
 #define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
-#define C_BLE_IO_WAKE	    GPIO_PIN(PORT_A, 9)
+#define C_BLE_IO_WAKE_SW    GPIO_PIN(PORT_A, 9)
+#define C_BLE_IO_WAKE_HW    GPIO_PIN(PORT_D, 1)
 #define C_BLE_IO_CONN	    GPIO_PIN(PORT_B, 4)
+#define C_BT_CMD	    GPIO_PIN(PORT_E, 8)
+#define C_BT_WS		    GPIO_PIN(PORT_D, 14)
+#define C_BT_MLDP_EV	    GPIO_PIN(PORT_D, 3)
 #define C_WIFI_INT	    GPIO_PIN(PORT_F, 4)
 #define C_SWITCH_1	    GPIO_PIN(PORT_G, 12)
 #define C_USB_VBUS_SWITCH   GPIO_PIN(PORT_G, 13)
 
-#define C_SPI1_CS	    GPIO_PIN(PORT_D, 4)
-#define C_SPI2_CS	    GPIO_PIN(PORT_D, 5)
-#define C_SPI3_CS	    GPIO_PIN(PORT_B, 8)
+#define C_SPI0_CS_J5	    GPIO_PIN(PORT_D, 4)
+#define C_SPI0_CS_J10	    GPIO_PIN(PORT_D, 5)
+#define C_SPI1_CS	    GPIO_PIN(PORT_A, 5)
+#define C_SPI2_CS	    GPIO_PIN(PORT_A, 1)
 
 #define C_INT2		    GPIO_PIN(PORT_C, 3)
 
-#define LED1_MASK           (1 << 3)
-#define LED2_MASK           (1 << 4)
-#define LED3_MASK           (1 << 6)
-#define LED4_MASKR          (1 << 5)
-#define LED4_MASKG          (1 << 1)
-#define LED4_MASKB          (1 << 0)
-#define PDEBUG1_MASK        (1 << 7)
-#define PDEBUG2_MASK        (1 << 1)
-#define PDEBUG3_MASK        (1 << 2)
+#define LED1_ON             gpio_set(LED1_PIN)
+#define LED1_OFF            gpio_clear(LED1_PIN)
+#define LED1_TOGGLE         gpio_toggle(LED1_PIN)
 
-#define LED1_ON             (LATESET = LED1_MASK)
-#define LED1_OFF            (LATECLR = LED1_MASK)
-#define LED1_TOGGLE         (LATEINV = LED1_MASK)
+#define LED2_ON             gpio_set(LED2_PIN)
+#define LED2_OFF            gpio_clear(LED2_PIN)
+#define LED2_TOGGLE         gpio_toggle(LED2_PIN)
 
-#define LED2_ON             (LATESET = LED2_MASK)
-#define LED2_OFF            (LATECLR = LED2_MASK)
-#define LED2_TOGGLE         (LATEINV = LED2_MASK)
+#define LED3_ON             gpio_set(LED3_PIN)
+#define LED3_OFF            gpio_clear(LED3_PIN)
+#define LED3_TOGGLE         gpio_toggle(LED3_PIN)
 
-#define LED3_ON             (LATESET = LED3_MASK)
-#define LED3_OFF            (LATECLR = LED3_MASK)
-#define LED3_TOGGLE         (LATEINV = LED3_MASK)
+#define LED4R_OFF           gpio_set(LED4_PINR)
+#define LED4R_ON            gpio_clear(LED4_PINR)
+#define LED4R_TOGGLE        gpio_toggle(LED4_PINR)
 
-#define LED4R_OFF           (LATBSET = LED4_MASKR)
-#define LED4R_ON            (LATBCLR = LED4_MASKR)
-#define LED4R_TOGGLE        (LATBINV = LED4_MASKR)
+#define LED4G_OFF           gpio_set(LED4_PING)
+#define LED4G_ON            gpio_clear(LED4_PING)
+#define LED4G_TOGGLE        gpio_toggle(LED4_PING)
 
-#define LED4G_OFF           (LATBSET = LED4_MASKG)
-#define LED4G_ON            (LATBCLR = LED4_MASKG)
-#define LED4G_TOGGLE        (LATBINV = LED4_MASKG)
+#define LED4B_OFF           gpio_set(LED4_PINB)
+#define LED4B_ON            gpio_clear(LED4_PINB)
+#define LED4B_TOGGLE        gpio_toggle(LED4_PINB)
 
-#define LED4B_OFF           (LATBSET = LED4_MASKB)
-#define LED4B_ON            (LATBCLR = LED4_MASKB)
-#define LED4B_TOGGLE        (LATBINV = LED4_MASKB)
+#define PDEBUG1_ON          gpio_set(PDEBUG1_PIN)
+#define PDEBUG1_OFF         gpio_clear(PDEBUG1_PIN)
+#define PDEBUG1_TOGGLE      gpio_toggle(PDEBUG1_PIN)
 
-#define PDEBUG1_ON          (LATESET = PDEBUG1_MASK)
-#define PDEBUG1_OFF         (LATECLR = PDEBUG1_MASK)
-#define PDEBUG1_TOGGLE      (LATEINV = PDEBUG1_MASK)
+#define PDEBUG2_ON          gpio_set(PDEBUG2_PIN)
+#define PDEBUG2_OFF         gpio_clear(PDEBUG2_PIN)
+#define PDEBUG2_TOGGLE      gpio_toggle(PDEBUG2_PIN)
 
-#define PDEBUG2_ON          (LATESET = PDEBUG2_MASK)
-#define PDEBUG2_OFF         (LATECLR = PDEBUG2_MASK)
-#define PDEBUG2_TOGGLE      (LATEINV = PDEBUG2_MASK)
-
-#define PDEBUG3_ON          (LATESET = PDEBUG3_MASK)
-#define PDEBUG3_OFF         (LATECLR = PDEBUG3_MASK)
-#define PDEBUG3_TOGGLE      (LATEINV = PDEBUG3_MASK)
+#define PDEBUG3_ON          gpio_set(PDEBUG3_PIN)
+#define PDEBUG3_OFF         gpio_clear(PDEBUG3_PIN)
+#define PDEBUG3_TOGGLE      gpio_toggle(PDEBUG3_PIN)
 	/** @} */
 
 	/**
@@ -148,22 +144,22 @@ extern "C" {
 #define Ja5_15           GPIO_PIN(PORT_F, 13)
 #define Ja5_16           GPIO_PIN(PORT_E, 8)
 
-#define Ja10_1            GPIO_PIN(PORT_A, 1)
-#define Ja10_2            GPIO_PIN(PORT_A, 5)
-#define Ja10_3            GPIO_PIN(PORT_D, 5)
-#define Ja10_4            GPIO_PIN(PORT_G, 6)
-#define Ja10_5            GPIO_PIN(PORT_G, 0)
-#define Ja10_6            GPIO_PIN(PORT_G, 7)
-#define Ja10_7            "+3.3v"
-#define Ja10_8            "gnd"
-#define Ja10_9            "gnd"
-#define Ja10_10	          "+5v"
-#define Ja10_11           GPIO_PIN(PORT_A, 15)
-#define Ja10_12           GPIO_PIN(PORT_A, 14)
-#define Ja10_13           GPIO_PIN(PORT_C, 2)
-#define Ja10_14           GPIO_PIN(PORT_C, 3)
-#define Ja10_15           GPIO_PIN(PORT_F, 12) /* INT2 not working on this pin */
-#define Ja10_16           GPIO_PIN(PORT_F, 2)
+#define Ja10_1           GPIO_PIN(PORT_A, 1)
+#define Ja10_2           GPIO_PIN(PORT_A, 5)
+#define Ja10_3           GPIO_PIN(PORT_D, 5)
+#define Ja10_4           GPIO_PIN(PORT_G, 6)
+#define Ja10_5           GPIO_PIN(PORT_G, 0)
+#define Ja10_6           GPIO_PIN(PORT_G, 7)
+#define Ja10_7           "+3.3v"
+#define Ja10_8           "gnd"
+#define Ja10_9           "gnd"
+#define Ja10_10	         "+5v"
+#define Ja10_11          GPIO_PIN(PORT_A, 15)
+#define Ja10_12          GPIO_PIN(PORT_A, 14)
+#define Ja10_13          GPIO_PIN(PORT_C, 2)
+#define Ja10_14          GPIO_PIN(PORT_C, 3)
+#define Ja10_15          GPIO_PIN(PORT_F, 12) /* INT2 not working on this pin */
+#define Ja10_16          GPIO_PIN(PORT_F, 2)
 
 	/** @} */
 

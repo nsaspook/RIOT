@@ -142,6 +142,43 @@ extern "C" {
 		uint32_t ipc_mask_pos_s;
 	} uart_conf_t;
 
+/* for 24-bit transmit and extra status data */
+	typedef struct mcp_adc_t {
+		uint32_t dummy12 : 12; // dummy space for adc data
+		uint32_t nullbits : 2;
+		uint32_t index : 3; //adc channel select
+		uint32_t single_diff : 1;
+		uint32_t start_bit : 1;
+		uint32_t dummy8 : 8;
+		uint32_t finish : 1;
+		uint32_t in_progress : 1;
+	} mcp_adc_t;
+
+	/* upper-> lower bytes to 32 bit word for ADC/DAC, etc ... */
+	union adc_bytes4 {
+		uint32_t ld;
+		uint8_t bd[4];
+	};
+
+	/* upper/lower bytes to 16 bit word for ADC/DAC, etc ... */
+	union adc_bytes2 {
+		uint16_t ld;
+		uint8_t bd[2];
+	};
+
+	/* used to hold 24-bit adc buffer, index and control bits */
+	union mcp_adc_buf_t {
+		uint32_t ld;
+		uint8_t bd[4];
+		struct mcp_adc_t map;
+	};
+
+	typedef struct {
+		union mcp_adc_buf_t mcp3208_cmd;
+		uint16_t potValue;
+		uint8_t chan;
+	} MCP_ADC_DATA;
+
 #ifdef __cplusplus
 }
 #endif

@@ -16,6 +16,7 @@
 #include "periph/hwrng.h"
 #include "periph/spi.h"
 #include "periph/uart.h"
+#include "periph/adc.h"
 #include "bitarithm.h"
 #include "board.h"
 #include "cpu.h"
@@ -95,7 +96,7 @@ void board_init(void)
 	gpio_init(Ja10_1, GPIO_OUT); // CS2
 	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
-	gpio_init(Ja10_14, GPIO_IN); // INT2
+	gpio_init(Ja10_14, GPIO_IN_PU); // INT2
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
@@ -134,20 +135,30 @@ void board_init(void)
 
 	/* board device defaults */
 	gpio_init(C_WIFI_SLEEP, GPIO_OUT);
-	LATACLR = (1 << 0);
+	gpio_set(C_WIFI_SLEEP);
+	gpio_init(C_RF24F_CS, GPIO_OUT);
+	gpio_set(C_RF24F_CS);
 	gpio_init(C_STBY_RST, GPIO_OUT);
-	LATACLR = (1 << 5);
-	gpio_init(C_BLE_IO_WAKE, GPIO_OUT);
-	LATACLR = (1 << 9);
-	gpio_init(C_BLE_IO_CONN, GPIO_IN);
-	gpio_init(C_WIFI_INT, GPIO_IN);
-	gpio_init(C_SWITCH_1, GPIO_IN);
-	CNPUGSET = (1 << 12);
+	gpio_clear(C_STBY_RST);
+
+	gpio_init(C_BLE_IO_WAKE_SW, GPIO_OUT);
+	gpio_clear(C_BLE_IO_WAKE_SW); //keep low until after UART is initialized
+	gpio_init(C_BLE_IO_WAKE_HW, GPIO_OUT);
+	gpio_set(C_BLE_IO_WAKE_HW); //Dormant line is set high
+	gpio_init(C_BT_CMD, GPIO_OUT);
+	gpio_clear(C_BT_CMD); //Command mode on
+	gpio_init(C_BLE_IO_CONN, GPIO_IN_PU);
+	gpio_init(C_BT_MLDP_EV, GPIO_IN_PU);
+	gpio_init(C_BT_WS, GPIO_IN_PU);
+	gpio_clear(Ja5_11); // send RTS low to RN4020
+
+	gpio_init(C_WIFI_INT, GPIO_IN_PU);
+	gpio_init(C_SWITCH_1, GPIO_IN_PU);
 	gpio_init(C_USB_VBUS_SWITCH, GPIO_OUT);
-	LATGCLR = (1 << 13);
-	CNPUFSET = (1 << 12);
+	gpio_clear(C_USB_VBUS_SWITCH);
 
 	hwrng_init();
+	adc_init(0);
 
 	/* Stop the linker from throwing away the PIC32 config register settings */
 	dummy();

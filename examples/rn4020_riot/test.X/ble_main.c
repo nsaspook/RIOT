@@ -42,39 +42,4 @@ void initBoard(void)
 	RELAY2 = 1;
 	RELAY3 = 1;
 	RELAY4 = 1;
-
-	//RN4020 module - UART1
-	BT_WAKE_HW = 1; //Dormant line is set high
-	BT_WAKE_HW_TRIS = 0; //Dormant line is output
-
-	BT_WAKE_SW = 0; //keep low until after UART is initialized
-	BT_WAKE_SW_TRIS = 0;
-
-	BT_CMD = 0; //Command mode on
-	BT_CMD_TRIS = 0;
-
-	BT_WS_TRIS = 1;
-	BT_MLDP_EV_TRIS = 1;
-	BT_CONNECTED_TRIS = 1;
-
-	SWITCH1_TRIS = 1;
-	ADC_INT2_TRIS = 1;
-
-	U1RX_TRIS = 1;
-	U1TX_TRIS = 0;
-	U1CTS_TRIS = 1;
-	U1RTS_LAT = 0;
-	U1RTS_TRIS = 0;
-
-	// SPI Master Devices
-	SPI_CS0_TRIS = 0;
-	SPI_CS1_TRIS = 0;
-	SPI_CS2_TRIS = 0;
-
-	RF24F_INT_TRIS = 1; /* slave interrupt request */
-	RF24F_CS = 1; /* device select */
-	RF24F_CS_TRIS = 0;
-
-	RF24F_SLEEP = 1; /* doze off */
-	RF24F_SLEEP_TRIS = 0;
 }
