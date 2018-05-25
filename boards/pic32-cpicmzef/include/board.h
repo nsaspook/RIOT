@@ -67,14 +67,16 @@ extern "C" {
 
 #define C_WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
 #define C_RF24F_CS	    GPIO_PIN(PORT_B, 8)
-#define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
+#define C_WIFI_INT	    GPIO_PIN(PORT_F, 4)
+	
 #define C_BLE_IO_WAKE_SW    GPIO_PIN(PORT_A, 9)
 #define C_BLE_IO_WAKE_HW    GPIO_PIN(PORT_D, 1)
 #define C_BLE_IO_CONN	    GPIO_PIN(PORT_B, 4)
 #define C_BT_CMD	    GPIO_PIN(PORT_E, 8)
 #define C_BT_WS		    GPIO_PIN(PORT_D, 14)
 #define C_BT_MLDP_EV	    GPIO_PIN(PORT_D, 3)
-#define C_WIFI_INT	    GPIO_PIN(PORT_F, 4)
+
+#define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
 #define C_SWITCH_1	    GPIO_PIN(PORT_G, 12)
 #define C_USB_VBUS_SWITCH   GPIO_PIN(PORT_G, 13)
 

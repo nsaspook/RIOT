@@ -252,16 +252,11 @@ struct gatts_char_inst {
 #define BT_WS       PORTDbits.RD14                         /* RN4020 module is awake and active, OK */
 #define BT_MLDP_EV      PORTDbits.RD3                         /* RN4020 module in MLDP mode has a pending event, NC, OK */
 
-/* RF24F */
-#define RF24F_INT	PORTFbits.RF4
-#define RF24F_CS	LATBbits.LATB8
-#define RF24F_SLEEP	LATAbits.LATA0
-
 /* RELAY outputs */
-#define RELAY1	LATBbits.LATB3 /* output 0 (low) turns on relay */
-#define RELAY2	LATBbits.LATB3
-#define RELAY3	LATBbits.LATB3
-#define RELAY4	LATBbits.LATB3
+#define RELAY1	LED3_TOGGLE /* output 0 (low) turns on relay */
+#define RELAY2	LED3_TOGGLE
+#define RELAY3	LED3_TOGGLE
+#define RELAY4	LED3_TOGGLE
 
 #define SWITCH1		gpio_read(C_SWITCH_1)
 

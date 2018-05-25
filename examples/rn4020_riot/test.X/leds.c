@@ -58,10 +58,15 @@ void LED_Tasks(void)
 		break;
 
 	case LED_BTLE_PAIRED:
-		RELAY1 = !appData.led1; // logic low turns on relay
+		if (!appData.led1)
+			RELAY1; /* toggle led 3 for testing */
+		/* 
+		 * logic low turns on relay
+		RELAY1 = !appData.led1; 
 		RELAY2 = !appData.led2;
 		RELAY3 = !appData.led3;
 		RELAY4 = !appData.led4;
+		 */
 		SLED_OFF;
 		G_LED_ON;
 		break;

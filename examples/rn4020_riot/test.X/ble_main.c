@@ -38,8 +38,8 @@ int main(void)
 void initBoard(void)
 {
 	// LEDs are outputs and off
-	RELAY1 = 1;
-	RELAY2 = 1;
-	RELAY3 = 1;
-	RELAY4 = 1;
+	RELAY1;
+	RELAY2;
+	RELAY3;
+	RELAY4;
 }

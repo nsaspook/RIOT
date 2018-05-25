@@ -31,9 +31,9 @@ void mrf24f_testing(void)
 		mr24f_txb[1] = 'g';
 		mr24f_txb[2] = 'b';
 
-		RF24F_CS = 0;
+		gpio_clear(C_RF24F_CS);
 		spi_transfer_bytes(SPI_DEV(3), 0, true, mr24f_txb, mr24f_rxb, 3);
-		RF24F_CS = 1;
+		gpio_set(C_RF24F_CS);
 	}
 	ads1220_testing();
 }
