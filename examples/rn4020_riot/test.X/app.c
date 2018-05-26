@@ -252,7 +252,7 @@ bool APP_Initialize(void)
 	ads1220_init();
 
 	B_LED_ON;
-	BT_WAKE_SW = 1; //wake module
+	BT_WAKE_SW_SET; //wake module
 	/* Wait for WS status high */
 	StartTimer(TMR_RN_COMMS, 4000);
 	while (BT_WS == 0) {

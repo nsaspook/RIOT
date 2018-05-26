@@ -60,11 +60,6 @@ void ShortDelay(uint32_t DelayCount)
 #define TIMER_ACCURACY       (1 << TIMER_ACCURACY_SHIFT)
 #define CHANNELS             (3)
 
-/* TICKS_PER_US must be set in the board file */
-#ifndef TICKS_PER_US
-#error "Please set TICK_PER_US in your board file"
-#endif
-
 extern void UART_1_ISR_RX(void);
 extern void UART_2_ISR_RX(void);
 extern void UART_3_ISR_RX(void);

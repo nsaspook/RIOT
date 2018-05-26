@@ -533,9 +533,9 @@ bool BT_RebootEnFlow(void)
 	WaitMs(2);
 	if (SWITCH1 == 0) {
 		LED4G_OFF;
-		BT_WAKE_SW = 1;
-		BT_WAKE_HW = 1;
-		BT_CMD = 0;
+		BT_WAKE_SW_SET;
+		BT_WAKE_HW_SET;
+		BT_CMD_CLR;
 
 		BT_SendCommand("SF,2\r\n", false); // perform complete factory reset
 		WaitMs(100);

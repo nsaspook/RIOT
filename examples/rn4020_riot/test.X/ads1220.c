@@ -7,9 +7,9 @@
 #include "timers.h"
 #include "ads1220.h"
 
-uint8_t *tx_buff;
-uint8_t *rx_buff;
-static int32_t val = 0, upd = false;
+static uint8_t *tx_buff;
+static uint8_t *rx_buff;
+static bool upd = false;
 
 extern APP_DATA appData;
 
@@ -67,7 +67,7 @@ int ads1220_init(void)
 	 */
 	ads_int_setup();
 	if ((rx_buff[1] != ads1220_r0) ||
-		(rx_buff[2] != ads1220_r1)) {
+		(rx_buff[2] != (ads1220_r1 | ADS1220_TEMP_SENSOR))) { /* checking for sensor flag too */
 		printf(
 			"\r\nADS1220 configuration error: %x,%x %x,%x %x %x\r\n",
 			ads1220_r0, rx_buff[1], ads1220_r1, rx_buff[2],
@@ -160,27 +160,27 @@ int ads1220_testing(void)
 		tx_buff[2] = 0;
 		tx_buff[3] = 0;
 		ads_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 4);
-		val = rx_buff[1];
-		val = (val << 8) | rx_buff[2];
-		val = (val << 8) | rx_buff[3];
+		appData.ads1220Value = rx_buff[1];
+		appData.ads1220Value = (appData.ads1220Value << 8) | rx_buff[2];
+		appData.ads1220Value = (appData.ads1220Value << 8) | rx_buff[3];
 
 		/* mangle the data as necessary */
 		/* Bipolar Offset Binary */
-		//		val &= 0x0ffffff;
-		//		val ^= 0x0800000;
+		//		appData.ads1220Value &= 0x0ffffff;
+		//		appData.ads1220Value ^= 0x0800000;
 
 		if (SWITCH1 == 0) {
-			printf(" ADS1220 value: %x\r\n", (int) (val >> 10));
+			printf(" ADS1220 value: %x\r\n", (int) (appData.ads1220Value >> 10));
 		}
 		upd = false;
 		i = 0;
 	}
-	return val;
+	return  appData.ads1220Value;
 }
 
 void INT_2_ISR_(void)
 {
 	PDEBUG3_ON;
-	appData.heatValue = (int16_t) ((val >> 10) - 0x0390);
+	appData.heatValue = (int16_t) ((appData.ads1220Value >> 10) - 0x0370);
 	upd = true;
 }

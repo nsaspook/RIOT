@@ -46,16 +46,17 @@
 #include "periph/gpio.h"
 #include "periph/spi.h"
 
-#define APP_VERSION_STR "4.1 RIOT-OS"       /* This firmware version */
+#define APP_VERSION_STR "4.2 RIOT-OS"       /* This firmware version */
 
 /*
-//	2.8	increase ADC sampling and message transmission rates
-//	2.9	minor spelling fixes
-//	3.0	Add some public service support
-//	3.1	heart rate service added (demo data) makes software version 1.33.4 firmware dependant
-//	3.2	add automation io service
-//	4.0	riot-os port
+	2.8	increase ADC sampling and message transmission rates
+	2.9	minor spelling fixes
+	3.0	Add some public service support
+	3.1	heart rate service added (demo data) makes software version 1.33.4 firmware dependant
+	3.2	add automation io service
+	4.0	riot-os port
 	4.1	basic BLE funtions
+ *	4.2	generize gpio and hardware functions
  */
 
 /*******************************************************************************
@@ -241,16 +242,19 @@ struct gatts_char_inst {
  ******************************************************************************/
 
 /* PHY Clock frequency */
-#define FCY (100000000)                              /* timer and module clock base */
+#define FCY (100000000)		/* timer and module clock base */
 
 /* RN4020 BTLE */
 
-#define BT_WAKE_HW      LATDbits.LATD1                       /* Hardware wake from dormant state; BT_WAKE_HW, OK */
-#define BT_WAKE_SW      LATAbits.LATA9                       /* Deep sleep wake; BT_WAKE_SW, OK */
-#define BT_CMD      LATEbits.LATE8                 /* Place RN4020 module in command mode, low for MLDP mode, OK */
-#define BT_CONNECTED        PORTBbits.RB4                     /* RN4020 module is connected to central device, OK */
-#define BT_WS       PORTDbits.RD14                         /* RN4020 module is awake and active, OK */
-#define BT_MLDP_EV      PORTDbits.RD3                         /* RN4020 module in MLDP mode has a pending event, NC, OK */
+#define BT_WAKE_HW_SET  gpio_set(C_BLE_IO_WAKE_HW)		/* Hardware wake from dormant state; BT_WAKE_HW, OK */
+#define BT_WAKE_HW_CLR  gpio_clear(C_BLE_IO_WAKE_HW)
+#define BT_WAKE_SW_SET  gpio_set(C_BLE_IO_WAKE_SW)		/* Deep sleep wake; BT_WAKE_SW, OK */
+#define BT_WAKE_SW_CLR  gpio_clear(C_BLE_IO_WAKE_SW)
+#define BT_CMD_SET	gpio_set(C_BT_CMD)			/* Place RN4020 module in command mode, low for MLDP mode, OK */
+#define BT_CMD_CLR	gpio_clear(C_BT_CMD)
+#define BT_CONNECTED	gpio_read(C_BLE_IO_CONN)		/* RN4020 module is connected to central device, OK */
+#define BT_WS		gpio_read(C_BT_WS)			/* RN4020 module is awake and active, OK */
+#define BT_MLDP_EV      gpio_read(C_BT_MLDP_EV)			/* RN4020 module in MLDP mode has a pending event, NC, OK */
 
 /* RELAY outputs */
 #define RELAY1	LED3_TOGGLE /* output 0 (low) turns on relay */

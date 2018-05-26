@@ -76,6 +76,7 @@ typedef struct {
 	CNint, //CN interrupt has tripped (flag to exit sleep)
 	sleepFlag; //sleep mode triggered
 	uint16_t potValue, potValueOld, potValueLastTX, version_code, hrmEnergy, heatValue; //potentiometer values - current, previous, and last transmitted, firmware version
+	int32_t ads1220Value;
 	struct LINK_DATA *packet_data;
 } APP_DATA;
 

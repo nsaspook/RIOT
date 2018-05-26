@@ -39,7 +39,4 @@ void initBoard(void)
 {
 	// LEDs are outputs and off
 	RELAY1;
-	RELAY2;
-	RELAY3;
-	RELAY4;
 }
