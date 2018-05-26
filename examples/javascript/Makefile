@@ -9,10 +9,10 @@ RIOTBASE ?= $(CURDIR)/../..
 
 BOARD_INSUFFICIENT_MEMORY := airfy-beacon b-l072z-lrwan1 bluepill calliope-mini \
                              cc2650-launchpad cc2650stk maple-mini \
-                             microbit nrf51dongle nrf6310 nucleo-f030 nucleo-f070 \
-                             nucleo-f072 nucleo-f103 nucleo-f302 nucleo-f334 nucleo-f410 \
-                             nucleo-l053 nucleo-l073 nucleo32-f031 nucleo32-f042 \
-                             nucleo32-f303 nucleo32-l031 opencm904 \
+                             microbit nrf51dongle nrf6310 nucleo-f030r8 nucleo-f070rb \
+                             nucleo-f072rb nucleo-f103rb nucleo-f302r8 nucleo-f334r8 nucleo-f410rb \
+                             nucleo-l053r8 nucleo-l073rz nucleo-f031k6 nucleo-f042k6 \
+                             nucleo-f303k8 nucleo-l031k6 opencm904 \
                              spark-core stm32f0discovery yunjia-nrf51822 \
 
 BOARD_BLACKLIST := arduino-duemilanove arduino-mega2560 arduino-uno chronos \
