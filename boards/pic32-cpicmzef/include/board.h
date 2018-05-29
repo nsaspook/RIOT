@@ -52,79 +52,6 @@ extern "C" {
 #define EIC_IRQ      (1)
 
 	/**
-	 * @name    LED pin configuration
-	 * @{
-	 */
-#define LED1_PIN            GPIO_PIN(PORT_E, 3)
-#define LED2_PIN            GPIO_PIN(PORT_E, 4)
-#define LED3_PIN            GPIO_PIN(PORT_E, 6)
-#define LED4_PINR           GPIO_PIN(PORT_B, 5)
-#define LED4_PING           GPIO_PIN(PORT_B, 1)
-#define LED4_PINB           GPIO_PIN(PORT_B, 0)
-#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)
-#define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
-#define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
-
-#define C_WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
-#define C_RF24F_CS	    GPIO_PIN(PORT_B, 8)
-#define C_WIFI_INT	    GPIO_PIN(PORT_F, 4)
-	
-#define C_BLE_IO_WAKE_SW    GPIO_PIN(PORT_A, 9)
-#define C_BLE_IO_WAKE_HW    GPIO_PIN(PORT_D, 1)
-#define C_BLE_IO_CONN	    GPIO_PIN(PORT_B, 4)
-#define C_BT_CMD	    GPIO_PIN(PORT_E, 8)
-#define C_BT_WS		    GPIO_PIN(PORT_D, 14)
-#define C_BT_MLDP_EV	    GPIO_PIN(PORT_D, 3)
-
-#define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
-#define C_SWITCH_1	    GPIO_PIN(PORT_G, 12)
-#define C_USB_VBUS_SWITCH   GPIO_PIN(PORT_G, 13)
-
-#define C_SPI0_CS_J5	    GPIO_PIN(PORT_D, 4)
-#define C_SPI0_CS_J10	    GPIO_PIN(PORT_D, 5)
-#define C_SPI1_CS	    GPIO_PIN(PORT_A, 5)
-#define C_SPI2_CS	    GPIO_PIN(PORT_C, 3)
-
-#define C_INT2		    GPIO_PIN(PORT_C, 3)
-
-#define LED1_ON             gpio_set(LED1_PIN)
-#define LED1_OFF            gpio_clear(LED1_PIN)
-#define LED1_TOGGLE         gpio_toggle(LED1_PIN)
-
-#define LED2_ON             gpio_set(LED2_PIN)
-#define LED2_OFF            gpio_clear(LED2_PIN)
-#define LED2_TOGGLE         gpio_toggle(LED2_PIN)
-
-#define LED3_ON             gpio_set(LED3_PIN)
-#define LED3_OFF            gpio_clear(LED3_PIN)
-#define LED3_TOGGLE         gpio_toggle(LED3_PIN)
-
-#define LED4R_OFF           gpio_set(LED4_PINR)
-#define LED4R_ON            gpio_clear(LED4_PINR)
-#define LED4R_TOGGLE        gpio_toggle(LED4_PINR)
-
-#define LED4G_OFF           gpio_set(LED4_PING)
-#define LED4G_ON            gpio_clear(LED4_PING)
-#define LED4G_TOGGLE        gpio_toggle(LED4_PING)
-
-#define LED4B_OFF           gpio_set(LED4_PINB)
-#define LED4B_ON            gpio_clear(LED4_PINB)
-#define LED4B_TOGGLE        gpio_toggle(LED4_PINB)
-
-#define PDEBUG1_ON          gpio_set(PDEBUG1_PIN)
-#define PDEBUG1_OFF         gpio_clear(PDEBUG1_PIN)
-#define PDEBUG1_TOGGLE      gpio_toggle(PDEBUG1_PIN)
-
-#define PDEBUG2_ON          gpio_set(PDEBUG2_PIN)
-#define PDEBUG2_OFF         gpio_clear(PDEBUG2_PIN)
-#define PDEBUG2_TOGGLE      gpio_toggle(PDEBUG2_PIN)
-
-#define PDEBUG3_ON          gpio_set(PDEBUG3_PIN)
-#define PDEBUG3_OFF         gpio_clear(PDEBUG3_PIN)
-#define PDEBUG3_TOGGLE      gpio_toggle(PDEBUG3_PIN)
-	/** @} */
-
-	/**
 	 * @name    jack pin configuration
 	 * @{
 	 */
@@ -163,6 +90,80 @@ extern "C" {
 #define Ja10_15          GPIO_PIN(PORT_F, 12) /* INT2 not working on this pin */
 #define Ja10_16          GPIO_PIN(PORT_F, 2)
 
+	/** @} */
+
+	/**
+	 * @name    pin configuration
+	 * @{
+	 */
+
+#define LED1_PIN            GPIO_PIN(PORT_E, 3)
+#define LED2_PIN            GPIO_PIN(PORT_E, 4)
+#define LED3_PIN            GPIO_PIN(PORT_E, 6)
+#define LED4_PINR           GPIO_PIN(PORT_B, 5)
+#define LED4_PING           GPIO_PIN(PORT_B, 1)
+#define LED4_PINB           GPIO_PIN(PORT_B, 0)
+#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)
+#define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
+#define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
+
+#define C_WIFI_SLEEP	    GPIO_PIN(PORT_A, 0)
+#define C_RF24F_CS	    GPIO_PIN(PORT_B, 8)
+#define C_WIFI_INT	    GPIO_PIN(PORT_F, 4)
+
+#define C_BLE_IO_WAKE_SW    Ja5_2
+#define C_BLE_IO_WAKE_HW    Ja5_4
+#define C_BLE_IO_CONN	    Ja5_1
+#define C_BT_CMD	    Ja5_16
+#define C_BT_WS		    Ja5_5
+#define C_BT_MLDP_EV	    Ja5_6
+
+#define C_STBY_RST	    GPIO_PIN(PORT_A, 5)
+#define C_SWITCH_1	    GPIO_PIN(PORT_G, 12)
+#define C_USB_VBUS_SWITCH   GPIO_PIN(PORT_G, 13)
+
+#define C_SPI0_CS_J5	    Ja5_3
+#define C_SPI0_CS_J10	    Ja10_3
+#define C_SPI1_CS	    Ja10_2
+#define C_SPI2_CS	    Ja10_13
+
+#define C_INT2		    Ja10_14
+
+#define LED1_ON             gpio_set(LED1_PIN)
+#define LED1_OFF            gpio_clear(LED1_PIN)
+#define LED1_TOGGLE         gpio_toggle(LED1_PIN)
+
+#define LED2_ON             gpio_set(LED2_PIN)
+#define LED2_OFF            gpio_clear(LED2_PIN)
+#define LED2_TOGGLE         gpio_toggle(LED2_PIN)
+
+#define LED3_ON             gpio_set(LED3_PIN)
+#define LED3_OFF            gpio_clear(LED3_PIN)
+#define LED3_TOGGLE         gpio_toggle(LED3_PIN)
+
+#define LED4R_OFF           gpio_set(LED4_PINR)
+#define LED4R_ON            gpio_clear(LED4_PINR)
+#define LED4R_TOGGLE        gpio_toggle(LED4_PINR)
+
+#define LED4G_OFF           gpio_set(LED4_PING)
+#define LED4G_ON            gpio_clear(LED4_PING)
+#define LED4G_TOGGLE        gpio_toggle(LED4_PING)
+
+#define LED4B_OFF           gpio_set(LED4_PINB)
+#define LED4B_ON            gpio_clear(LED4_PINB)
+#define LED4B_TOGGLE        gpio_toggle(LED4_PINB)
+
+#define PDEBUG1_ON          gpio_set(PDEBUG1_PIN)
+#define PDEBUG1_OFF         gpio_clear(PDEBUG1_PIN)
+#define PDEBUG1_TOGGLE      gpio_toggle(PDEBUG1_PIN)
+
+#define PDEBUG2_ON          gpio_set(PDEBUG2_PIN)
+#define PDEBUG2_OFF         gpio_clear(PDEBUG2_PIN)
+#define PDEBUG2_TOGGLE      gpio_toggle(PDEBUG2_PIN)
+
+#define PDEBUG3_ON          gpio_set(PDEBUG3_PIN)
+#define PDEBUG3_OFF         gpio_clear(PDEBUG3_PIN)
+#define PDEBUG3_TOGGLE      gpio_toggle(PDEBUG3_PIN)
 	/** @} */
 
 	/* L1 cache modes, boot code defaults to WB_WA, best performance

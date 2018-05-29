@@ -93,6 +93,7 @@ void board_init(void)
 	gpio_init(Ja5_12, GPIO_IN); // CTS from RN4020
 	gpio_init(Ja5_16, GPIO_OUT); // CMD to rn4020
 
+	/* mikro BUS #2 spi related control signals*/
 	gpio_init(Ja10_13, GPIO_OUT); // CS2
 	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
@@ -100,15 +101,19 @@ void board_init(void)
 
 	/* init uart ports */
 	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
-	gpio_init(GPIO_PIN(PORT_C, 2), GPIO_OUT);
-	gpio_init(GPIO_PIN(PORT_D, 15), GPIO_OUT);
+	/*	gpio_init(Ja10_13, GPIO_OUT);
+	 *  used by spi
+	 */
+	gpio_init(Ja5_13, GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_G, 1), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_B, 2), GPIO_IN);
-	gpio_init(GPIO_PIN(PORT_C, 3), GPIO_IN);
-	gpio_init(GPIO_PIN(PORT_D, 10), GPIO_IN);
+	/*	gpio_init(Ja10_14, GPIO_IN);
+	 *  used by spi
+	 */
+	gpio_init(Ja5_14, GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_F, 4), GPIO_IN);
 
-	/* init mf24f pins */
+	/* init mf24f pins, the WiFi chip is not useful with riot-os */
 	gpio_init(GPIO_PIN(PORT_F, 5), GPIO_IN);
 	gpio_init(GPIO_PIN(PORT_B, 8), GPIO_OUT);
 	gpio_init(GPIO_PIN(PORT_A, 0), GPIO_OUT);
