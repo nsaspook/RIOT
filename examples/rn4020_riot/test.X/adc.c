@@ -6,81 +6,24 @@
 #include "config.h"
 #include "timers.h"
 #include "ads1220.h"
+#include "periph/adc.h"
 
 extern APP_DATA appData;
 extern ADC_DATA adcData;
 
-static uint8_t *td;
-static uint8_t *rd;
-
 void ADC_Init(void)
 {
-	static bool adc_is_init = false;
-
-	if (!adc_is_init) {
-		adcData.mcp3208_cmd.ld = 0; // clear the command word
-		adcData.chan = 0;
-		adcData.mcp3208_cmd.map.start_bit = 1;
-		adcData.mcp3208_cmd.map.single_diff = 1;
-		adcData.mcp3208_cmd.map.index = 0; // channel
-		appData.ADCcalFlag = true;
-		SPI_CS0_1_J10;
-		td = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
-		rd = __pic32_alloc_coherent(32);
-		adc_is_init = true;
-	}
+	adc_init(0);
 }
-
-static void mcp_spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
-	const void *out, void *in, size_t len)
-{
-	spi_speed_config(bus, 0, SPI_CLK_1MHZ); /* mode 0, speed */
-	spi_transfer_bytes_async(bus, cs, cont, out, in, len);
-}
-
-/*
- * State machine for restarting ADC and taking new readings from pot
- * Returns true when SPI data has been returned from the mpc3208; false otherwise
- */
 
 bool ADC_Tasks(void)
 {
-
-	/* send the command sequence to the adc */
-	if (!adcData.mcp3208_cmd.map.in_progress) {
-		adcData.mcp3208_cmd.map.in_progress = true;
-		adcData.mcp3208_cmd.map.finish = false;
-		adcData.mcp3208_cmd.map.single_diff = 1;
-		adcData.mcp3208_cmd.map.index = adcData.chan;
-		td[0] = adcData.mcp3208_cmd.bd[2];
-		td[1] = adcData.mcp3208_cmd.bd[1];
-		td[2] = adcData.mcp3208_cmd.bd[0];
-		SPI_CS0_0_J10; // select the ADC
-		mcp_spi_transfer_bytes_async(SPI_DEV(2), 0, true, td, rd, 3);
-	}
-
-	/* read the returned spi data from the buffer and format it */
-	if (adcData.mcp3208_cmd.map.in_progress) {
-		if (spi_complete(SPI_DEV(2))) {
-			SPI_CS0_1_J10; // deselect the ADC
-
-			/* lsb array index 2 */
-			adcData.potValue = (rd[1]&0x0f) << 8;
-			adcData.potValue += rd[2];
-			adcData.mcp3208_cmd.map.finish = true;
-		} else {
-			return false;
-		}
-	}
-
-	/* cleanup for next time */
-	if (adcData.mcp3208_cmd.map.finish) {
-		adcData.mcp3208_cmd.map.in_progress = false;
-		appData.accumReady = true;
-		return true;
-	}
-
-	return false;
+	/* read value from the adc */
+	adcData.potValue = adc_sample(adcData.chan, ADC_RES_12BIT);
+	adcData.mcp3208_cmd.map.finish = true;
+	adcData.mcp3208_cmd.map.in_progress = false;
+	appData.accumReady = true;
+	return true;
 }
 
 /*
