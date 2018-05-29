@@ -83,7 +83,7 @@ extern "C" {
 #define C_SPI0_CS_J5	    GPIO_PIN(PORT_D, 4)
 #define C_SPI0_CS_J10	    GPIO_PIN(PORT_D, 5)
 #define C_SPI1_CS	    GPIO_PIN(PORT_A, 5)
-#define C_SPI2_CS	    GPIO_PIN(PORT_A, 1)
+#define C_SPI2_CS	    GPIO_PIN(PORT_C, 3)
 
 #define C_INT2		    GPIO_PIN(PORT_C, 3)
 

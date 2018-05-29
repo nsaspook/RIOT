@@ -6,6 +6,7 @@
 #include "config.h"
 #include "timers.h"
 #include "ads1220.h"
+#include "periph/dac.h"
 
 static uint8_t *tx_buff;
 static uint8_t *rx_buff;
@@ -16,7 +17,7 @@ extern APP_DATA appData;
 void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 	const void *out, void *in, size_t len)
 {
-	spi_speed_config(bus, 0, SPI_CLK_2MHZ); /* mode , no speed change */
+	spi_speed_config(bus, 1, SPI_CLK_2MHZ); /* mode , no speed change */
 	SPI_CS1_0;
 	ShortDelay(75);
 	spi_transfer_bytes(bus, cs, cont, out, in, len);
@@ -43,7 +44,7 @@ int ads1220_init(void)
 	/*
 	 * setup ads1220 registers
 	 */
-	spi_speed_config(SPI_DEV(2), 0, SPI_CLK_2MHZ); /* mode , no speed change */
+	spi_speed_config(SPI_DEV(2), 1, SPI_CLK_2MHZ); /* mode , no speed change */
 	SPI_CS1_0;
 	ShortDelay(50);
 	tx_buff[0] = ADS1220_CMD_RESET;
@@ -148,7 +149,7 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 
 int ads1220_testing(void)
 {
-	static int i = 0;
+	static int i = 0, a1=2048,b1=16;
 
 	if (upd || (i++ > 90000)) {
 		PDEBUG3_OFF;
@@ -174,6 +175,9 @@ int ads1220_testing(void)
 		}
 		upd = false;
 		i = 0;
+		dac_set(0,a1+=100);
+		dac_set(1,b1+=100);
+
 	}
 	return  appData.ads1220Value;
 }

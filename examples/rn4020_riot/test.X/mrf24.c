@@ -6,6 +6,7 @@
 #include "config.h"
 #include "timers.h"
 #include "ads1220.h"
+#include "periph/dac.h"
 
 extern APP_DATA appData;
 extern ADC_DATA adcData;
@@ -20,6 +21,7 @@ void Mrf24_Init(void)
 
 	spi_init(SPI_DEV(3));
 	spi_acquire(SPI_DEV(3), 0, SPI_MODE_0, SPI_CLK_1MHZ);
+	dac_init(0);
 }
 
 void mrf24f_testing(void)

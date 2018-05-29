@@ -178,11 +178,11 @@ void spi_speed_config(spi_t bus, spi_mode_t mode, spi_clk_t clk)
 
 	switch (mode) {
 	case SPI_MODE_0:
-		SPIxCONCLR(pic_spi[bus]) = (_SPI1CON_CKP_MASK | _SPI1CON_CKE_MASK);
-		break;
-	case SPI_MODE_1:
 		SPIxCONCLR(pic_spi[bus]) = _SPI1CON_CKP_MASK;
 		SPIxCONSET(pic_spi[bus]) = _SPI1CON_CKE_MASK;
+		break;
+	case SPI_MODE_1:
+		SPIxCONCLR(pic_spi[bus]) = (_SPI1CON_CKP_MASK | _SPI1CON_CKE_MASK);
 		break;
 	case SPI_MODE_2:
 		SPIxCONCLR(pic_spi[bus]) = _SPI1CON_CKE_MASK;
