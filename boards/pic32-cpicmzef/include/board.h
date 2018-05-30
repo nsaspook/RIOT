@@ -56,6 +56,25 @@ extern "C" {
 	 * @{
 	 */
 
+#define Ja17_1		 GPIO_PIN(PORT_E, 1)
+#define Ja17_2		 GPIO_PIN(PORT_E, 2)
+#define Ja17_3		 GPIO_PIN(PORT_E, 9)
+#define Ja17_4		 GPIO_PIN(PORT_B, 3)
+#define Ja17_5		 GPIO_PIN(PORT_B, 2)
+#define Ja17_6		 GPIO_PIN(PORT_A, 10)
+#define Ja17_7		 GPIO_PIN(PORT_B, 15)
+#define Ja17_8		 GPIO_PIN(PORT_E, 0)
+#define Ja17_9		 GPIO_PIN(PORT_G, 1)
+#define Ja17_10		 GPIO_PIN(PORT_D, 13)
+#define Ja17_11		 GPIO_PIN(PORT_D, 12)
+#define Ja17_12		 GPIO_PIN(PORT_C, 13)
+#define Ja17_13		 GPIO_PIN(PORT_D, 9)
+#define Ja17_14		 GPIO_PIN(PORT_F, 8)
+#define Ja17_15		 GPIO_PIN(PORT_F, 5)
+#define Ja17_16		 GPIO_PIN(PORT_A, 6)
+#define Ja17_17		 GPIO_PIN(PORT_A, 4)
+#define Ja17_18		 GPIO_PIN(PORT_E, 7)
+
 #define Ja5_1            GPIO_PIN(PORT_B, 4)
 #define Ja5_2            GPIO_PIN(PORT_A, 9)
 #define Ja5_3            GPIO_PIN(PORT_D, 4)

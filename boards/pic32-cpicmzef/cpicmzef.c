@@ -97,26 +97,23 @@ void board_init(void)
 	gpio_init(Ja10_13, GPIO_OUT); // CS2
 	gpio_init(Ja10_2, GPIO_OUT); // CS1
 	gpio_init(Ja10_3, GPIO_OUT); // CS0
-	gpio_init(Ja10_14, GPIO_IN_PU); // INT2
+	gpio_init(Ja10_14, GPIO_IN_PU); // INT2 for ADC
 
 	/* init uart ports */
-	gpio_init(GPIO_PIN(PORT_F, 8), GPIO_OUT);
+	gpio_init(Ja5_13, GPIO_OUT);
+	gpio_init(Ja5_14, GPIO_IN);
+	gpio_init(Ja17_9, GPIO_OUT);
+	gpio_init(Ja17_15, GPIO_IN);
+	gpio_init(Ja17_14, GPIO_OUT);
+	gpio_init(Ja17_5, GPIO_IN);
+
 	/*	gpio_init(Ja10_13, GPIO_OUT);
 	 *  used by spi
 	 */
-	gpio_init(Ja5_13, GPIO_OUT);
-	gpio_init(GPIO_PIN(PORT_G, 1), GPIO_OUT);
-	gpio_init(GPIO_PIN(PORT_B, 2), GPIO_IN);
+
 	/*	gpio_init(Ja10_14, GPIO_IN);
 	 *  used by spi
 	 */
-	gpio_init(Ja5_14, GPIO_IN);
-	gpio_init(GPIO_PIN(PORT_F, 4), GPIO_IN);
-
-	/* init mf24f pins, the WiFi chip is not useful with riot-os */
-	gpio_init(GPIO_PIN(PORT_F, 5), GPIO_IN);
-	gpio_init(GPIO_PIN(PORT_B, 8), GPIO_OUT);
-	gpio_init(GPIO_PIN(PORT_A, 0), GPIO_OUT);
 
 	/* Turn off all LED's */
 	gpio_init(LED1_PIN, GPIO_OUT);
@@ -139,10 +136,15 @@ void board_init(void)
 	PDEBUG3_OFF;
 
 	/* board device defaults */
+	/* init mf24f pins, the WiFi chip is not useful with riot-os
+	 * because of no register data
+	 */
 	gpio_init(C_WIFI_SLEEP, GPIO_OUT);
 	gpio_set(C_WIFI_SLEEP);
 	gpio_init(C_RF24F_CS, GPIO_OUT);
 	gpio_set(C_RF24F_CS);
+	gpio_init(C_WIFI_INT, GPIO_IN_PU);
+
 	gpio_init(C_STBY_RST, GPIO_OUT);
 	gpio_clear(C_STBY_RST);
 
@@ -157,7 +159,6 @@ void board_init(void)
 	gpio_init(C_BT_WS, GPIO_IN_PU);
 	gpio_clear(Ja5_11); // send RTS low to RN4020
 
-	gpio_init(C_WIFI_INT, GPIO_IN_PU);
 	gpio_init(C_SWITCH_1, GPIO_IN_PU);
 	gpio_init(C_USB_VBUS_SWITCH, GPIO_OUT);
 	gpio_clear(C_USB_VBUS_SWITCH);

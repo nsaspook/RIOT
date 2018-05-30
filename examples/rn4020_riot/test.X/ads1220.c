@@ -149,7 +149,7 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 
 int ads1220_testing(void)
 {
-	static int i = 0, a1=2048,b1=16;
+	static int i = 0, a1 = 2048, b1 = 16;
 
 	if (upd || (i++ > 90000)) {
 		PDEBUG3_OFF;
@@ -175,11 +175,10 @@ int ads1220_testing(void)
 		}
 		upd = false;
 		i = 0;
-		dac_set(0,a1+=100);
-		dac_set(1,b1+=100);
-
+		dac_set(0, a1 += 100);
+		dac_set(1, b1 += 100);
 	}
-	return  appData.ads1220Value;
+	return appData.ads1220Value;
 }
 
 void INT_2_ISR_(void)
