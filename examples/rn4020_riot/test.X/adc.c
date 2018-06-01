@@ -8,21 +8,21 @@
 #include "ads1220.h"
 #include "periph/adc.h"
 
-extern APP_DATA appData;
-extern ADC_DATA adcData;
+extern rn4020_appdata_t rn4020_appdata;
+extern rn4020_adcdata_t rn4020_adcdata;
 
 void ADC_Init(void)
 {
     adc_init(0);
 }
 
-bool ADC_Tasks(void)
+bool rn4040_adc_tasks(void)
 {
     /* read value from the adc */
-    adcData.potValue = adc_sample(adcData.chan, ADC_RES_12BIT);
-    adcData.mcp3208_cmd.map.finish = true;
-    adcData.mcp3208_cmd.map.in_progress = false;
-    appData.accumReady = true;
+    rn4020_adcdata.potValue = adc_sample(rn4020_adcdata.chan, ADC_RES_12BIT);
+    rn4020_adcdata.mcp3208_cmd.map.finish = true;
+    rn4020_adcdata.mcp3208_cmd.map.in_progress = false;
+    rn4020_appdata.accumReady = true;
     return true;
 }
 
@@ -33,13 +33,13 @@ bool ADC_Tasks(void)
 
 void ADC_ProcAccum(void)
 {
-    appData.potValueOld = appData.potValue; //Save previous value
-    appData.potValue = adcData.potValue;
+    rn4020_appdata.potValueOld = rn4020_appdata.potValue; //Save previous value
+    rn4020_appdata.potValue = rn4020_adcdata.potValue;
 }
 
-void GetNewADC_Chan(void)
+void rn4040_getnewadc_chan(void)
 {
-    adcData.chan = appData.receive_packet[9] == '1' ? 1 : 0; // update adc channel
-    adcData.chan += appData.receive_packet[11] == '1' ? 2 : 0;
-    adcData.chan += appData.receive_packet[13] == '1' ? 4 : 0;
+    rn4020_adcdata.chan = rn4020_appdata.receive_packet[9] == '1' ? 1 : 0; // update adc channel
+    rn4020_adcdata.chan += rn4020_appdata.receive_packet[11] == '1' ? 2 : 0;
+    rn4020_adcdata.chan += rn4020_appdata.receive_packet[13] == '1' ? 4 : 0;
 }

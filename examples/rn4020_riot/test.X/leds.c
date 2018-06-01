@@ -39,8 +39,8 @@
 #include "leds.h"
 #include "app.h"
 
-extern APP_DATA appData;
-extern ADC_DATA adcData;
+extern rn4020_appdata_t rn4020_appdata;
+extern rn4020_adcdata_t rn4020_adcdata;
 static LED_LIGHTSHOW_T lightShow = LED_IDLE;
 
 void LED_Tasks(void)
@@ -51,29 +51,29 @@ void LED_Tasks(void)
             break;
 
         case LED_BTLE_ADVERTISING:
-            if (TimerDone(TMR_LEDS)) {
+            if (rn4020_timerdone(TMR_LEDS)) {
                 SLED;
-                StartTimer(TMR_LEDS, LED_BLINK_MS);
+                rn4020_starttimer(TMR_LEDS, LED_BLINK_MS);
             }
             break;
 
         case LED_BTLE_PAIRED:
-            if (!appData.led1) {
+            if (!rn4020_appdata.led1) {
                 RELAY1; /* toggle led 3 for testing */
             }
             /*
              * logic low turns on relay
-               RELAY1 = !appData.led1;
-               RELAY2 = !appData.led2;
-               RELAY3 = !appData.led3;
-               RELAY4 = !appData.led4;
+               RELAY1 = !rn4020_appdata.led1;
+               RELAY2 = !rn4020_appdata.led2;
+               RELAY3 = !rn4020_appdata.led3;
+               RELAY4 = !rn4020_appdata.led4;
              */
             SLED_OFF;
             G_LED_ON;
             break;
 
         case LED_ERROR:
-            switch (appData.error_code) {
+            switch (rn4020_appdata.error_code) {
                 case ERROR_INITIALIZATION:
                     SLED_OFF;
                     break;
@@ -95,29 +95,29 @@ void LED_Tasks(void)
     }
 }
 
-void LED_SET_LightShow(LED_LIGHTSHOW_T setting)
+void rn4040_led_set_lightshow(LED_LIGHTSHOW_T setting)
 {
     lightShow = setting;
 }
 
 //Update LEDs with status from LED update message
 
-void GetNewLEDs(void)
+void rn4040_getnewleds(void)
 {
-    if (!appData.update_packet) {
-        appData.led1 = appData.oled1;
-        appData.led2 = appData.oled2;
-        appData.led3 = appData.oled3;
-        appData.led4 = appData.oled4;
+    if (!rn4020_appdata.update_packet) {
+        rn4020_appdata.led1 = rn4020_appdata.oled1;
+        rn4020_appdata.led2 = rn4020_appdata.oled2;
+        rn4020_appdata.led3 = rn4020_appdata.oled3;
+        rn4020_appdata.led4 = rn4020_appdata.oled4;
     }
     else {
-        appData.led1 = appData.receive_packet[9] == '1' ? 1 : 0;
-        appData.led2 = appData.receive_packet[11] == '1' ? 1 : 0;
-        appData.led3 = appData.receive_packet[13] == '1' ? 1 : 0;
-        appData.led4 = appData.receive_packet[15] == '1' ? 1 : 0;
-        appData.oled1 = appData.led1;
-        appData.oled2 = appData.led2;
-        appData.oled3 = appData.led3;
-        appData.oled4 = appData.led4;
+        rn4020_appdata.led1 = rn4020_appdata.receive_packet[9] == '1' ? 1 : 0;
+        rn4020_appdata.led2 = rn4020_appdata.receive_packet[11] == '1' ? 1 : 0;
+        rn4020_appdata.led3 = rn4020_appdata.receive_packet[13] == '1' ? 1 : 0;
+        rn4020_appdata.led4 = rn4020_appdata.receive_packet[15] == '1' ? 1 : 0;
+        rn4020_appdata.oled1 = rn4020_appdata.led1;
+        rn4020_appdata.oled2 = rn4020_appdata.led2;
+        rn4020_appdata.oled3 = rn4020_appdata.led3;
+        rn4020_appdata.oled4 = rn4020_appdata.led4;
     }
 }

@@ -56,190 +56,194 @@
 #include "mrf24.h"
 #include "ads1220.h"
 
-APP_DATA appData;
-ADC_DATA adcData;
-AIO_DATA aioData;
+rn4020_appdata_t rn4020_appdata;
+rn4020_adcdata_t rn4020_adcdata;
+aio_data_t rn4020_aiodata;
 
 /* Primary application state machine */
 
-void APP_Tasks(void)
+void rn4020_app_tasks(void)
 {
     /* Update LED outputs */
     LED_Tasks();
 
-    switch (appData.state) {
+    switch (rn4020_appdata.state) {
         /* Initial state */
         case APP_INITIALIZE:
-            if (APP_Initialize()) {
-                appData.state = APP_BLUETOOTH_ADVERTISE;
+            if (rn4020_app_initialize()) {
+                rn4020_appdata.state = APP_BLUETOOTH_ADVERTISE;
             }
             else {
-                appData.state = APP_INITIALIZATION_ERROR;
+                rn4020_appdata.state = APP_INITIALIZATION_ERROR;
             }
             break;
 
         /* Initialization failed */
         case APP_INITIALIZATION_ERROR:
-            LED_SET_LightShow(LED_ERROR);
+            rn4040_led_set_lightshow(LED_ERROR);
             break;
 
         /* We're not connected to a device - advertise mode */
         case APP_BLUETOOTH_ADVERTISE:
-            LED_SET_LightShow(LED_BTLE_ADVERTISING);
+            rn4040_led_set_lightshow(LED_BTLE_ADVERTISING);
             if (BT_CONNECTED) {
-                appData.state = APP_BLUETOOTH_PAIRED;
+                rn4020_appdata.state = APP_BLUETOOTH_PAIRED;
             }
             break;
 
         /* We are connected to a BTLE device */
         case APP_BLUETOOTH_PAIRED:
             /* Update LEDs */
-            LED_SET_LightShow(LED_BTLE_PAIRED);
+            rn4040_led_set_lightshow(LED_BTLE_PAIRED);
             /* Check to see if we are still connected; return to advertise state if not */
             if (!BT_CONNECTED) {
-                appData.update_packet = false;
-                LED_SET_LightShow(LED_BTLE_ADVERTISING);
-                appData.state = APP_BLUETOOTH_ADVERTISE;
+                rn4020_appdata.update_packet = false;
+                rn4040_led_set_lightshow(LED_BTLE_ADVERTISING);
+                rn4020_appdata.state = APP_BLUETOOTH_ADVERTISE;
                 G_LED_OFF;
                 break;
             }
 
             /* Check if switches have changed and debounce timers are expired */
             Switch_Tasks();
-            if (appData.sendSwitches) { //New switch status to send?
-                sprintf(appData.transmit_packet, "shw," PRIVATE_CHAR_SWITCHES_H ",%d%d%d%d\r", appData.sw1, appData.sw2, appData.sw3, appData.sw4);
-                if (BT_SendCommand(appData.transmit_packet, true)) {
-                    appData.sendSwitches = false;
+            if (rn4020_appdata.sendSwitches) { //New switch status to send?
+                sprintf(rn4020_appdata.transmit_packet, "shw," PRIVATE_CHAR_SWITCHES_H ",%d%d%d%d\r", rn4020_appdata.sw1, rn4020_appdata.sw2, rn4020_appdata.sw3, rn4020_appdata.sw4);
+                if (rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, true)) {
+                    rn4020_appdata.sendSwitches = false;
                 }
             }
 
             /* Process ADC accumulator value if oversampling is complete */
-            if (appData.accumReady) {
+            if (rn4020_appdata.accumReady) {
                 ADC_ProcAccum();
-                appData.accumReady = false; //Clear app flags
-                appData.ADCinUse = false;
+                rn4020_appdata.accumReady = false; //Clear app flags
+                rn4020_appdata.ADCinUse = false;
             }
 
             /*
-             *  packet transmission queue, TimerDone puts packet in the transmission stream
+             *  packet transmission queue, rn4020_timerdone puts packet in the transmission stream
              */
 
             /* Start new ADC read if timer expired, not currently sampling, and not waiting to process accumulator */
-            if (TimerDone(TMR_ADC) && appData.ADCinUse == false) {
-                if (ADC_Tasks()) {
-                    StartTimer(TMR_ADC, ADC_REFRESH_MS);
+            if (rn4020_timerdone(TMR_ADC) && rn4020_appdata.ADCinUse == false) {
+                if (rn4040_adc_tasks()) {
+                    rn4020_starttimer(TMR_ADC, ADC_REFRESH_MS);
                 }
             }
 
             /* Transmit new potentiometer reading? */
-            if (TimerDone(TMR_POT)) {
+            if (rn4020_timerdone(TMR_POT)) {
                 /* Send message only if pot value has changed */
-                if (appData.potValue != appData.potValueLastTX) {
-                    sprintf(appData.transmit_packet, "shw," PRIVATE_CHAR_POTENTIOMETER_H ",%04d\r\n", appData.potValue);
-                    if (BT_SendCommand(appData.transmit_packet, true)) {
-                        appData.potValueLastTX = appData.potValue;
-                        StartTimer(TMR_POT, POT_TX_MS);
+                if (rn4020_appdata.potValue != rn4020_appdata.potValueLastTX) {
+                    sprintf(rn4020_appdata.transmit_packet, "shw," PRIVATE_CHAR_POTENTIOMETER_H ",%04d\r\n", rn4020_appdata.potValue);
+                    if (rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, true)) {
+                        rn4020_appdata.potValueLastTX = rn4020_appdata.potValue;
+                        rn4020_starttimer(TMR_POT, POT_TX_MS);
                     }
                 }
                 else {
-                    StartTimer(TMR_POT, POT_TX_MS);
+                    rn4020_starttimer(TMR_POT, POT_TX_MS);
                 } /* value not changed - skip this transmission */
             }
 
-            if (TimerDone(TMR_BATT)) {
-                sprintf(appData.transmit_packet, "suw,"PUBLIC_BATT_CHAR_BL ",%02d\r", (appData.potValue >> 6) & 0b00111111);
-                if (BT_SendCommand(appData.transmit_packet, true)) {
-                    StartTimer(TMR_BATT, BATT_TX_MS);
+            if (rn4020_timerdone(TMR_BATT)) {
+                sprintf(rn4020_appdata.transmit_packet, "suw,"PUBLIC_BATT_CHAR_BL ",%02d\r", (rn4020_appdata.potValue >> 6) & 0b00111111);
+                if (rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, true)) {
+                    rn4020_starttimer(TMR_BATT, BATT_TX_MS);
                 }
             }
 
-            if (TimerDone(TMR_HR)) {
-                sprintf(appData.transmit_packet, "suw,"PUBLIC_HR_CHAR_HRM ",%02x%02x%02x%02x\r", 0x08, (appData.heatValue) & 0xff, appData.hrmEnergy & 0x00ff, appData.hrmEnergy >> 8); // format mask and ADC data
-                if (BT_SendCommand(appData.transmit_packet, true)) {
-                    StartTimer(TMR_HR, HR_TX_MS);
-                    sprintf(appData.transmit_packet, "suw,"PUBLIC_HR_CHAR_BSL ",%02x\r", 3);
-                    BT_SendCommand(appData.transmit_packet, false);
-                    appData.hrmEnergy++;
+            if (rn4020_timerdone(TMR_HR)) {
+                sprintf(rn4020_appdata.transmit_packet, "suw,"PUBLIC_HR_CHAR_HRM ","
+                        "%02x%02x%02x%02x\r", 0x08,
+                        (rn4020_appdata.heatValue) & 0xff,
+                        rn4020_appdata.hrmEnergy & 0x00ff,
+                        rn4020_appdata.hrmEnergy >> 8); // format mask and ADC data
+                if (rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, true)) {
+                    rn4020_starttimer(TMR_HR, HR_TX_MS);
+                    sprintf(rn4020_appdata.transmit_packet, "suw,"PUBLIC_HR_CHAR_BSL ",%02x\r", 3);
+                    rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, false);
+                    rn4020_appdata.hrmEnergy++;
                 }
             }
 
-            if (TimerDone(TMR_AIO_DIG)) {
+            if (rn4020_timerdone(TMR_AIO_DIG)) {
                 //Form message
-                sprintf(appData.transmit_packet, "shw,"PUBLIC_AIO_CHAR_DIG_H ",0101010101010101\r"); /* digital data */
+                sprintf(rn4020_appdata.transmit_packet, "shw,"PUBLIC_AIO_CHAR_DIG_H ",0101010101010101\r"); /* digital data */
                 //Try to transmit the message; reset timer if successful
-                if (BT_SendCommand(appData.transmit_packet, true)) {
-                    StartTimer(TMR_AIO_DIG, AIO_TX_MS);
+                if (rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, true)) {
+                    rn4020_starttimer(TMR_AIO_DIG, AIO_TX_MS);
                 }
             }
 
             /* Process any new messages received from RN module */
-            appData.got_packet = BT_ReceivePacket(appData.receive_packet);              /* Get new message if one has been received from the RN4020 */
-            if (appData.got_packet == true) {                                           /* true if new packet received */
-                if (strstr(appData.receive_packet, "WV," PRIVATE_CHAR_LEDS_H ",")) {    /* Check for LED update message 1.33 */
-                    GetNewLEDs();                                                       //Latch new LED values
-                    appData.update_packet = true;
+            rn4020_appdata.got_packet = BT_ReceivePacket(rn4020_appdata.receive_packet);        /* Get new message if one has been received from the RN4020 */
+            if (rn4020_appdata.got_packet == true) {                                            /* true if new packet received */
+                if (strstr(rn4020_appdata.receive_packet, "WV," PRIVATE_CHAR_LEDS_H ",")) {     /* Check for LED update message 1.33 */
+                    rn4040_getnewleds();
+                    rn4020_appdata.update_packet = true;
                 }
                 /*
                    //Other message handling can be added here
                  */
                 /* receive new SPI ADC channel */
-                if (strstr(appData.receive_packet, "WV," PRIVATE_CHAR_ADC_CHAN_H ",")) {
-                    GetNewADC_Chan(); /* new ADC config data */
+                if (strstr(rn4020_appdata.receive_packet, "WV," PRIVATE_CHAR_ADC_CHAN_H ",")) {
+                    rn4040_getnewadc_chan(); /* new ADC config data */
                 }
                 /* receive new SPI SLAVE request */
-                if (strstr(appData.receive_packet, "WV," PRIVATE_CHAR_PIC_SLAVE_H ",")) {}
+                if (strstr(rn4020_appdata.receive_packet, "WV," PRIVATE_CHAR_PIC_SLAVE_H ",")) {}
                 /* HRM energy expended reset */
-                if (strstr(appData.receive_packet, "WV,"PUBLIC_HR_CHAR_RCP_H ",01.")) {
-                    appData.hrmEnergy = 0;
+                if (strstr(rn4020_appdata.receive_packet, "WV,"PUBLIC_HR_CHAR_RCP_H ",01.")) {
+                    rn4020_appdata.hrmEnergy = 0;
                 }
                 /* receive new BATTERY request */
-                if (strstr(appData.receive_packet, "RV,"PUBLIC_BATT_CHAR_H ".")) {
-                    sprintf(appData.transmit_packet, "suw,"PUBLIC_BATT_CHAR_BL ",%d\r", 63);
-                    BT_SendCommand(appData.transmit_packet, false);
+                if (strstr(rn4020_appdata.receive_packet, "RV,"PUBLIC_BATT_CHAR_H ".")) {
+                    sprintf(rn4020_appdata.transmit_packet, "suw,"PUBLIC_BATT_CHAR_BL ",%d\r", 63);
+                    rn4020_bt_sendcommand(rn4020_appdata.transmit_packet, false);
                 }
             }
             break;
 
         default:
             break;
-    }   /* end switch(appData.state) */
-}       /* end APP_Tasks() */
+    }   /* end switch(rn4020_appdata.state) */
+}       /* end rn4020_app_tasks() */
 
 //Sets up the RN module
 
-bool APP_Initialize(void)
+bool rn4020_app_initialize(void)
 {
     /****************************************************************************
-     * Initialize appData structure
+     * Initialize rn4020_appdata structure
      ***************************************************************************/
-    appData.error_code = ERROR_NONE;
-    appData.got_packet = false;
-    appData.potValue = 0;
-    appData.potValueOld = 0xFFFF;
-    appData.potValueLastTX = 0xFFFF;
-    appData.state = APP_INITIALIZE;
-    appData.sw1 = false;
-    appData.sw2 = false;
-    appData.sw3 = false;
-    appData.sw4 = false;
-    appData.led1 = 0;
-    appData.led2 = 0;
-    appData.led3 = 0;
-    appData.led4 = 0;
-    appData.led5 = 0;
-    appData.led6 = 0;
-    appData.update_packet = true;
-    appData.sw1Changed = false;
-    appData.sw2Changed = false;
-    appData.sw3Changed = false;
-    appData.sw4Changed = false;
-    appData.sendSwitches = false;
-    appData.ADCcalFlag = false;
-    appData.sleepFlag = false;
-    appData.RTCCalarm = false;
-    appData.accumReady = false;
-    appData.ADCinUse = false;
-    appData.timer1Flag = false;
+    rn4020_appdata.error_code = ERROR_NONE;
+    rn4020_appdata.got_packet = false;
+    rn4020_appdata.potValue = 0;
+    rn4020_appdata.potValueOld = 0xFFFF;
+    rn4020_appdata.potValueLastTX = 0xFFFF;
+    rn4020_appdata.state = APP_INITIALIZE;
+    rn4020_appdata.sw1 = false;
+    rn4020_appdata.sw2 = false;
+    rn4020_appdata.sw3 = false;
+    rn4020_appdata.sw4 = false;
+    rn4020_appdata.led1 = 0;
+    rn4020_appdata.led2 = 0;
+    rn4020_appdata.led3 = 0;
+    rn4020_appdata.led4 = 0;
+    rn4020_appdata.led5 = 0;
+    rn4020_appdata.led6 = 0;
+    rn4020_appdata.update_packet = true;
+    rn4020_appdata.sw1Changed = false;
+    rn4020_appdata.sw2Changed = false;
+    rn4020_appdata.sw3Changed = false;
+    rn4020_appdata.sw4Changed = false;
+    rn4020_appdata.sendSwitches = false;
+    rn4020_appdata.ADCcalFlag = false;
+    rn4020_appdata.sleepFlag = false;
+    rn4020_appdata.RTCCalarm = false;
+    rn4020_appdata.accumReady = false;
+    rn4020_appdata.ADCinUse = false;
+    rn4020_appdata.timer1Flag = false;
 
     /****************************************************************************
      * Peripherals Init
@@ -247,17 +251,17 @@ bool APP_Initialize(void)
     SPI_Init();
     ADC_Init();
     UART_Init();
-    Timers_Init();
+    rn4020_timers_init();
     Mrf24_Init();
     ads1220_init();
 
     B_LED_ON;
     BT_WAKE_SW_SET; //wake module
     /* Wait for WS status high */
-    StartTimer(TMR_RN_COMMS, 4000);
+    rn4020_starttimer(TMR_RN_COMMS, 4000);
     while (BT_WS == 0) {
-        if (TimerDone(TMR_RN_COMMS)) {
-            appData.error_code = ERROR_INITIALIZATION;
+        if (rn4020_timerdone(TMR_RN_COMMS)) {
+            rn4020_appdata.error_code = ERROR_INITIALIZATION;
             return false;
         }
     }
@@ -267,24 +271,24 @@ bool APP_Initialize(void)
 
     /* Wait for end of "CMD\r\n" - we don't check for full "CMD\r\n" string because we may
        //miss some bits or bytes at the beginning while the UART starts up */
-    StartTimer(TMR_RN_COMMS, 4000);
+    rn4020_starttimer(TMR_RN_COMMS, 4000);
     while (UART_ReadRxBuffer() != '\n') {
-        if (TimerDone(TMR_RN_COMMS)) {
-            appData.error_code = ERROR_INITIALIZATION;
+        if (rn4020_timerdone(TMR_RN_COMMS)) {
+            rn4020_appdata.error_code = ERROR_INITIALIZATION;
             return false;
         }
     }
 
     /* Module is now in command mode and ready for input */
     if (!BT_SetupModule()) { /* Setup RN4020 module */
-        appData.error_code = ERROR_INITIALIZATION;
+        rn4020_appdata.error_code = ERROR_INITIALIZATION;
         return false;
     }
 
 
 #ifdef VERIFY_RN_FW_VER
-    if (!(appData.version_code = BT_CheckFwVer())) {
-        appData.error_code = ERROR_RN_FW;
+    if (!(rn4020_appdata.version_code = BT_CheckFwVer())) {
+        rn4020_appdata.error_code = ERROR_RN_FW;
         return false;
     }
 #endif
@@ -293,7 +297,7 @@ bool APP_Initialize(void)
     while (UART_IsNewRxData()) {
         UART_ReadRxBuffer();
         if (!UART_IsNewRxData()) {
-            WaitMs(100);
+            rn4020_wait_ms(100);
         }
     }
 

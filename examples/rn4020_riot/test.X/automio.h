@@ -45,7 +45,7 @@ typedef struct {
     AUTOMIO_STATE_T state;      //AUTOMIO_Tasks state
     uint8_t digital_packet[8];  // digital value storage
     uint16_t analog_packet[8];  // analog value storage
-} AIO_DATA;
+} aio_data_t;
 
 enum {
     BLE_DIGITAL_INACTIVE = 0,

@@ -8,8 +8,8 @@
 #include "ads1220.h"
 #include "periph/dac.h"
 
-extern APP_DATA appData;
-extern ADC_DATA adcData;
+extern rn4020_appdata_t rn4020_appdata;
+extern rn4020_adcdata_t rn4020_adcdata;
 
 uint8_t *mr24f_rxb;
 uint8_t *mr24f_txb;

@@ -22,28 +22,28 @@
 #include <mips/regdef.h>
 #include <mips/asm.h>
 #include <string.h>
-
+#include <sys/time.h>
+#include <stdio.h>
 #include <periph/timer.h>
 #include "periph/uart.h"
 #include "cpu_conf.h"
-#include <stdio.h>
 #include "sched.h"
 #include "thread.h"
 #include "board.h"
 #include "irq.h"
 #include "timex.h"
 #include "div.h"
-#include <sys/time.h>
+
 
 #ifdef EIC_IRQ
 #include "eic_irq.h"
 #endif
 
 /* core timer blocking delay
- * example:     ShortDelay(50 * US_TO_CT_TICKS);
+ * example:     timer_shortdelay(50 * US_TO_CT_TICKS);
  * 50us delay time
  */
-void ShortDelay(uint32_t DelayCount)
+void timer_shortdelay(uint32_t DelayCount)
 {
     uint32_t StartTime;
 
@@ -59,21 +59,21 @@ void ShortDelay(uint32_t DelayCount)
 #define TIMER_ACCURACY       (1 << TIMER_ACCURACY_SHIFT)
 #define CHANNELS             (3)
 
-extern void UART_1_ISR_RX(void);
-extern void UART_2_ISR_RX(void);
-extern void UART_3_ISR_RX(void);
-extern void UART_4_ISR_RX(void);
+extern void uart_1_isr_rx(void);
+extern void uart_2_isr_rx(void);
+extern void uart_3_isr_rx(void);
+extern void uart_4_isr_rx(void);
 
-extern void SPI_1_ISR_RX(void);
-extern void SPI_2_ISR_RX(void);
-extern void SPI_3_ISR_RX(void);
+extern void spi_1_isr_rx(void);
+extern void spi_2_isr_rx(void);
+extern void spi_3_isr_rx(void);
 
-extern void DMA_SPI_1_ISR_RX(void);
-extern void DMA_SPI_2_ISR_RX(void);
-extern void DMA_SPI_3_ISR_RX(void);
+extern void dma_spi_1_isr_rx(void);
+extern void dma_spi_2_isr_rx(void);
+extern void dma_spi_3_isr_rx(void); /* not used */
 
-extern void _T1Interrupt(void);
-extern void INT_2_ISR_(void);
+extern void rn4020_t1interrupt(void);
+extern void rn4020_int_2_isr(void);
 
 /*
  * The base MIPS count / compare timer is fixed frequency at core clock / 2
@@ -312,7 +312,7 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 
     /* Bus RX SPI1 DMA 0 */
     if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
-        DMA_SPI_1_ISR_RX();
+        dma_spi_1_isr_rx();
         DCH0INTCLR = 0xFF;
         IFS4CLR = _IFS4_DMA0IF_MASK;
     }
@@ -325,57 +325,57 @@ void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 
     /* Bus RX SPI2 DMA 2 */
     if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
-        DMA_SPI_2_ISR_RX();
+        dma_spi_2_isr_rx();
         DCH2INTCLR = 0xFF;
         IFS4CLR = _IFS4_DMA2IF_MASK;
     }
 
     if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
-        SPI_1_ISR_RX();
+        spi_1_isr_rx();
         IFS3CLR = _IFS3_SPI1RXIF_MASK;
     }
 
     if (IEC4bits.SPI2RXIE && IFS4bits.SPI2RXIF) {
-        SPI_2_ISR_RX();
+        spi_2_isr_rx();
         IFS4CLR = _IFS4_SPI2RXIF_MASK;
     }
 
     if (IEC4bits.SPI3RXIE && IFS4bits.SPI3RXIF) {
-        SPI_3_ISR_RX();
+        spi_3_isr_rx();
         IFS4CLR = _IFS4_SPI3RXIF_MASK;
     }
 
     /* process uart receive interrupts here */
     if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
         IFS3CLR = _IFS3_U1RXIF_MASK;
-        UART_1_ISR_RX();
+        uart_1_isr_rx();
     }
 
     if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
         IFS4CLR = _IFS4_U2RXIF_MASK;
-        UART_2_ISR_RX();
+        uart_2_isr_rx();
     }
 
     if (IEC4bits.U3RXIE && IFS4bits.U3RXIF) {
         IFS4CLR = _IFS4_U3RXIF_MASK;
-        UART_3_ISR_RX();
+        uart_3_isr_rx();
     }
 
     if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
         IFS5CLR = _IFS5_U4RXIF_MASK;
-        UART_4_ISR_RX();
+        uart_4_isr_rx();
     }
 
     /* Timer0 real interrupt for BLE state machine timers */
     if (IEC0bits.T1IE && IFS0bits.T1IF) {
         IFS0CLR = _IFS0_T1IF_MASK;
-        _T1Interrupt();
+        rn4020_t1interrupt();
     }
 
     /* ads1220 conversion done interrupt */
     if (IEC0bits.INT2IE && IFS0bits.INT2IF) {
         IFS0CLR = _IFS0_INT2IF_MASK;
-        INT_2_ISR_();
+        rn4020_int_2_isr();
     }
 #endif
 }

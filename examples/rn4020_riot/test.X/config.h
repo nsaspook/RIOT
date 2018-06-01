@@ -52,11 +52,12 @@
     2.8	increase ADC sampling and message transmission rates
     2.9	minor spelling fixes
     3.0	Add some public service support
-    3.1	heart rate service added (demo data) makes software version 1.33.4 firmware dependant
+    3.1	heart rate service added (demo data)
+ *	makes software version 1.33.4 firmware dependant
     3.2	add automation io service
     4.0	riot-os port
     4.1	basic BLE funtions
- *	4.2	generize gpio and hardware functions
+    4.2	generize gpio and hardware functions
  */
 
 /*******************************************************************************
@@ -179,6 +180,7 @@
 #define PRIVATE_CHAR_ADC_CHAN_H     "0037"
 #define PRIVATE_CHAR_PIC_SLAVE_H    "0039"
 
+#ifdef ESP_STUFF
 typedef struct {
 #define ESP_UUID_LEN_16     2
 #define ESP_UUID_LEN_32     4
@@ -235,6 +237,7 @@ struct gatts_char_inst {
     char char_handle[16];
     char char_nvs[16];
 };
+#endif
 
 /*******************************************************************************
  * End application configuration settings

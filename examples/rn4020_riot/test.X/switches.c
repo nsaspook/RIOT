@@ -36,32 +36,32 @@
 #include "config.h"
 #include "timers.h"
 
-extern APP_DATA appData;
+extern rn4020_appdata_t rn4020_appdata;
 
 //Switches state machine
 
 void Switch_Tasks(void)
 {
     //Check if switches have changed and debounce timers are expired
-    if (appData.sw1Changed && TimerDone(TMR_SW1_DEBOUNCE)) {
+    if (rn4020_appdata.sw1Changed && rn4020_timerdone(TMR_SW1_DEBOUNCE)) {
 
-        appData.sw1Changed = false;     //clear individual flag
-        appData.sendSwitches = true;    //set group flag to request TX
+        rn4020_appdata.sw1Changed = false;      //clear individual flag
+        rn4020_appdata.sendSwitches = true;     //set group flag to request TX
     }
-    if (appData.sw2Changed && TimerDone(TMR_SW2_DEBOUNCE)) {
+    if (rn4020_appdata.sw2Changed && rn4020_timerdone(TMR_SW2_DEBOUNCE)) {
 
-        appData.sw2Changed = false;
-        appData.sendSwitches = true;
+        rn4020_appdata.sw2Changed = false;
+        rn4020_appdata.sendSwitches = true;
     }
-    if (appData.sw3Changed && TimerDone(TMR_SW3_DEBOUNCE)) {
+    if (rn4020_appdata.sw3Changed && rn4020_timerdone(TMR_SW3_DEBOUNCE)) {
 
-        appData.sw3Changed = false;
-        appData.sendSwitches = true;
+        rn4020_appdata.sw3Changed = false;
+        rn4020_appdata.sendSwitches = true;
     }
-    if (appData.sw4Changed && TimerDone(TMR_SW4_DEBOUNCE)) {
+    if (rn4020_appdata.sw4Changed && rn4020_timerdone(TMR_SW4_DEBOUNCE)) {
 
-        appData.sw4Changed = false;
-        appData.sendSwitches = true;
+        rn4020_appdata.sw4Changed = false;
+        rn4020_appdata.sendSwitches = true;
     }
 }
 

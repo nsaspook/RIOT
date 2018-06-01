@@ -40,45 +40,49 @@
 #include "timers.h"
 #include "app.h"
 
-extern APP_DATA appData;
+extern rn4020_appdata_t rn4020_appdata;
 
 static volatile uint16_t tickCount[TMR_COUNT] = { 0 };
 
-void Timers_Init(void)
+void rn4020_timers_init(void)
 {
-    //Timer 1 is used for interrupt based software timers counting 1ms intervals to a resolution of 500us
-    T1CON = TIMER_OFF;              //Timer 1 off
-    TMR1 = 0;                       //Clear timer 1
-    PR1 = TIMER_500US_PERIOD;       //Set the period value for 500us
-    T1CON |= TIMER_ON_PRESCALE1;    //using 1:1 prescaler and turn on timer 1
-    IFS0bits.T1IF = 0;              //Clear the interrupt flag
-    IPC1bits.T1IP = 3;              /* DMA interrupt priority. */
-    IPC1bits.T1IS = 1;              /* DMA sub-priority. */
-    IEC0bits.T1IE = 1;              //Enable the timer 1 interrupt
+    /* Timer 1 is used for interrupt based software timers
+     * counting 1ms intervals to a resolution of 500us
+     */
+    T1CON = TIMER_OFF;
+    TMR1 = 0;
+    PR1 = TIMER_500US_PERIOD;
+    T1CON |= TIMER_ON_PRESCALE1;
+    IFS0bits.T1IF = 0;
+    IPC1bits.T1IP = 3;
+    IPC1bits.T1IS = 1;
+    IEC0bits.T1IE = 1;
 }
 
-void StartTimer(uint8_t timer, uint16_t count)
+void rn4020_starttimer(uint8_t timer, uint16_t count)
 {
-    tickCount[timer] = count << 1; //Interrupt is every 500us but StartTimer() takes multiple of 1ms so multiply by 2
+    tickCount[timer] = count << 1;
+    /* Interrupt is every 500us but rn4020_starttimer()
+     * takes multiple of 1ms so multiply by 2
+     */
 }
 
-bool TimerDone(uint8_t timer)
+bool rn4020_timerdone(uint8_t timer)
 {
-    if (tickCount[timer] == 0) {    //Check if counted down to zero
-        return true;                //then return true
+    if (tickCount[timer] == 0) {
+        return true;
     }
-    return false;                   //else return false
+    return false;
 }
 
-void WaitMs(uint16_t numMilliseconds)
+void rn4020_wait_ms(uint16_t numMilliseconds)
 {
-    StartTimer(TMR_INTERNAL, numMilliseconds); //Start software timer and wait for it to count down
-    while (!TimerDone(TMR_INTERNAL)) {}
+    rn4020_starttimer(TMR_INTERNAL, numMilliseconds);
+    while (!rn4020_timerdone(TMR_INTERNAL)) {}
 }
 
 /* Timer 1 interrupt routine for application software timers */
-
-void _T1Interrupt(void)
+void rn4020_t1interrupt(void)
 {
     uint8_t i;
 

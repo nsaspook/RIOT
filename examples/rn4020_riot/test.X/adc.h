@@ -39,9 +39,9 @@
 // Section: Functions
 // *****************************************************************************
 
-void ADC_Init(void);        //Initialize the ADC
-bool ADC_Tasks(void);       //Update ADC reading
-void ADC_ProcAccum(void);   //Process full accumulator
-void GetNewADC_Chan(void);
+void ADC_Init(void);            //Initialize the ADC
+bool rn4040_adc_tasks(void);    //Update ADC reading
+void ADC_ProcAccum(void);       //Process full accumulator
+void rn4040_getnewadc_chan(void);
 
 #endif  /* ADC_H */

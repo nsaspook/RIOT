@@ -12,6 +12,8 @@
 
 #include <stdio.h>
 #include <stdint.h>
+#include <mips/cpu.h>
+#include <mips/m32c0.h>
 #include "periph/gpio.h"
 #include "periph/hwrng.h"
 #include "periph/spi.h"
@@ -20,8 +22,6 @@
 #include "bitarithm.h"
 #include "board.h"
 #include "cpu.h"
-#include <mips/cpu.h>
-#include <mips/m32c0.h>
 
 extern void dummy(void);
 

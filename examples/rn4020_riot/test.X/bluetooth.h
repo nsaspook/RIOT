@@ -51,7 +51,7 @@ enum BluetoothDecodeState {
 
 
 bool BT_ReceivePacket(char *message);
-bool BT_SendCommand(const char *data, bool wait);
+bool rn4020_bt_sendcommand(const char *data, bool wait);
 void BT_SendByte(char data);
 bool BT_GetResponse(char *data);
 bool BT_CompareResponse(const char *data1, const char *data2);

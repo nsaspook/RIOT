@@ -26,7 +26,7 @@ int main(void)
     printf("\r\n rn4020 app\r\n");
 
     while (1) {
-        APP_Tasks();
+        rn4020_app_tasks();
         LED3_OFF;
         LED2_ON;
         mrf24f_testing();

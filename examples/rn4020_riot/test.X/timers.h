@@ -67,11 +67,11 @@ enum APP_TIMERS {
     TMR_COUNT //number of timers - always keep at end of enum!
 };
 
-void Timers_Init(void);
-void StartTimer(uint8_t timer, uint16_t count);
-bool TimerDone(uint8_t timer);
-void WaitMs(uint16_t numMilliseconds);
-void _T1Interrupt(void);
+void rn4020_timers_init(void);
+void rn4020_starttimer(uint8_t timer, uint16_t count);
+bool rn4020_timerdone(uint8_t timer);
+void rn4020_wait_ms(uint16_t numMilliseconds);
+void rn4020_t1interrupt(void);
 
 #ifdef USE_SLEEP                //see config.h, Application setting section
 inline void SleepTimerReset(void);

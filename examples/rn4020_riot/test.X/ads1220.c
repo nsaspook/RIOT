@@ -12,22 +12,22 @@ static uint8_t *tx_buff;
 static uint8_t *rx_buff;
 static bool upd = false;
 
-extern APP_DATA appData;
+extern rn4020_appdata_t rn4020_appdata;
 
-void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
-                            const void *out, void *in, size_t len)
+static void ads_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
+                                   const void *out, void *in, size_t len)
 {
     spi_speed_config(bus, 1, SPI_CLK_2MHZ); /* mode , no speed change */
     SPI_CS1_0;
-    ShortDelay(75);
+    timer_shortdelay(75);
     spi_transfer_bytes(bus, cs, cont, out, in, len);
     tx_buff[0] = ADS1220_CMD_SYNC;
     spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
-    ShortDelay(25);
+    timer_shortdelay(25);
     SPI_CS1_1;
 }
 
-void ads_int_setup(void)
+static void ads_int_setup(void)
 {
     IEC0CLR = _IEC0_INT2IE_MASK;    /* disable interrupt */
     INTCONbits.INT2EP = 0;
@@ -46,10 +46,10 @@ int ads1220_init(void)
      */
     spi_speed_config(SPI_DEV(2), 1, SPI_CLK_2MHZ); /* mode , no speed change */
     SPI_CS1_0;
-    ShortDelay(50);
+    timer_shortdelay(50);
     tx_buff[0] = ADS1220_CMD_RESET;
     spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
-    ShortDelay(250 * US_TO_CT_TICKS);
+    timer_shortdelay(250 * US_TO_CT_TICKS);
     tx_buff[0] = ADS1220_CMD_WREG + 3;
     tx_buff[1] = ads1220_r0;
     tx_buff[2] = ads1220_r1 | ADS1220_TEMP_SENSOR;
@@ -62,7 +62,7 @@ int ads1220_init(void)
     tx_buff[3] = 0;
     tx_buff[4] = 0;
     spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 5);
-    ShortDelay(10 * US_TO_CT_TICKS);
+    timer_shortdelay(10 * US_TO_CT_TICKS);
     /*
      * Check to be sure we have a device
      */
@@ -82,7 +82,7 @@ int ads1220_init(void)
     return 0;
 }
 
-static void ADS1220WriteRegister(int32_t StartAddress, int32_t NumRegs, uint32_t *pData)
+static void ads1220_writeregister(int32_t StartAddress, int32_t NumRegs, uint32_t *pData)
 {
     int32_t i;
 
@@ -143,7 +143,7 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
         }
         cMux |= ((range & 0x03) << 1); /* setup the gain bits for range with NO pga */
         cMux |= ads1220_r0_for_mux_gain;
-        ADS1220WriteRegister(ADS1220_0_REGISTER, 0x01, &cMux);
+        ads1220_writeregister(ADS1220_0_REGISTER, 0x01, &cMux);
     }
 }
 
@@ -161,29 +161,29 @@ int ads1220_testing(void)
         tx_buff[2] = 0;
         tx_buff[3] = 0;
         ads_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 4);
-        appData.ads1220Value = rx_buff[1];
-        appData.ads1220Value = (appData.ads1220Value << 8) | rx_buff[2];
-        appData.ads1220Value = (appData.ads1220Value << 8) | rx_buff[3];
+        rn4020_appdata.ads1220Value = rx_buff[1];
+        rn4020_appdata.ads1220Value = (rn4020_appdata.ads1220Value << 8) | rx_buff[2];
+        rn4020_appdata.ads1220Value = (rn4020_appdata.ads1220Value << 8) | rx_buff[3];
 
         /* mangle the data as necessary */
         /* Bipolar Offset Binary */
-        //		appData.ads1220Value &= 0x0ffffff;
-        //		appData.ads1220Value ^= 0x0800000;
+        //		rn4020_appdata.ads1220Value &= 0x0ffffff;
+        //		rn4020_appdata.ads1220Value ^= 0x0800000;
 
         if (SWITCH1 == 0) {
-            printf(" ADS1220 value: %x\r\n", (int) (appData.ads1220Value >> 10));
+            printf(" ADS1220 value: %x\r\n", (int) (rn4020_appdata.ads1220Value >> 10));
         }
         upd = false;
         i = 0;
         dac_set(0, a1 += 100);
         dac_set(1, b1 += 100);
     }
-    return appData.ads1220Value;
+    return rn4020_appdata.ads1220Value;
 }
 
-void INT_2_ISR_(void)
+void rn4020_int_2_isr(void)
 {
     PDEBUG3_ON;
-    appData.heatValue = (int16_t) ((appData.ads1220Value >> 10) - 0x0370);
+    rn4020_appdata.heatValue = (int16_t) ((rn4020_appdata.ads1220Value >> 10) - 0x0370);
     upd = true;
 }

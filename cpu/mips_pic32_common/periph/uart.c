@@ -39,13 +39,13 @@
 
 /* PERIPHERAL_CLOCK must be defined in board file */
 
-typedef struct PIC32_UART_tag {
+typedef struct pic32_uart_tag {
     volatile uint32_t *regs;
     uint32_t clock;
-} PIC32_UART_T;
+} pic32_uart_t;
 
 /* pic uarts are numbered 1 to 6 */
-static PIC32_UART_T pic_uart[UART_NUMOF + 1];
+static pic32_uart_t pic_uart[UART_NUMOF + 1];
 
 /**
  * @brief   Allocate memory to store the callback functions
@@ -148,22 +148,22 @@ static void rx_irq(uart_t uart)
     }
 }
 
-void UART_1_ISR_RX(void)
+void uart_1_isr_rx(void)
 {
     rx_irq(1);
 }
 
-void UART_2_ISR_RX(void)
+void uart_2_isr_rx(void)
 {
     rx_irq(2);
 }
 
-void UART_3_ISR_RX(void)
+void uart_3_isr_rx(void)
 {
     rx_irq(3);
 }
 
-void UART_4_ISR_RX(void)
+void uart_4_isr_rx(void)
 {
     rx_irq(4);
 }

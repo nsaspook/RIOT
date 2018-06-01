@@ -19,14 +19,13 @@
  * https://github.com/jasonkajita/pic32-part-support/blob/master/include/sys/l1cache.h
  */
 
+#include <stdio.h>
+#include <string.h>
 #include "assert.h"
 #include "board.h"
 #include "mutex.h"
 #include "periph/gpio.h"
 #include "periph/spi.h"
-
-#include <stdio.h>
-#include <string.h>
 #include "periph/uart.h"
 
 #define SPIxCON(U)          ((U).regs[0x00 / 4])
@@ -64,26 +63,26 @@
 
 /* PERIPHERAL_CLOCK must be defined in board file */
 
-typedef struct PIC32_SPI_tag {
+typedef struct pic32_spi_tag {
     volatile uint32_t *regs;
     uint8_t *in;
     size_t len;
     volatile int32_t complete;
-} PIC32_SPI_T;
+} pic32_spi_t;
 
-typedef struct PIC32_DMA_tag {
+typedef struct pic_32_dma_tag {
     volatile uint32_t *regs;
     spi_t bus;
-} PIC32_DMA_T;
+} pic32_dma_t;
 
-static PIC32_SPI_T pic_spi[SPI_NUMOF + 1];
+static pic32_spi_t pic_spi[SPI_NUMOF + 1];
 static mutex_t locks[SPI_NUMOF + 1];
-static PIC32_DMA_T pic_dma[DMA_NUMOF];
+static pic32_dma_t pic_dma[DMA_NUMOF];
 
 int32_t spi_complete(spi_t);
-static void Init_Dma_Chan(uint8_t, uint32_t, volatile unsigned int *, volatile unsigned int *, spi_t);
+static void init_dma_chan(uint8_t, uint32_t, volatile unsigned int *, volatile unsigned int *, spi_t);
 
-static void Release_Dma_Chan(uint8_t chan)
+static void release_dma_chan(uint8_t chan)
 {
     assert(chan < DMA_NUMOF);
 
@@ -94,7 +93,7 @@ static void Release_Dma_Chan(uint8_t chan)
     DCHxINT(pic_dma[chan]) = 0;
 }
 
-static void Init_Dma_Chan(uint8_t chan, uint32_t irq_num, volatile unsigned int *SourceDma, volatile unsigned int *DestDma, spi_t bus)
+static void init_dma_chan(uint8_t chan, uint32_t irq_num, volatile unsigned int *SourceDma, volatile unsigned int *DestDma, spi_t bus)
 {
     assert(chan < DMA_NUMOF);
     assert(bus != 0 && bus <= SPI_NUMOF_USED);
@@ -146,7 +145,7 @@ static void spi_reset_dma_irq(spi_t bus)
     }
 }
 
-static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
+static void trigger_bus_dma_tx(uint8_t chan, size_t len, uint32_t physSourceDma)
 {
     assert(chan < DMA_NUMOF);
 
@@ -155,7 +154,7 @@ static void Trigger_Bus_DMA_Tx(uint8_t chan, size_t len, uint32_t physSourceDma)
     DCHxCONSET(pic_dma[chan]) = _DCH0CON_CHEN_MASK; /* Channel enable. */
 }
 
-static void Trigger_Bus_DMA_Rx(uint8_t chan, size_t len, uint32_t physDestDma)
+static void trigger_bus_dma_rx(uint8_t chan, size_t len, uint32_t physDestDma)
 {
     assert(chan < DMA_NUMOF);
 
@@ -213,12 +212,12 @@ static void spi_irq_enable(spi_t bus)
 
     switch (bus) {
         case 1:
-            Init_Dma_Chan(SPI1_DMA_TX, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
-            Init_Dma_Chan(SPI1_DMA_RX, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
+            init_dma_chan(SPI1_DMA_TX, _SPI1_TX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
+            init_dma_chan(SPI1_DMA_RX, _SPI1_RX_VECTOR, &SPI1BUF, &SPI1BUF, bus);
             break;
         case 2:
-            Init_Dma_Chan(SPI2_DMA_TX, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
-            Init_Dma_Chan(SPI2_DMA_RX, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
+            init_dma_chan(SPI2_DMA_TX, _SPI2_TX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
+            init_dma_chan(SPI2_DMA_RX, _SPI2_RX_VECTOR, &SPI2BUF, &SPI2BUF, bus);
             break;
         default:
             break;
@@ -243,12 +242,12 @@ static void spi_irq_disable(spi_t bus)
 
     switch (bus) {
         case 1:
-            Release_Dma_Chan(SPI1_DMA_RX);
-            Release_Dma_Chan(SPI1_DMA_TX);
+            release_dma_chan(SPI1_DMA_RX);
+            release_dma_chan(SPI1_DMA_TX);
             break;
         case 2:
-            Release_Dma_Chan(SPI2_DMA_RX);
-            Release_Dma_Chan(SPI2_DMA_TX);
+            release_dma_chan(SPI2_DMA_RX);
+            release_dma_chan(SPI2_DMA_TX);
             break;
         default:
             break;
@@ -358,12 +357,12 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
     /* Translate a kernel (KSEG) virtual address to a physical address. */
     switch (bus + dma_able) {
         case 1:
-            Trigger_Bus_DMA_Rx(SPI1_DMA_RX, len, KVA_TO_PA(in));
-            Trigger_Bus_DMA_Tx(SPI1_DMA_TX, len, KVA_TO_PA(out_buffer));
+            trigger_bus_dma_rx(SPI1_DMA_RX, len, KVA_TO_PA(in));
+            trigger_bus_dma_tx(SPI1_DMA_TX, len, KVA_TO_PA(out_buffer));
             break;
         case 2:
-            Trigger_Bus_DMA_Rx(SPI2_DMA_RX, len, KVA_TO_PA(in));
-            Trigger_Bus_DMA_Tx(SPI2_DMA_TX, len, KVA_TO_PA(out_buffer));
+            trigger_bus_dma_rx(SPI2_DMA_RX, len, KVA_TO_PA(in));
+            trigger_bus_dma_tx(SPI2_DMA_TX, len, KVA_TO_PA(out_buffer));
             break;
         default: /* non-dma mode */
             while (len--) {
@@ -438,33 +437,34 @@ static void spi_rx_irq(spi_t bus)
     }
 }
 
-void SPI_1_ISR_RX(void)
+void spi_1_isr_rx(void)
 {
     spi_rx_irq(1);
 }
 
-void SPI_2_ISR_RX(void)
+void spi_2_isr_rx(void)
 {
     spi_rx_irq(2);
 }
 
-void SPI_3_ISR_RX(void)
+void spi_3_isr_rx(void)
 {
     spi_rx_irq(3);
 }
 
 /* set transfer complete flag */
-void DMA_SPI_1_ISR_RX(void)
+void dma_spi_1_isr_rx(void)
 {
     pic_spi[1].complete = true;
 }
 
-void DMA_SPI_2_ISR_RX(void)
+void dma_spi_2_isr_rx(void)
 {
     pic_spi[2].complete = true;
 }
 
-void DMA_SPI_3_ISR_RX(void)
+/* not currently used */
+void dma_spi_3_isr_rx(void)
 {
     pic_spi[3].complete = true;
 }
