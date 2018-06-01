@@ -14,7 +14,7 @@ extern void set_cache_policy(uint32_t);
 
 int main(void)
 {
-    void initBoard(void);
+    void rn4020_initboard(void);
 
     /* testing cache modes */
     set_cache_policy(WB_WA);
@@ -23,7 +23,7 @@ int main(void)
      * setup debug serial ports #4 @115200 bps
      */
     uart_init(4, DEBUG_UART_BAUD, NULL, 0);
-    printf("\r\n rn4020 app\r\n");
+    printf("\r\n rn4020 app %s\r\n", APP_VERSION_STR);
 
     while (1) {
         rn4020_app_tasks();
@@ -35,8 +35,7 @@ int main(void)
     return 0;
 }
 
-void initBoard(void)
+void rn4020_initboard(void)
 {
-    // LEDs are outputs and off
     RELAY1;
 }

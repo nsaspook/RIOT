@@ -9,19 +9,7 @@
 static uint8_t *td;
 static uint8_t *rd;
 
-static MCP_ADC_DATA riot_adc;
-
-static void ADC_Init(void)
-{
-    static bool adc_is_init = false;
-
-    if (!adc_is_init) {
-        gpio_set(Ja10_3);                   // deselect the ADC
-        td = __pic32_alloc_coherent(32);    /* uncached memory for spi transfers */
-        rd = __pic32_alloc_coherent(32);
-        adc_is_init = true;
-    }
-}
+static mcp3208_data_t riot_adc;
 
 /* for RIOT-OS 8 lines, 12-bit resolution only */
 int adc_sample(adc_t line, adc_res_t res)
@@ -50,7 +38,15 @@ int adc_sample(adc_t line, adc_res_t res)
 int adc_init(adc_t line)
 {
     (void) line;
+    static bool adc_is_init = false;
 
-    ADC_Init();
-    return true;
+    if (!adc_is_init) {
+        gpio_set(Ja10_3);                   // deselect the ADC
+        td = __pic32_alloc_coherent(32);    /* uncached memory for spi transfers */
+        rd = __pic32_alloc_coherent(32);
+        if (td && rd) {
+            adc_is_init = true;
+        }
+    }
+    return adc_is_init;
 }

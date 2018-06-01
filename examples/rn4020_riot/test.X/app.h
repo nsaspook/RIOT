@@ -1,35 +1,4 @@
-/*
- * Copyright (C) 2014 Microchip Technology Inc. and its subsidiaries.  You may use this software and any derivatives
- * exclusively with Microchip products.
- *
- * MICROCHIP SOFTWARE NOTICE AND DISCLAIMER:  You may use this software, and any derivatives created by any person or
- * entity by or on your behalf, exclusively with Microchip?s products.  Microchip and its licensors retain all ownership
- * and intellectual property rights in the accompanying software and in all derivatives hereto.
- *
- * This software and any accompanying information is for suggestion only.  It does not modify Microchip?s standard
- * warranty for its products.  You agree that you are solely responsible for testing the software and determining its
- * suitability.  Microchip has no obligation to modify, test, certify, or support the software.
- *
- * THIS SOFTWARE IS SUPPLIED BY MICROCHIP "AS IS".  NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, INCLUDING,
- * BUT NOT LIMITED TO, IMPLIED WARRANTIES OF NON-INFRINGEMENT, MERCHANTABILITY, AND FITNESS FOR A PARTICULAR PURPOSE
- * APPLY TO THIS SOFTWARE, ITS INTERACTION WITH MICROCHIP?S PRODUCTS, COMBINATION WITH ANY OTHER PRODUCTS, OR USE IN
- * ANY APPLICATION.
- *
- * IN NO EVENT, WILL MICROCHIP BE LIABLE, WHETHER IN CONTRACT, WARRANTY, TORT (INCLUDING NEGLIGENCE OR BREACH OF
- * STATUTORY DUTY), STRICT LIABILITY, INDEMNITY, CONTRIBUTION, OR OTHERWISE, FOR ANY INDIRECT, SPECIAL, PUNITIVE,
- * EXEMPLARY, INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, FOR COST OR EXPENSE OF ANY KIND WHATSOEVER RELATED TO THE
- * SOFTWARE, HOWSOEVER CAUSED, EVEN IF MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE FORESEEABLE.
- * TO THE FULLEST EXTENT ALLOWABLE BY LAW, MICROCHIP'S TOTAL LIABILITY ON ALL CLAIMS IN ANY WAY RELATED TO THIS
- * SOFTWARE WILL NOT EXCEED THE AMOUNT OF FEES, IF ANY, THAT YOU HAVE PAID DIRECTLY TO MICROCHIP FOR THIS SOFTWARE.
- *
- * MICROCHIP PROVIDES THIS SOFTWARE CONDITIONALLY UPON YOUR ACCEPTANCE OF THESE TERMS.
- *
- *
- * File:        app.c
- * Date:        July 24, 2014
- * Compiler:    XC16 v1.23
- *
- */
+
 
 #ifndef APP_H
 #define APP_H
@@ -57,21 +26,21 @@ typedef struct {
     char transmit_packet[BT_TX_PKT_SZ];
     bool got_packet,
          update_packet,
-         sendSwitches,
-         ADCcalFlag,
+         sendswitches,
+         adc_cal_flag,
          led1, led2, led3, led4, led5, led6,
          oled1, oled2, oled3, oled4;
     int8_t error_code;
     volatile bool sw1, sw2, sw3, sw4,
-                  sw1Changed, sw2Changed, sw3Changed, sw4Changed,
-                  RTCCalarm,
-                  accumReady,
-                  ADCinUse,
-                  timer1Flag,
-                  CNint,
-                  sleepFlag;
-    uint16_t potValue, potValueOld, potValueLastTX, version_code, hrmEnergy, heatValue;
-    int32_t ads1220Value;
+                  sw1changed, sw2changed, sw3changed, sw4changed,
+                  rtccalarm,
+                  accumready,
+                  adcinuse,
+                  timer1flag,
+                  cn_int,
+                  sleepflag;
+    uint16_t potvalue, potvalueold, potvaluelast_tx, version_code, hrm_energy, heat_value;
+    int32_t ads1220value;
     struct LINK_DATA *packet_data;
 } rn4020_appdata_t;
 
@@ -108,7 +77,7 @@ union rn4020_adcbuf_t {
 
 typedef struct {
     union rn4020_adcbuf_t mcp3208_cmd;
-    uint16_t potValue;
+    uint16_t potvalue;
     uint8_t chan;
 } rn4020_adcdata_t;
 

@@ -50,18 +50,18 @@ enum BluetoothDecodeState {
 };
 
 
-bool BT_ReceivePacket(char *message);
+bool bt_receivepacket(char *message);
 bool rn4020_bt_sendcommand(const char *data, bool wait);
-void BT_SendByte(char data);
-bool BT_GetResponse(char *data);
-bool BT_CompareResponse(const char *data1, const char *data2);
-bool BT_CheckResponse(const char *);
-bool BT_CheckResponseWithWildcard(const char *data, char Wildcard);
-bool BT_SetupModule(void);
-bool BT_RebootEnFlow(void);
+void bt_sendbyte(char data);
+bool bt_getresponse(char *data);
+bool bt_compareresponse(const char *data1, const char *data2);
+bool bt_checkresponse(const char *);
+bool bt_checkresponsewithwildcard(const char *data, char Wildcard);
+bool bt_setupmodule(void);
+bool bt_rebootenflow(void);
 
 #ifdef VERIFY_RN_FW_VER
-uint16_t BT_CheckFwVer(void);
+uint16_t bt_checkfwver(void);
 #endif
 
 #endif //BLUETOOTH_H

@@ -35,6 +35,6 @@
 #ifndef SWITCHES_H
 #define SWITCHES_H
 
-void Switch_Tasks(void);
+void rn4020_switch_tasks(void);
 
 #endif  /* SWITCHES_H */

@@ -41,6 +41,10 @@ int ads1220_init(void)
 {
     tx_buff = __pic32_alloc_coherent(32); /* uncached memory for spi transfers */
     rx_buff = __pic32_alloc_coherent(32);
+
+    if (!(tx_buff && rx_buff)) {
+        return false;
+    }
     /*
      * setup ads1220 registers
      */
@@ -79,7 +83,7 @@ int ads1220_init(void)
     tx_buff[0] = ADS1220_CMD_SYNC;
     spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
     SPI_CS1_1;
-    return 0;
+    return true;
 }
 
 static void ads1220_writeregister(int32_t StartAddress, int32_t NumRegs, uint32_t *pData)
@@ -149,9 +153,10 @@ static void ai_set_chan_range_ads1220(uint32_t chan, uint32_t range)
 
 int ads1220_testing(void)
 {
-    static int i = 0, a1 = 2048, b1 = 16;
+    static int i = 0;
 
     if (upd || (i++ > 90000)) {
+        static int a1 = 2048, b1 = 16;
         PDEBUG3_OFF;
         ai_set_chan_range_ads1220(8, 0);
 
@@ -161,29 +166,29 @@ int ads1220_testing(void)
         tx_buff[2] = 0;
         tx_buff[3] = 0;
         ads_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 4);
-        rn4020_appdata.ads1220Value = rx_buff[1];
-        rn4020_appdata.ads1220Value = (rn4020_appdata.ads1220Value << 8) | rx_buff[2];
-        rn4020_appdata.ads1220Value = (rn4020_appdata.ads1220Value << 8) | rx_buff[3];
+        rn4020_appdata.ads1220value = rx_buff[1];
+        rn4020_appdata.ads1220value = (rn4020_appdata.ads1220value << 8) | rx_buff[2];
+        rn4020_appdata.ads1220value = (rn4020_appdata.ads1220value << 8) | rx_buff[3];
 
         /* mangle the data as necessary */
         /* Bipolar Offset Binary */
-        //		rn4020_appdata.ads1220Value &= 0x0ffffff;
-        //		rn4020_appdata.ads1220Value ^= 0x0800000;
+        //		rn4020_appdata.ads1220value &= 0x0ffffff;
+        //		rn4020_appdata.ads1220value ^= 0x0800000;
 
         if (SWITCH1 == 0) {
-            printf(" ADS1220 value: %x\r\n", (int) (rn4020_appdata.ads1220Value >> 10));
+            printf(" ADS1220 value: %x\r\n", (int) (rn4020_appdata.ads1220value >> 10));
         }
         upd = false;
         i = 0;
         dac_set(0, a1 += 100);
         dac_set(1, b1 += 100);
     }
-    return rn4020_appdata.ads1220Value;
+    return rn4020_appdata.ads1220value;
 }
 
 void rn4020_int_2_isr(void)
 {
     PDEBUG3_ON;
-    rn4020_appdata.heatValue = (int16_t) ((rn4020_appdata.ads1220Value >> 10) - 0x0370);
+    rn4020_appdata.heat_value = (int16_t) ((rn4020_appdata.ads1220value >> 10) - 0x0370);
     upd = true;
 }

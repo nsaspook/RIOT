@@ -14,6 +14,8 @@
 #include <stdint.h>
 #include <mips/cpu.h>
 #include <mips/m32c0.h>
+#include <malloc.h>
+#include <mips/notlb.h>
 #include "periph/gpio.h"
 #include "periph/hwrng.h"
 #include "periph/spi.h"
@@ -43,6 +45,24 @@ void set_cache_policy(uint32_t cc)
     asm ("nop"); /* re-sequence the pipeline after cp0 write */
     asm ("nop");
     asm ("sync" ::);
+}
+
+__inline__ void *__pic32_alloc_coherent(size_t size)
+{
+    void *retptr;
+
+    retptr = malloc(size);
+    if (retptr == NULL) {
+        return NULL;
+    }
+    /* malloc returns a cached pointer, but convert it to an uncached pointer */
+    return __PIC32_UNCACHED_PTR(retptr);
+}
+
+__inline__ void __pic32_free_coherent(void *ptr)
+{
+    /* Convert back to a cached pointer before calling free. */
+    free(__PIC32_CACHED_PTR(ptr));
 }
 
 void board_init(void)

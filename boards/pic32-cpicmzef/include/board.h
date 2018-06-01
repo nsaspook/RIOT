@@ -28,17 +28,15 @@
 #ifndef BOARD_H
 #define BOARD_H
 
+#include <mips/notlb.h>
 #include "periph_conf.h"
 #include "periph/spi.h"
+#include "vendor/p32mz2048efm100.h"
+#include "vendor/ports_p32mz2048efm100.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
-
-#include "vendor/p32mz2048efm100.h"
-#include "vendor/ports_p32mz2048efm100.h"
-#include <malloc.h>
-#include <mips/notlb.h>
 
 /**
  * @brief   Set how many increments of the count register per uS
@@ -255,23 +253,8 @@ typedef unsigned long _vaddr_t;     /* a virtual address */
 #define __PIC32_KVA1_TO_KVA0_VAR(v) (*(__typeof__(v) *)((unsigned long)& (v) & ~0x20000000u))
 #define __PIC32_KVA1_TO_KVA0_PTR(v) ((__typeof__(v) *)((unsigned long)(v) & ~0x20000000u))
 
-static __inline__ void *__pic32_alloc_coherent(size_t size)
-{
-    void *retptr;
-
-    retptr = malloc(size);
-    if (retptr == NULL) {
-        return NULL;
-    }
-    /* malloc returns a cached pointer, but convert it to an uncached pointer */
-    return __PIC32_UNCACHED_PTR(retptr);
-}
-
-static __inline__ void __pic32_free_coherent(void *ptr)
-{
-    /* Convert back to a cached pointer before calling free. */
-    free(__PIC32_CACHED_PTR(ptr));
-}
+void *__pic32_alloc_coherent(size_t);
+void __pic32_free_coherent(void *);
 
 /*******************************************************************/
 /** FlushCache - flush cache to RAM                               **/

@@ -44,88 +44,9 @@
 #include "uart.h"
 #include "timers.h"
 
-uint16_t BT_CheckFwVer(void);
+uint16_t bt_checkfwver(void);
 
-#ifdef ESP_STUFF
-struct gatts_service_inst gatts_service[] = {
-    {
-        .gatts_if = 0, /* gatts_if not known yet, so initial is ESP_GATT_IF_NONE */
-    },
-    {
-        .gatts_if = 0, /* gatts_if not known yet, so initial is ESP_GATT_IF_NONE */
-    }
-};
-
-struct gatts_char_inst gatts_char[] = {
-    {
-        /* Battery Service -> Battery Level */
-        .service_pos = 0, // Battery service
-        .char_perm = ESP_GATT_PERM_READ,
-        .char_property = "",
-        .char_val = NULL,
-        .char_handle = "0032",
-        .char_nvs = "2A19"
-    },
-    {
-        .service_pos = 1, // heart rate service
-        .char_perm = ESP_GATT_PERM_READ,
-        .char_property = "22,02",
-        .char_val = NULL,
-        .char_handle = "001B",
-        .char_nvs = "2A37"
-    }
-};
-
-
-uint16_t get_char_handle(struct gatts_char_inst *bt, char *rxbuf)
-{
-    char *pch;
-    uint8_t state = 0;
-
-    char *tempBuf = (char *) malloc(strlen(rxbuf) + 1);
-
-    if (!tempBuf) {
-        return false;
-    }
-    strcpy(tempBuf, rxbuf);
-    /* Parse response line by line */
-    pch = strtok(tempBuf, "\r\n");
-    do {
-        switch (state) {
-            case 0:
-                /* Check if the line contains a service */
-                if (strstr(pch, bt->char_nvs)) {
-                    /* Service found, now looking for line with characteristic */
-                    state = 1;
-                    break;
-                }
-                break;
-            case 1:
-                if (strncmp(pch, "  ", 2)) {
-                    free(tempBuf);
-                    return 0;
-                }
-                if (strstr(pch, bt->char_nvs)) {
-                    /* Characteristic found, now looking for handle */
-                    char *pch2 = strchr(pch, ',') + 1;
-                    unsigned int handle;
-                    if (sscanf(pch2, "%x,", &handle) == 1) {
-                        free(tempBuf);
-                        return (uint16_t) handle;
-
-                    }
-                    state = 0;
-                    break;
-                }
-        }
-        pch = strtok(NULL, "\r\n");
-    } while (pch != NULL);
-    free(tempBuf);
-    return 0;
-}
-#endif
-
-bool BT_ReceivePacket(char *Message)
+bool bt_receivepacket(char *Message)
 {
     static enum BluetoothDecodeState btDecodeState = WaitForCR;
     static uint16_t i = 0;
@@ -177,13 +98,13 @@ bool rn4020_bt_sendcommand(const char *data, bool wait)
     return false;
 }
 
-void BT_SendByte(char data)
+void bt_sendbyte(char data)
 {
     UART_WriteTxBuffer(data);
 }
 
 
-bool BT_GetResponse(char *data)
+bool bt_getresponse(char *data)
 {
     uint16_t byteCount = 0;
     char newByte;
@@ -206,7 +127,7 @@ bool BT_GetResponse(char *data)
     return false;
 }
 
-bool BT_CompareResponse(const char *data1, const char *data2)
+bool bt_compareresponse(const char *data1, const char *data2)
 {
     uint16_t i;
 
@@ -221,7 +142,7 @@ bool BT_CompareResponse(const char *data1, const char *data2)
     return false;
 }
 
-bool BT_CheckResponse(const char *data)
+bool bt_checkresponse(const char *data)
 {
     uint16_t i, ByteCount = 0;
     char NewByte, Buffer[50], *BufPtr;
@@ -262,7 +183,7 @@ bool BT_CheckResponse(const char *data)
  * Use this to ignore text that changes, like MAC addresses.
  */
 
-bool BT_CheckResponseWithWildcard(const char *data, char Wildcard)
+bool bt_checkresponsewithwildcard(const char *data, char Wildcard)
 {
     uint16_t i, ByteCount = 0;
     char NewByte, Buffer[50], *BufPtr;
@@ -304,66 +225,66 @@ bool BT_CheckResponseWithWildcard(const char *data, char Wildcard)
  *  Set up the RN4020 module
  */
 
-bool BT_SetupModule(void)
+bool bt_setupmodule(void)
 {
     uint16_t version_code;
 
-    version_code = BT_CheckFwVer();
+    version_code = bt_checkfwver();
 
     LED4G_ON;
     rn4020_bt_sendcommand("sf,2\r\n", false); /* Get RN4020 module feature settings */
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     //Send "GR" to get feature settings
     rn4020_bt_sendcommand("gr\r\n", false);
-    if (!BT_CheckResponse("26060000\r\n")) {
+    if (!bt_checkresponse("26060000\r\n")) {
         rn4020_bt_sendcommand("sr,26060000\r\n", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
     }
 
     char macAddr[16];
     rn4020_bt_sendcommand("gds\r\n", false); /* Get mac address */
-    while (!BT_ReceivePacket(macAddr)) {}
+    while (!bt_receivepacket(macAddr)) {}
 
     char message[12];
     macAddr[12] = '\0';
     sprintf(message, "sn,%s_BT\r\n", &macAddr[8]);
 
     rn4020_bt_sendcommand(message, false); /* Set advertise name */
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("gs\r\n", false);
-    if (!BT_CheckResponse("F0000001\r\n")) {
+    if (!bt_checkresponse("F0000001\r\n")) {
         /*
          * Send "SS" to set user defined private profiles
          * and ID/Battery in 1.33 firmware
          */
         rn4020_bt_sendcommand("ss,F0000001\r\n", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
     }
 
     rn4020_bt_sendcommand("s-,FRC-\r\n", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     //  initial connection parameters
     rn4020_bt_sendcommand("st,003c,0000,0064\r\n", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     /* Clear all settings of defined services and characteristics */
     rn4020_bt_sendcommand("pz\r\n", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
@@ -372,54 +293,54 @@ bool BT_SetupModule(void)
 
         /* heart rate service with standard 16-bit UUID */
         rn4020_bt_sendcommand("ps,"PUBLIC_HR_UUID ",\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_HR_CHAR_HRM ",12,04\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_HR_CHAR_BSL ",06,01\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_HR_CHAR_RCP ",06,01\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("ps,"PUBLIC_AIO_UUID ",\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_AIO_CHAR_DIG ",16,08,33\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_AIO_CHAR_ANA ",16,02,33\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("pc,"PUBLIC_AIO_CHAR_AGG ",12,0F,33\r", false);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
     }
 
     /* set power to max */
     rn4020_bt_sendcommand("sp,7\r\n", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("sdr,"APP_VERSION_STR "\r\n", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
@@ -427,59 +348,59 @@ bool BT_SetupModule(void)
 
     /* Send "ps" to set user defined service UUID */
     rn4020_bt_sendcommand("ps," PRIVATE_SERVICE ",\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_SWITCHES ",22,02\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_POTENTIOMETER ",22,02\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_LEDS ",0A,04\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_RELAYS ",0A,04\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_ADC_CHAN ",0A,04\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("pc," PRIVATE_CHAR_PIC_SLAVE ",0A,0F\r", false);
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
     rn4020_bt_sendcommand("wc\r\n", false); /* Command to clear script */
-    if (!BT_CheckResponse(AOK)) {
+    if (!bt_checkresponse(AOK)) {
         return false;
     }
 
-    return BT_RebootEnFlow();
+    return bt_rebootenflow();
 }
 
 /*
  * Reboot the module and enable flow control on PIC UART
  */
 
-bool BT_RebootEnFlow(void)
+bool bt_rebootenflow(void)
 {
     bool do_ls = true, good_boot;
 
     /* Send "R,1" to save changes and reboot */
     rn4020_bt_sendcommand("r,1\r\n", false);
-    if (!BT_CheckResponse("Reboot\r\n")) {
+    if (!bt_checkresponse("Reboot\r\n")) {
         return false;
     }
 
@@ -495,7 +416,7 @@ bool BT_RebootEnFlow(void)
         }
     }
 
-    good_boot = BT_CheckResponse("MD\r\n");
+    good_boot = bt_checkresponse("MD\r\n");
 
     if (do_ls) {
         rn4020_bt_sendcommand("LS\r\n", false);
@@ -512,47 +433,47 @@ bool BT_RebootEnFlow(void)
 
         rn4020_bt_sendcommand("SF,2\r\n", false); /* perform complete factory reset */
         rn4020_wait_ms(100);
-        BT_CheckResponse(AOK);
+        bt_checkresponse(AOK);
 
         rn4020_bt_sendcommand("SF,2\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("SDH,4.1\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
         rn4020_bt_sendcommand("SDM,RN4020\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("SDN,Microchip\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("SP,7\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         rn4020_bt_sendcommand("SS,C0000000\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
 
         /* support MLDP, enable OTA (peripheral mode is enabled by default) */
         rn4020_bt_sendcommand("SR,32008000\r\n", false);
         rn4020_wait_ms(100);
-        if (!BT_CheckResponse(AOK)) {
+        if (!bt_checkresponse(AOK)) {
             return false;
         }
         rn4020_bt_sendcommand("R,1\r\n", false); //Force reboot
@@ -614,7 +535,7 @@ bool BT_RebootEnFlow(void)
 
 #ifdef VERIFY_RN_FW_VER
 
-uint16_t BT_CheckFwVer(void)
+uint16_t bt_checkfwver(void)
 {
     char fpVer[20];
     char *pfpVer = fpVer;
@@ -631,7 +552,7 @@ uint16_t BT_CheckFwVer(void)
 
     rn4020_starttimer(TMR_RN_COMMS, 2000);
     rn4020_bt_sendcommand("v\r", false);
-    while (!BT_ReceivePacket(strVer)) {
+    while (!bt_receivepacket(strVer)) {
         if (rn4020_timerdone(TMR_RN_COMMS)) {
             return false;
         }
@@ -665,4 +586,4 @@ uint16_t BT_CheckFwVer(void)
 
     return verMinor;
 }
-#endif //VERIFY_RN_FW_VER
+#endif

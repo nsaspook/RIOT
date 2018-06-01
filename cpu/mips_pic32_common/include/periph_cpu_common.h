@@ -177,7 +177,7 @@ typedef struct {
     union mcp_adc_buf_t mcp3208_cmd;
     uint16_t potValue;
     uint8_t chan;
-} MCP_ADC_DATA;
+} mcp3208_data_t;
 
 #ifdef __cplusplus
 }

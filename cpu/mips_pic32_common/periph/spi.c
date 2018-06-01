@@ -9,7 +9,7 @@
  * modified for receive interrupt, async and fifo operation @nsaspook
  * The 'normal' sync transfer function is a wrapper on the async engine
  * _spi_transfer_bytes_async
- * using non-atomic set and clears for setup functions, might need fixing
+ * ALL SPI transfer buffers in and out MUST be pic32mz uncached memory
  *
  * DMA links
  * https://tutorial.cytron.io/2017/09/01/i2s-pic32mxmz-direct-memory-access-dma/
