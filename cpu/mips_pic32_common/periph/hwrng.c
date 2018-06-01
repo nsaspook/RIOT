@@ -16,8 +16,10 @@
 static void wait_plen_cycles(void)
 {
     unsigned int i;
-    for (i = 0; i < (RNGCON & _RNGCON_PLEN_MASK); ++i)
+
+    for (i = 0; i < (RNGCON & _RNGCON_PLEN_MASK); ++i) {
         __asm volatile ("nop");
+    }
 }
 
 void hwrng_init(void)
@@ -25,9 +27,9 @@ void hwrng_init(void)
     RNGCON = _RNGCON_TRNGEN_MASK;
 
     /*
-    * Wait to have at least 64 bits before setting the 64-bit seed
-    * of the pseudo random generator.
-    */
+     * Wait to have at least 64 bits before setting the 64-bit seed
+     * of the pseudo random generator.
+     */
     while (RNGCNT < 64) {}
 
     /* Load seed from the TRNG */

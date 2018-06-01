@@ -12,17 +12,17 @@ static struct LINK_DATA l_data;
 
 bool Write_Link_Packet(const uint8_t *data, bool start)
 {
-	(void) data;
-	(void) start;
-	return false;
+    (void) data;
+    (void) start;
+    return false;
 }
 
-struct LINK_DATA* Read_Link_Packet(const uint8_t *data)
+struct LINK_DATA *Read_Link_Packet(const uint8_t *data)
 {
-	return memcpy(&l_data, data, LINK_BYTES);
+    return memcpy(&l_data, data, LINK_BYTES);
 }
 
-struct LINK_DATA* Get_Link_Packet(void)
+struct LINK_DATA *Get_Link_Packet(void)
 {
-	return &l_data;
+    return &l_data;
 }

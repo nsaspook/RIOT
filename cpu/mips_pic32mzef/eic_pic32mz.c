@@ -52,5 +52,5 @@ void eic_irq_ack(int irq_num)
     assert(irq_num == EIC_IRQ_TIMER);
 
     /* Ack the timer interrupt */
-    IFS0CLR =_IFS0_CTIF_MASK;
+    IFS0CLR = _IFS0_CTIF_MASK;
 }

@@ -33,9 +33,8 @@
  */
 
 #ifndef SWITCHES_H
-#define	SWITCHES_H
+#define SWITCHES_H
 
 void Switch_Tasks(void);
 
-#endif	/* SWITCHES_H */
-
+#endif  /* SWITCHES_H */

@@ -32,7 +32,7 @@
  */
 
 #ifndef RTCC_H
-#define	RTCC_H
+#define RTCC_H
 
 #include "config.h"
 
@@ -44,5 +44,4 @@ void RTCC_Init(void);
 #endif  //SLEEP_MODE_LPRC_RTCC
 #endif  //USE_SLEEP
 
-#endif	/* RTCC_H */
-
+#endif  /* RTCC_H */

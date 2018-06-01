@@ -38,8 +38,8 @@
 
 #ifdef MIPS_HARD_FLOAT
 /* pointer to the current and old fpu context for lazy context switching */
-static struct fp64ctx *currentfpctx;   /* fpu context of current running task */
-static struct fp64ctx *oldfpctx;       /* fpu context of last task that executed fpu */
+static struct fp64ctx *currentfpctx;    /* fpu context of current running task */
+static struct fp64ctx *oldfpctx;        /* fpu context of last task that executed fpu */
 #endif
 
 /*
@@ -61,7 +61,7 @@ static struct fp64ctx *oldfpctx;       /* fpu context of last task that executed
  */
 
 char *thread_stack_init(thread_task_func_t task_func, void *arg,
-                             void *stack_start, int stack_size)
+                        void *stack_start, int stack_size)
 {
     /* make sure it is aligned to 8 bytes this is a requirement of the O32 ABI */
     uintptr_t *p = (uintptr_t *)(((long)(stack_start) + stack_size) & ~7);
@@ -101,7 +101,7 @@ char *thread_stack_init(thread_task_func_t task_func, void *arg,
      * note the -4 (-16 bytes) as the toolchain exception handling code
      * adjusts the sp for alignment
      */
-    p -= PADDING/sizeof(unsigned int);
+    p -= PADDING / sizeof(unsigned int);
 
     return (void *)p;
 }
@@ -152,9 +152,10 @@ void thread_yield_higher(void)
     __asm volatile ("syscall 2");
 }
 
-struct linkctx* exctx_find(reg_t id, struct gpctx *gp)
+struct linkctx *exctx_find(reg_t id, struct gpctx *gp)
 {
     struct linkctx **ctx = (struct linkctx **)&gp->link;
+
     while (*ctx) {
         if ((*ctx)->id == id) {
             return *ctx;
@@ -170,9 +171,9 @@ static inline uint32_t
 /* Clang does not support attribute optimize */
 __attribute__((optimize("-O3")))
 #endif
-mem_rw(const void *vaddr)
-{
+mem_rw(const void *vaddr){
     uint32_t v;
+
     memcpy(&v, vaddr, sizeof(v));
     return v;
 }
@@ -190,6 +191,7 @@ void __attribute__((nomips16))
 _mips_handle_exception(struct gpctx *ctx, int exception)
 {
     unsigned int syscall_num = 0;
+
 #ifdef MIPS_DSP
     struct dspctx dsp_ctx; /* intentionally allocated on current stack */
 #endif
@@ -264,12 +266,12 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
 
 #ifdef MIPS_DSP
                 _dsp_save(&dsp_ctx);
-                _linkctx_append(ctx,&(dsp_ctx.link));
+                _linkctx_append(ctx, &(dsp_ctx.link));
 #endif
 
 #ifdef MIPS_HARD_FLOAT
-                if(currentfpctx) {
-                    _linkctx_append(ctx,&(currentfpctx->fp.link));
+                if (currentfpctx) {
+                    _linkctx_append(ctx, &(currentfpctx->fp.link));
                 }
 #endif
 
@@ -279,7 +281,7 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
 
 #ifdef MIPS_HARD_FLOAT
                 currentfpctx = (struct fp64ctx *)exctx_find(LINKCTX_TYPE_FP64, new_ctx);
-                if(!currentfpctx) {
+                if (!currentfpctx) {
                     /* check for half-width FPU ctx in-case hardware doesn't support double. */
                     currentfpctx = (struct fp64ctx *)exctx_find(LINKCTX_TYPE_FP32, new_ctx);
                 }
@@ -287,20 +289,21 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
 
 #ifdef MIPS_DSP
                 new_dspctx = (struct dspctx *)exctx_find(LINKCTX_TYPE_DSP, new_ctx);
-                if (new_dspctx)
+                if (new_dspctx) {
                     _dsp_load(new_dspctx);
+                }
 #endif
 
 #ifdef MIPS_MICROMIPS
                 return_instruction =
                     mem_rw((const void *)(new_ctx->epc & ~MICROMIPS_ISA_MODE));
                 if ((return_instruction & MM_SYSCALL_MASK) == MM_SYSCALL) { /* syscall */
-                    new_ctx->epc += 4; /* move PC past the syscall */
+                    new_ctx->epc += 4;                                      /* move PC past the syscall */
                 }
 #else
                 return_instruction = mem_rw((const void *)new_ctx->epc);
-                if ((return_instruction & M32_SYSCALL_MASK) == M32_SYSCALL) { /* syscall */
-                    new_ctx->epc += 4; /* move PC past the syscall */
+                if ((return_instruction & M32_SYSCALL_MASK) == M32_SYSCALL) {   /* syscall */
+                    new_ctx->epc += 4;                                          /* move PC past the syscall */
                 }
 #endif
 
@@ -334,11 +337,11 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
 
                 UNREACHABLE();
             }
-        break;
+            break;
 #ifdef MIPS_HARD_FLOAT
         case EXC_CPU:
         {
-            int newly_allocd  = false;
+            int newly_allocd = false;
 
             mips_bissr(SR_CU1);
             ctx->status |= SR_CU1;
@@ -346,7 +349,7 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
             if (!currentfpctx) {
                 currentfpctx = malloc(sizeof(struct fp64ctx));
                 assert(currentfpctx);
-                memset(currentfpctx,0,sizeof(struct fp64ctx));
+                memset(currentfpctx, 0, sizeof(struct fp64ctx));
                 currentfpctx->fp.link.id = LINKCTX_TYPE_FP64;
                 newly_allocd = true;
             }
@@ -373,7 +376,7 @@ _mips_handle_exception(struct gpctx *ctx, int exception)
              */
             oldfpctx = currentfpctx;
 
-        return;
+            return;
         }
 #endif
 

@@ -70,8 +70,7 @@ void panic_arch(void)
 {
     printf("\nPANIC!\n");
     assert(0);
-    while (1) {
-    }
+    while (1) {}
 }
 
 void cpu_init(void)

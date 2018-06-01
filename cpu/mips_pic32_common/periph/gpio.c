@@ -8,16 +8,16 @@
  *
  */
 
- /**
-  * @ingroup     cpu_mips_pic32_common
-  * @ingroup     drivers_periph_gpio
-  * @{
-  *
-  * @file
-  * @brief       Low-level GPIO driver implementation
-  *
-  * @}
-  */
+/**
+ * @ingroup     cpu_mips_pic32_common
+ * @ingroup     drivers_periph_gpio
+ * @{
+ *
+ * @file
+ * @brief       Low-level GPIO driver implementation
+ *
+ * @}
+ */
 
 #include <assert.h>
 #include <stdint.h>
@@ -27,97 +27,97 @@
 #define GPIO_PIN_NO(PIN)    (1 << ((PIN) & 0xf))
 #define GPIO_PORT(PIN)      ((PIN) >> 4)
 
-#define LATx(P)         (base_address[P].gpio[0x10/0x4])
-#define LATxCLR(P)      (base_address[P].gpio[0x14/0x4])
-#define LATxSET(P)      (base_address[P].gpio[0x18/0x4])
-#define LATxINV(P)      (base_address[P].gpio[0x1C/0x4])
+#define LATx(P)         (base_address[P].gpio[0x10 / 0x4])
+#define LATxCLR(P)      (base_address[P].gpio[0x14 / 0x4])
+#define LATxSET(P)      (base_address[P].gpio[0x18 / 0x4])
+#define LATxINV(P)      (base_address[P].gpio[0x1C / 0x4])
 #define PORTx(P)        (base_address[P].gpio[0x0])
-#define CNPUxCLR(P)     (base_address[P].gpio[0x34/0x4])
-#define CNPUxSET(P)     (base_address[P].gpio[0x38/0x4])
-#define CNPDxCLR(P)     (base_address[P].gpio[0x44/0x4])
-#define CNPDxSET(P)     (base_address[P].gpio[0x48/0x4])
-#define ODCxCLR(P)      (base_address[P].gpio[0x24/0x4])
-#define ODCxSET(P)      (base_address[P].gpio[0x28/0x4])
-#define ANSELxCLR(P)    (base_address[P].ansel[0x04/0x4])
-#define TRISxCLR(P)     (base_address[P].tris[0x04/0x4])
-#define TRISxSET(P)     (base_address[P].tris[0x08/0x4])
+#define CNPUxCLR(P)     (base_address[P].gpio[0x34 / 0x4])
+#define CNPUxSET(P)     (base_address[P].gpio[0x38 / 0x4])
+#define CNPDxCLR(P)     (base_address[P].gpio[0x44 / 0x4])
+#define CNPDxSET(P)     (base_address[P].gpio[0x48 / 0x4])
+#define ODCxCLR(P)      (base_address[P].gpio[0x24 / 0x4])
+#define ODCxSET(P)      (base_address[P].gpio[0x28 / 0x4])
+#define ANSELxCLR(P)    (base_address[P].ansel[0x04 / 0x4])
+#define TRISxCLR(P)     (base_address[P].tris[0x04 / 0x4])
+#define TRISxSET(P)     (base_address[P].tris[0x08 / 0x4])
 
 typedef struct PIC32_GPIO_tag {
-    volatile uint32_t* gpio;
-    volatile uint32_t* ansel;
-    volatile uint32_t* tris;
+    volatile uint32_t *gpio;
+    volatile uint32_t *ansel;
+    volatile uint32_t *tris;
 } PIC32_GPIO_T;
 
 static PIC32_GPIO_T base_address[] = {
 #ifdef _PORTA_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTA_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELA,
-        .tris  = (volatile uint32_t*)&TRISA
+        .gpio = (volatile uint32_t *)_PORTA_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELA,
+        .tris = (volatile uint32_t *)&TRISA
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTB_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTB_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELB,
-        .tris  = (volatile uint32_t*)&TRISB
+        .gpio = (volatile uint32_t *)_PORTB_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELB,
+        .tris = (volatile uint32_t *)&TRISB
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTC_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTC_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELC,
-        .tris  = (volatile uint32_t*)&TRISC
+        .gpio = (volatile uint32_t *)_PORTC_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELC,
+        .tris = (volatile uint32_t *)&TRISC
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTD_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTD_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELD,
-        .tris  = (volatile uint32_t*)&TRISD
+        .gpio = (volatile uint32_t *)_PORTD_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELD,
+        .tris = (volatile uint32_t *)&TRISD
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTE_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTE_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELE,
-        .tris  = (volatile uint32_t*)&TRISE
+        .gpio = (volatile uint32_t *)_PORTE_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELE,
+        .tris = (volatile uint32_t *)&TRISE
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTF_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTF_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELF,
-        .tris  = (volatile uint32_t*)&TRISF
+        .gpio = (volatile uint32_t *)_PORTF_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELF,
+        .tris = (volatile uint32_t *)&TRISF
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 #ifdef _PORTG_BASE_ADDRESS
     {
-        .gpio  = (volatile uint32_t*)_PORTG_BASE_ADDRESS,
-        .ansel = (volatile uint32_t*)&ANSELG,
-        .tris  = (volatile uint32_t*)&TRISG
+        .gpio = (volatile uint32_t *)_PORTG_BASE_ADDRESS,
+        .ansel = (volatile uint32_t *)&ANSELG,
+        .tris = (volatile uint32_t *)&TRISG
     },
 #else
-    {0 , 0, 0},
+    { 0, 0, 0 },
 #endif
 };
 
 static inline int check_valid_port(uint8_t port)
 {
-    return port < (sizeof(base_address)/sizeof(base_address[0]))
-        && base_address[port].gpio != NULL;
+    return port < (sizeof(base_address) / sizeof(base_address[0]))
+           && base_address[port].gpio != NULL;
 }
 
 int gpio_init(gpio_t pin, gpio_mode_t mode)
@@ -149,25 +149,33 @@ int gpio_init(gpio_t pin, gpio_mode_t mode)
 
     ANSELxCLR(port) = pin_no;       /* Configure GPIO as digital */
 
-    if (pu)
+    if (pu) {
         CNPUxSET(port) = pin_no;
-    else
+    }
+    else {
         CNPUxCLR(port) = pin_no;
+    }
 
-    if (pd)
+    if (pd) {
         CNPDxSET(port) = pin_no;
-    else
+    }
+    else {
         CNPDxCLR(port) = pin_no;
+    }
 
-    if (od)
+    if (od) {
         ODCxSET(port) = pin_no;
-    else
+    }
+    else {
         ODCxCLR(port) = pin_no;
+    }
 
-    if (output)
+    if (output) {
         TRISxCLR(port) = pin_no;
-    else
+    }
+    else {
         TRISxSET(port) = pin_no;
+    }
 
     return 0;
 }
@@ -216,8 +224,10 @@ void gpio_toggle(gpio_t pin)
 
 void gpio_write(gpio_t pin, int value)
 {
-    if (value)
+    if (value) {
         gpio_set(pin);
-    else
+    }
+    else {
         gpio_clear(pin);
+    }
 }

@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   spi.h
  * Author: root
  *
@@ -6,21 +6,20 @@
  */
 
 #ifndef SPI_H
-#define	SPI_H
+#define SPI_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 #include <stdint.h>
 #include <stdbool.h>
 #include "config.h"
 
-	void SPI_Init(void);
-	void SPI_Speed(spi_t, spi_mode_t, spi_clk_t);
+void SPI_Init(void);
+void SPI_Speed(spi_t, spi_mode_t, spi_clk_t);
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* SPI_H */
-
+#endif  /* SPI_H */

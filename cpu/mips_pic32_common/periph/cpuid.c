@@ -12,7 +12,7 @@
 #include "board.h"
 #include "periph/cpuid.h"
 
- void cpuid_get(void *id)
- {
-    memcpy(id, (uint32_t*)&DEVID, CPUID_LEN);
- }
+void cpuid_get(void *id)
+{
+    memcpy(id, (uint32_t *)&DEVID, CPUID_LEN);
+}

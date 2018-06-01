@@ -46,43 +46,43 @@
  */
 volatile uint32_t DEVCFG3_LA  __attribute__((used, section(".devcfg3_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG3_USERID_MASK     |  0xFFFF   << _DEVCFG3_USERID_POSITION)
-    & (~_DEVCFG3_FMIIEN_MASK     |  0        << _DEVCFG3_FMIIEN_POSITION)
-    & (~_DEVCFG3_FETHIO_MASK     |  1        << _DEVCFG3_FETHIO_POSITION)
-    & (~_DEVCFG3_PGL1WAY_MASK    |  0        << _DEVCFG3_PGL1WAY_POSITION)
-    & (~_DEVCFG3_PMDL1WAY_MASK   |  0        << _DEVCFG3_PMDL1WAY_POSITION)
-    & (~_DEVCFG3_IOL1WAY_MASK    |  0        << _DEVCFG3_IOL1WAY_POSITION)
-    & (~_DEVCFG3_FUSBIDIO_MASK   |  0        << _DEVCFG3_FUSBIDIO_POSITION);
+    & (~_DEVCFG3_USERID_MASK     |  0xFFFF << _DEVCFG3_USERID_POSITION)
+    & (~_DEVCFG3_FMIIEN_MASK     |  0 << _DEVCFG3_FMIIEN_POSITION)
+    & (~_DEVCFG3_FETHIO_MASK     |  1 << _DEVCFG3_FETHIO_POSITION)
+    & (~_DEVCFG3_PGL1WAY_MASK    |  0 << _DEVCFG3_PGL1WAY_POSITION)
+    & (~_DEVCFG3_PMDL1WAY_MASK   |  0 << _DEVCFG3_PMDL1WAY_POSITION)
+    & (~_DEVCFG3_IOL1WAY_MASK    |  0 << _DEVCFG3_IOL1WAY_POSITION)
+    & (~_DEVCFG3_FUSBIDIO_MASK   |  0 << _DEVCFG3_FUSBIDIO_POSITION);
 
 volatile uint32_t ADEVCFG3_LA __attribute__((used, section(".adevcfg3_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG3_USERID_MASK     |  0xFFFF   << _DEVCFG3_USERID_POSITION)
-    & (~_DEVCFG3_FMIIEN_MASK     |  0        << _DEVCFG3_FMIIEN_POSITION)
-    & (~_DEVCFG3_FETHIO_MASK     |  1        << _DEVCFG3_FETHIO_POSITION)
-    & (~_DEVCFG3_PGL1WAY_MASK    |  0        << _DEVCFG3_PGL1WAY_POSITION)
-    & (~_DEVCFG3_PMDL1WAY_MASK   |  0        << _DEVCFG3_PMDL1WAY_POSITION)
-    & (~_DEVCFG3_IOL1WAY_MASK    |  0        << _DEVCFG3_IOL1WAY_POSITION)
-    & (~_DEVCFG3_FUSBIDIO_MASK   |  0        << _DEVCFG3_FUSBIDIO_POSITION);
+    & (~_DEVCFG3_USERID_MASK     |  0xFFFF << _DEVCFG3_USERID_POSITION)
+    & (~_DEVCFG3_FMIIEN_MASK     |  0 << _DEVCFG3_FMIIEN_POSITION)
+    & (~_DEVCFG3_FETHIO_MASK     |  1 << _DEVCFG3_FETHIO_POSITION)
+    & (~_DEVCFG3_PGL1WAY_MASK    |  0 << _DEVCFG3_PGL1WAY_POSITION)
+    & (~_DEVCFG3_PMDL1WAY_MASK   |  0 << _DEVCFG3_PMDL1WAY_POSITION)
+    & (~_DEVCFG3_IOL1WAY_MASK    |  0 << _DEVCFG3_IOL1WAY_POSITION)
+    & (~_DEVCFG3_FUSBIDIO_MASK   |  0 << _DEVCFG3_FUSBIDIO_POSITION);
 
 volatile uint32_t DEVCFG3_B1  __attribute__((used, section(".devcfg3_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG3_USERID_MASK     |  0xFFFF   << _DEVCFG3_USERID_POSITION)
-    & (~_DEVCFG3_FMIIEN_MASK     |  0        << _DEVCFG3_FMIIEN_POSITION)
-    & (~_DEVCFG3_FETHIO_MASK     |  1        << _DEVCFG3_FETHIO_POSITION)
-    & (~_DEVCFG3_PGL1WAY_MASK    |  0        << _DEVCFG3_PGL1WAY_POSITION)
-    & (~_DEVCFG3_PMDL1WAY_MASK   |  0        << _DEVCFG3_PMDL1WAY_POSITION)
-    & (~_DEVCFG3_IOL1WAY_MASK    |  0        << _DEVCFG3_IOL1WAY_POSITION)
-    & (~_DEVCFG3_FUSBIDIO_MASK   |  0        << _DEVCFG3_FUSBIDIO_POSITION);
+    & (~_DEVCFG3_USERID_MASK     |  0xFFFF << _DEVCFG3_USERID_POSITION)
+    & (~_DEVCFG3_FMIIEN_MASK     |  0 << _DEVCFG3_FMIIEN_POSITION)
+    & (~_DEVCFG3_FETHIO_MASK     |  1 << _DEVCFG3_FETHIO_POSITION)
+    & (~_DEVCFG3_PGL1WAY_MASK    |  0 << _DEVCFG3_PGL1WAY_POSITION)
+    & (~_DEVCFG3_PMDL1WAY_MASK   |  0 << _DEVCFG3_PMDL1WAY_POSITION)
+    & (~_DEVCFG3_IOL1WAY_MASK    |  0 << _DEVCFG3_IOL1WAY_POSITION)
+    & (~_DEVCFG3_FUSBIDIO_MASK   |  0 << _DEVCFG3_FUSBIDIO_POSITION);
 
 volatile uint32_t ADEVCFG3_B1 __attribute__((used, section(".adevcfg3_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG3_USERID_MASK     |  0xFFFF   << _DEVCFG3_USERID_POSITION)
-    & (~_DEVCFG3_FMIIEN_MASK     |  0        << _DEVCFG3_FMIIEN_POSITION)
-    & (~_DEVCFG3_FETHIO_MASK     |  1        << _DEVCFG3_FETHIO_POSITION)
-    & (~_DEVCFG3_PGL1WAY_MASK    |  0        << _DEVCFG3_PGL1WAY_POSITION)
-    & (~_DEVCFG3_PMDL1WAY_MASK   |  0        << _DEVCFG3_PMDL1WAY_POSITION)
-    & (~_DEVCFG3_IOL1WAY_MASK    |  0        << _DEVCFG3_IOL1WAY_POSITION)
-    & (~_DEVCFG3_FUSBIDIO_MASK   |  0        << _DEVCFG3_FUSBIDIO_POSITION);
+    & (~_DEVCFG3_USERID_MASK     |  0xFFFF << _DEVCFG3_USERID_POSITION)
+    & (~_DEVCFG3_FMIIEN_MASK     |  0 << _DEVCFG3_FMIIEN_POSITION)
+    & (~_DEVCFG3_FETHIO_MASK     |  1 << _DEVCFG3_FETHIO_POSITION)
+    & (~_DEVCFG3_PGL1WAY_MASK    |  0 << _DEVCFG3_PGL1WAY_POSITION)
+    & (~_DEVCFG3_PMDL1WAY_MASK   |  0 << _DEVCFG3_PMDL1WAY_POSITION)
+    & (~_DEVCFG3_IOL1WAY_MASK    |  0 << _DEVCFG3_IOL1WAY_POSITION)
+    & (~_DEVCFG3_FUSBIDIO_MASK   |  0 << _DEVCFG3_FUSBIDIO_POSITION);
 /*
  * Not needed by default:
  * volatile uint32_t DEVCFG3_B2 __attribute__((used,section(".devcfg3_b2")))
@@ -112,39 +112,39 @@ volatile uint32_t ADEVCFG3_B1 __attribute__((used, section(".adevcfg3_b1"))) =
 
 volatile uint32_t DEVCFG2_LA  __attribute__ ((used, section(".devcfg2_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG2_FPLLIDIV_MASK     |  2        << _DEVCFG2_FPLLIDIV_POSITION)
-    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1      << _DEVCFG2_FPLLRNG_POSITION)
-    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0      << _DEVCFG2_FPLLICLK_POSITION)
-    & (~_DEVCFG2_FPLLMULT_MASK     |  49       << _DEVCFG2_FPLLMULT_POSITION)
-    & (~_DEVCFG2_FPLLODIV_MASK     |  1        << _DEVCFG2_FPLLODIV_POSITION)
-    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1      << _DEVCFG2_UPLLFSEL_POSITION);
+    & (~_DEVCFG2_FPLLIDIV_MASK     |  2 << _DEVCFG2_FPLLIDIV_POSITION)
+    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1 << _DEVCFG2_FPLLRNG_POSITION)
+    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0 << _DEVCFG2_FPLLICLK_POSITION)
+    & (~_DEVCFG2_FPLLMULT_MASK     |  49 << _DEVCFG2_FPLLMULT_POSITION)
+    & (~_DEVCFG2_FPLLODIV_MASK     |  1 << _DEVCFG2_FPLLODIV_POSITION)
+    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1 << _DEVCFG2_UPLLFSEL_POSITION);
 
 volatile uint32_t ADEVCFG2_LA __attribute__ ((used, section(".adevcfg2_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG2_FPLLIDIV_MASK     |  2        << _DEVCFG2_FPLLIDIV_POSITION)
-    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1      << _DEVCFG2_FPLLRNG_POSITION)
-    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0      << _DEVCFG2_FPLLICLK_POSITION)
-    & (~_DEVCFG2_FPLLMULT_MASK     |  49       << _DEVCFG2_FPLLMULT_POSITION)
-    & (~_DEVCFG2_FPLLODIV_MASK     |  1        << _DEVCFG2_FPLLODIV_POSITION)
-    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1      << _DEVCFG2_UPLLFSEL_POSITION);
+    & (~_DEVCFG2_FPLLIDIV_MASK     |  2 << _DEVCFG2_FPLLIDIV_POSITION)
+    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1 << _DEVCFG2_FPLLRNG_POSITION)
+    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0 << _DEVCFG2_FPLLICLK_POSITION)
+    & (~_DEVCFG2_FPLLMULT_MASK     |  49 << _DEVCFG2_FPLLMULT_POSITION)
+    & (~_DEVCFG2_FPLLODIV_MASK     |  1 << _DEVCFG2_FPLLODIV_POSITION)
+    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1 << _DEVCFG2_UPLLFSEL_POSITION);
 
 volatile uint32_t DEVCFG2_B1  __attribute__ ((used, section(".devcfg2_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG2_FPLLIDIV_MASK     |  2        << _DEVCFG2_FPLLIDIV_POSITION)
-    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1      << _DEVCFG2_FPLLRNG_POSITION)
-    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0      << _DEVCFG2_FPLLICLK_POSITION)
-    & (~_DEVCFG2_FPLLMULT_MASK     |  49       << _DEVCFG2_FPLLMULT_POSITION)
-    & (~_DEVCFG2_FPLLODIV_MASK     |  1        << _DEVCFG2_FPLLODIV_POSITION)
-    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1      << _DEVCFG2_UPLLFSEL_POSITION);
+    & (~_DEVCFG2_FPLLIDIV_MASK     |  2 << _DEVCFG2_FPLLIDIV_POSITION)
+    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1 << _DEVCFG2_FPLLRNG_POSITION)
+    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0 << _DEVCFG2_FPLLICLK_POSITION)
+    & (~_DEVCFG2_FPLLMULT_MASK     |  49 << _DEVCFG2_FPLLMULT_POSITION)
+    & (~_DEVCFG2_FPLLODIV_MASK     |  1 << _DEVCFG2_FPLLODIV_POSITION)
+    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1 << _DEVCFG2_UPLLFSEL_POSITION);
 
 volatile uint32_t ADEVCFG2_B1 __attribute__ ((used, section(".adevcfg2_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG2_FPLLIDIV_MASK     |  2        << _DEVCFG2_FPLLIDIV_POSITION)
-    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1      << _DEVCFG2_FPLLRNG_POSITION)
-    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0      << _DEVCFG2_FPLLICLK_POSITION)
-    & (~_DEVCFG2_FPLLMULT_MASK     |  49       << _DEVCFG2_FPLLMULT_POSITION)
-    & (~_DEVCFG2_FPLLODIV_MASK     |  1        << _DEVCFG2_FPLLODIV_POSITION)
-    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1      << _DEVCFG2_UPLLFSEL_POSITION);
+    & (~_DEVCFG2_FPLLIDIV_MASK     |  2 << _DEVCFG2_FPLLIDIV_POSITION)
+    & (~_DEVCFG2_FPLLRNG_MASK      |  0x1 << _DEVCFG2_FPLLRNG_POSITION)
+    & (~_DEVCFG2_FPLLICLK_MASK     |  0x0 << _DEVCFG2_FPLLICLK_POSITION)
+    & (~_DEVCFG2_FPLLMULT_MASK     |  49 << _DEVCFG2_FPLLMULT_POSITION)
+    & (~_DEVCFG2_FPLLODIV_MASK     |  1 << _DEVCFG2_FPLLODIV_POSITION)
+    & (~_DEVCFG2_UPLLFSEL_MASK     |  0x1 << _DEVCFG2_UPLLFSEL_POSITION);
 /* Not needed by default: */
 /* uint32_t DEVCFG2_B2  __attribute__ ((section(".devcfg2_b2")))  = DEVCFG2_LA; */
 /* uint32_t ADEVCFG2_B2 __attribute__ ((section(".adevcfg2_b2"))) = DEVCFG2_LA; */
@@ -176,71 +176,71 @@ volatile uint32_t ADEVCFG2_B1 __attribute__ ((used, section(".adevcfg2_b1"))) =
 
 volatile uint32_t DEVCFG1_LA  __attribute__ ((used, section(".devcfg1_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG1_FNOSC_MASK       |  0x1      << _DEVCFG1_FNOSC_POSITION)
-    & (~_DEVCFG1_DMTINTV_MASK     |  0x7      << _DEVCFG1_DMTINTV_POSITION)
-    & (~_DEVCFG1_FSOSCEN_MASK     |  0        << _DEVCFG1_FSOSCEN_POSITION)
-    & (~_DEVCFG1_IESO_MASK        |  1        << _DEVCFG1_IESO_POSITION)
-    & (~_DEVCFG1_POSCMOD_MASK     |  0x0      << _DEVCFG1_POSCMOD_POSITION)
-    & (~_DEVCFG1_OSCIOFNC_MASK    |  1        << _DEVCFG1_OSCIOFNC_POSITION)
-    & (~_DEVCFG1_FCKSM_MASK       |  0x0      << _DEVCFG1_FCKSM_POSITION)
-    & (~_DEVCFG1_WDTPS_MASK       |  0x14     << _DEVCFG1_WDTPS_POSITION)
-    & (~_DEVCFG1_WDTSPGM_MASK     |  1        << _DEVCFG1_WDTSPGM_POSITION)
-    & (~_DEVCFG1_WINDIS_MASK      |  1        << _DEVCFG1_WINDIS_POSITION)
-    & (~_DEVCFG1_FWDTEN_MASK      |  0        << _DEVCFG1_FWDTEN_POSITION)
-    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3      << _DEVCFG1_FWDTWINSZ_POSITION)
-    & (~_DEVCFG1_DMTCNT_MASK      |  0x0      << _DEVCFG1_DMTCNT_POSITION)
-    & (~_DEVCFG1_FDMTEN_MASK      |  0        << _DEVCFG1_FDMTEN_POSITION);
+    & (~_DEVCFG1_FNOSC_MASK       |  0x1 << _DEVCFG1_FNOSC_POSITION)
+    & (~_DEVCFG1_DMTINTV_MASK     |  0x7 << _DEVCFG1_DMTINTV_POSITION)
+    & (~_DEVCFG1_FSOSCEN_MASK     |  0 << _DEVCFG1_FSOSCEN_POSITION)
+    & (~_DEVCFG1_IESO_MASK        |  1 << _DEVCFG1_IESO_POSITION)
+    & (~_DEVCFG1_POSCMOD_MASK     |  0x0 << _DEVCFG1_POSCMOD_POSITION)
+    & (~_DEVCFG1_OSCIOFNC_MASK    |  1 << _DEVCFG1_OSCIOFNC_POSITION)
+    & (~_DEVCFG1_FCKSM_MASK       |  0x0 << _DEVCFG1_FCKSM_POSITION)
+    & (~_DEVCFG1_WDTPS_MASK       |  0x14 << _DEVCFG1_WDTPS_POSITION)
+    & (~_DEVCFG1_WDTSPGM_MASK     |  1 << _DEVCFG1_WDTSPGM_POSITION)
+    & (~_DEVCFG1_WINDIS_MASK      |  1 << _DEVCFG1_WINDIS_POSITION)
+    & (~_DEVCFG1_FWDTEN_MASK      |  0 << _DEVCFG1_FWDTEN_POSITION)
+    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3 << _DEVCFG1_FWDTWINSZ_POSITION)
+    & (~_DEVCFG1_DMTCNT_MASK      |  0x0 << _DEVCFG1_DMTCNT_POSITION)
+    & (~_DEVCFG1_FDMTEN_MASK      |  0 << _DEVCFG1_FDMTEN_POSITION);
 
 volatile uint32_t ADEVCFG1_LA __attribute__ ((used, section(".adevcfg1_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG1_FNOSC_MASK       |  0x1      << _DEVCFG1_FNOSC_POSITION)
-    & (~_DEVCFG1_DMTINTV_MASK     |  0x7      << _DEVCFG1_DMTINTV_POSITION)
-    & (~_DEVCFG1_FSOSCEN_MASK     |  0        << _DEVCFG1_FSOSCEN_POSITION)
-    & (~_DEVCFG1_IESO_MASK        |  1        << _DEVCFG1_IESO_POSITION)
-    & (~_DEVCFG1_POSCMOD_MASK     |  0x0      << _DEVCFG1_POSCMOD_POSITION)
-    & (~_DEVCFG1_OSCIOFNC_MASK    |  1        << _DEVCFG1_OSCIOFNC_POSITION)
-    & (~_DEVCFG1_FCKSM_MASK       |  0x0      << _DEVCFG1_FCKSM_POSITION)
-    & (~_DEVCFG1_WDTPS_MASK       |  0x14     << _DEVCFG1_WDTPS_POSITION)
-    & (~_DEVCFG1_WDTSPGM_MASK     |  1        << _DEVCFG1_WDTSPGM_POSITION)
-    & (~_DEVCFG1_WINDIS_MASK      |  1        << _DEVCFG1_WINDIS_POSITION)
-    & (~_DEVCFG1_FWDTEN_MASK      |  0        << _DEVCFG1_FWDTEN_POSITION)
-    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3      << _DEVCFG1_FWDTWINSZ_POSITION)
-    & (~_DEVCFG1_DMTCNT_MASK      |  0x0      << _DEVCFG1_DMTCNT_POSITION)
-    & (~_DEVCFG1_FDMTEN_MASK      |  0        << _DEVCFG1_FDMTEN_POSITION);
+    & (~_DEVCFG1_FNOSC_MASK       |  0x1 << _DEVCFG1_FNOSC_POSITION)
+    & (~_DEVCFG1_DMTINTV_MASK     |  0x7 << _DEVCFG1_DMTINTV_POSITION)
+    & (~_DEVCFG1_FSOSCEN_MASK     |  0 << _DEVCFG1_FSOSCEN_POSITION)
+    & (~_DEVCFG1_IESO_MASK        |  1 << _DEVCFG1_IESO_POSITION)
+    & (~_DEVCFG1_POSCMOD_MASK     |  0x0 << _DEVCFG1_POSCMOD_POSITION)
+    & (~_DEVCFG1_OSCIOFNC_MASK    |  1 << _DEVCFG1_OSCIOFNC_POSITION)
+    & (~_DEVCFG1_FCKSM_MASK       |  0x0 << _DEVCFG1_FCKSM_POSITION)
+    & (~_DEVCFG1_WDTPS_MASK       |  0x14 << _DEVCFG1_WDTPS_POSITION)
+    & (~_DEVCFG1_WDTSPGM_MASK     |  1 << _DEVCFG1_WDTSPGM_POSITION)
+    & (~_DEVCFG1_WINDIS_MASK      |  1 << _DEVCFG1_WINDIS_POSITION)
+    & (~_DEVCFG1_FWDTEN_MASK      |  0 << _DEVCFG1_FWDTEN_POSITION)
+    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3 << _DEVCFG1_FWDTWINSZ_POSITION)
+    & (~_DEVCFG1_DMTCNT_MASK      |  0x0 << _DEVCFG1_DMTCNT_POSITION)
+    & (~_DEVCFG1_FDMTEN_MASK      |  0 << _DEVCFG1_FDMTEN_POSITION);
 
 volatile uint32_t DEVCFG1_B1  __attribute__ ((used, section(".devcfg1_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG1_FNOSC_MASK       |  0x1      << _DEVCFG1_FNOSC_POSITION)
-    & (~_DEVCFG1_DMTINTV_MASK     |  0x7      << _DEVCFG1_DMTINTV_POSITION)
-    & (~_DEVCFG1_FSOSCEN_MASK     |  0        << _DEVCFG1_FSOSCEN_POSITION)
-    & (~_DEVCFG1_IESO_MASK        |  1        << _DEVCFG1_IESO_POSITION)
-    & (~_DEVCFG1_POSCMOD_MASK     |  0x0      << _DEVCFG1_POSCMOD_POSITION)
-    & (~_DEVCFG1_OSCIOFNC_MASK    |  1        << _DEVCFG1_OSCIOFNC_POSITION)
-    & (~_DEVCFG1_FCKSM_MASK       |  0x0      << _DEVCFG1_FCKSM_POSITION)
-    & (~_DEVCFG1_WDTPS_MASK       |  0x14     << _DEVCFG1_WDTPS_POSITION)
-    & (~_DEVCFG1_WDTSPGM_MASK     |  1        << _DEVCFG1_WDTSPGM_POSITION)
-    & (~_DEVCFG1_WINDIS_MASK      |  1        << _DEVCFG1_WINDIS_POSITION)
-    & (~_DEVCFG1_FWDTEN_MASK      |  0        << _DEVCFG1_FWDTEN_POSITION)
-    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3      << _DEVCFG1_FWDTWINSZ_POSITION)
-    & (~_DEVCFG1_DMTCNT_MASK      |  0x0      << _DEVCFG1_DMTCNT_POSITION)
-    & (~_DEVCFG1_FDMTEN_MASK      |  0        << _DEVCFG1_FDMTEN_POSITION);
+    & (~_DEVCFG1_FNOSC_MASK       |  0x1 << _DEVCFG1_FNOSC_POSITION)
+    & (~_DEVCFG1_DMTINTV_MASK     |  0x7 << _DEVCFG1_DMTINTV_POSITION)
+    & (~_DEVCFG1_FSOSCEN_MASK     |  0 << _DEVCFG1_FSOSCEN_POSITION)
+    & (~_DEVCFG1_IESO_MASK        |  1 << _DEVCFG1_IESO_POSITION)
+    & (~_DEVCFG1_POSCMOD_MASK     |  0x0 << _DEVCFG1_POSCMOD_POSITION)
+    & (~_DEVCFG1_OSCIOFNC_MASK    |  1 << _DEVCFG1_OSCIOFNC_POSITION)
+    & (~_DEVCFG1_FCKSM_MASK       |  0x0 << _DEVCFG1_FCKSM_POSITION)
+    & (~_DEVCFG1_WDTPS_MASK       |  0x14 << _DEVCFG1_WDTPS_POSITION)
+    & (~_DEVCFG1_WDTSPGM_MASK     |  1 << _DEVCFG1_WDTSPGM_POSITION)
+    & (~_DEVCFG1_WINDIS_MASK      |  1 << _DEVCFG1_WINDIS_POSITION)
+    & (~_DEVCFG1_FWDTEN_MASK      |  0 << _DEVCFG1_FWDTEN_POSITION)
+    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3 << _DEVCFG1_FWDTWINSZ_POSITION)
+    & (~_DEVCFG1_DMTCNT_MASK      |  0x0 << _DEVCFG1_DMTCNT_POSITION)
+    & (~_DEVCFG1_FDMTEN_MASK      |  0 << _DEVCFG1_FDMTEN_POSITION);
 
 volatile uint32_t ADEVCFG1_B1 __attribute__ ((used, section(".adevcfg1_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG1_FNOSC_MASK       |  0x1      << _DEVCFG1_FNOSC_POSITION)
-    & (~_DEVCFG1_DMTINTV_MASK     |  0x7      << _DEVCFG1_DMTINTV_POSITION)
-    & (~_DEVCFG1_FSOSCEN_MASK     |  0        << _DEVCFG1_FSOSCEN_POSITION)
-    & (~_DEVCFG1_IESO_MASK        |  1        << _DEVCFG1_IESO_POSITION)
-    & (~_DEVCFG1_POSCMOD_MASK     |  0x0      << _DEVCFG1_POSCMOD_POSITION)
-    & (~_DEVCFG1_OSCIOFNC_MASK    |  1        << _DEVCFG1_OSCIOFNC_POSITION)
-    & (~_DEVCFG1_FCKSM_MASK       |  0x0      << _DEVCFG1_FCKSM_POSITION)
-    & (~_DEVCFG1_WDTPS_MASK       |  0x14     << _DEVCFG1_WDTPS_POSITION)
-    & (~_DEVCFG1_WDTSPGM_MASK     |  1        << _DEVCFG1_WDTSPGM_POSITION)
-    & (~_DEVCFG1_WINDIS_MASK      |  1        << _DEVCFG1_WINDIS_POSITION)
-    & (~_DEVCFG1_FWDTEN_MASK      |  0        << _DEVCFG1_FWDTEN_POSITION)
-    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3      << _DEVCFG1_FWDTWINSZ_POSITION)
-    & (~_DEVCFG1_DMTCNT_MASK      |  0x0      << _DEVCFG1_DMTCNT_POSITION)
-    & (~_DEVCFG1_FDMTEN_MASK      |  0        << _DEVCFG1_FDMTEN_POSITION);
+    & (~_DEVCFG1_FNOSC_MASK       |  0x1 << _DEVCFG1_FNOSC_POSITION)
+    & (~_DEVCFG1_DMTINTV_MASK     |  0x7 << _DEVCFG1_DMTINTV_POSITION)
+    & (~_DEVCFG1_FSOSCEN_MASK     |  0 << _DEVCFG1_FSOSCEN_POSITION)
+    & (~_DEVCFG1_IESO_MASK        |  1 << _DEVCFG1_IESO_POSITION)
+    & (~_DEVCFG1_POSCMOD_MASK     |  0x0 << _DEVCFG1_POSCMOD_POSITION)
+    & (~_DEVCFG1_OSCIOFNC_MASK    |  1 << _DEVCFG1_OSCIOFNC_POSITION)
+    & (~_DEVCFG1_FCKSM_MASK       |  0x0 << _DEVCFG1_FCKSM_POSITION)
+    & (~_DEVCFG1_WDTPS_MASK       |  0x14 << _DEVCFG1_WDTPS_POSITION)
+    & (~_DEVCFG1_WDTSPGM_MASK     |  1 << _DEVCFG1_WDTSPGM_POSITION)
+    & (~_DEVCFG1_WINDIS_MASK      |  1 << _DEVCFG1_WINDIS_POSITION)
+    & (~_DEVCFG1_FWDTEN_MASK      |  0 << _DEVCFG1_FWDTEN_POSITION)
+    & (~_DEVCFG1_FWDTWINSZ_MASK   |  0x3 << _DEVCFG1_FWDTWINSZ_POSITION)
+    & (~_DEVCFG1_DMTCNT_MASK      |  0x0 << _DEVCFG1_DMTCNT_POSITION)
+    & (~_DEVCFG1_FDMTEN_MASK      |  0 << _DEVCFG1_FDMTEN_POSITION);
 
 /* Not needed by default: */
 /* uint32_t DEVCFG1_B2 __attribute__ ((section(".devcfg1_b2"))) = DEVCFG1_LA; */
@@ -272,71 +272,71 @@ volatile uint32_t ADEVCFG1_B1 __attribute__ ((used, section(".adevcfg1_b1"))) =
 
 volatile uint32_t DEVCFG0_LA   __attribute__ ((used, section(".devcfg0_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG0_DEBUG_MASK       |  0x3      << _DEVCFG0_DEBUG_POSITION)
-    & (~_DEVCFG0_JTAGEN_MASK      |  0x1      << _DEVCFG0_JTAGEN_POSITION)
-    & (~_DEVCFG0_ICESEL_MASK      |  0x2      << _DEVCFG0_ICESEL_POSITION)
-    & (~_DEVCFG0_TRCEN_MASK       |  0x1      << _DEVCFG0_TRCEN_POSITION)
-    & (~_DEVCFG0_BOOTISA_MASK     |  0x1      << _DEVCFG0_BOOTISA_POSITION)
-    & (~_DEVCFG0_FECCCON_MASK     |  0x3      << _DEVCFG0_FECCCON_POSITION)
-    & (~_DEVCFG0_FSLEEP_MASK      |  0x1      << _DEVCFG0_FSLEEP_POSITION)
-    & (~_DEVCFG0_DBGPER_MASK      |  0x7      << _DEVCFG0_DBGPER_POSITION)
-    & (~_DEVCFG0_SMCLR_MASK       |  0x1      << _DEVCFG0_SMCLR_POSITION)
-    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2      << _DEVCFG0_SOSCGAIN_POSITION)
-    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1      << _DEVCFG0_SOSCBOOST_POSITION)
-    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2      << _DEVCFG0_POSCGAIN_POSITION)
-    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1      << _DEVCFG0_POSCBOOST_POSITION)
-    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1      << _DEVCFG0_EJTAGBEN_POSITION);
+    & (~_DEVCFG0_DEBUG_MASK       |  0x3 << _DEVCFG0_DEBUG_POSITION)
+    & (~_DEVCFG0_JTAGEN_MASK      |  0x1 << _DEVCFG0_JTAGEN_POSITION)
+    & (~_DEVCFG0_ICESEL_MASK      |  0x2 << _DEVCFG0_ICESEL_POSITION)
+    & (~_DEVCFG0_TRCEN_MASK       |  0x1 << _DEVCFG0_TRCEN_POSITION)
+    & (~_DEVCFG0_BOOTISA_MASK     |  0x1 << _DEVCFG0_BOOTISA_POSITION)
+    & (~_DEVCFG0_FECCCON_MASK     |  0x3 << _DEVCFG0_FECCCON_POSITION)
+    & (~_DEVCFG0_FSLEEP_MASK      |  0x1 << _DEVCFG0_FSLEEP_POSITION)
+    & (~_DEVCFG0_DBGPER_MASK      |  0x7 << _DEVCFG0_DBGPER_POSITION)
+    & (~_DEVCFG0_SMCLR_MASK       |  0x1 << _DEVCFG0_SMCLR_POSITION)
+    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2 << _DEVCFG0_SOSCGAIN_POSITION)
+    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1 << _DEVCFG0_SOSCBOOST_POSITION)
+    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2 << _DEVCFG0_POSCGAIN_POSITION)
+    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1 << _DEVCFG0_POSCBOOST_POSITION)
+    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1 << _DEVCFG0_EJTAGBEN_POSITION);
 
 volatile uint32_t ADEVCFG0_LA  __attribute__ ((used, section(".adevcfg0_la"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG0_DEBUG_MASK       |  0x3      << _DEVCFG0_DEBUG_POSITION)
-    & (~_DEVCFG0_JTAGEN_MASK      |  0x1      << _DEVCFG0_JTAGEN_POSITION)
-    & (~_DEVCFG0_ICESEL_MASK      |  0x2      << _DEVCFG0_ICESEL_POSITION)
-    & (~_DEVCFG0_TRCEN_MASK       |  0x1      << _DEVCFG0_TRCEN_POSITION)
-    & (~_DEVCFG0_BOOTISA_MASK     |  0x1      << _DEVCFG0_BOOTISA_POSITION)
-    & (~_DEVCFG0_FECCCON_MASK     |  0x3      << _DEVCFG0_FECCCON_POSITION)
-    & (~_DEVCFG0_FSLEEP_MASK      |  0x1      << _DEVCFG0_FSLEEP_POSITION)
-    & (~_DEVCFG0_DBGPER_MASK      |  0x7      << _DEVCFG0_DBGPER_POSITION)
-    & (~_DEVCFG0_SMCLR_MASK       |  0x1      << _DEVCFG0_SMCLR_POSITION)
-    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2      << _DEVCFG0_SOSCGAIN_POSITION)
-    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1      << _DEVCFG0_SOSCBOOST_POSITION)
-    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2      << _DEVCFG0_POSCGAIN_POSITION)
-    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1      << _DEVCFG0_POSCBOOST_POSITION)
-    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1      << _DEVCFG0_EJTAGBEN_POSITION);
+    & (~_DEVCFG0_DEBUG_MASK       |  0x3 << _DEVCFG0_DEBUG_POSITION)
+    & (~_DEVCFG0_JTAGEN_MASK      |  0x1 << _DEVCFG0_JTAGEN_POSITION)
+    & (~_DEVCFG0_ICESEL_MASK      |  0x2 << _DEVCFG0_ICESEL_POSITION)
+    & (~_DEVCFG0_TRCEN_MASK       |  0x1 << _DEVCFG0_TRCEN_POSITION)
+    & (~_DEVCFG0_BOOTISA_MASK     |  0x1 << _DEVCFG0_BOOTISA_POSITION)
+    & (~_DEVCFG0_FECCCON_MASK     |  0x3 << _DEVCFG0_FECCCON_POSITION)
+    & (~_DEVCFG0_FSLEEP_MASK      |  0x1 << _DEVCFG0_FSLEEP_POSITION)
+    & (~_DEVCFG0_DBGPER_MASK      |  0x7 << _DEVCFG0_DBGPER_POSITION)
+    & (~_DEVCFG0_SMCLR_MASK       |  0x1 << _DEVCFG0_SMCLR_POSITION)
+    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2 << _DEVCFG0_SOSCGAIN_POSITION)
+    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1 << _DEVCFG0_SOSCBOOST_POSITION)
+    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2 << _DEVCFG0_POSCGAIN_POSITION)
+    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1 << _DEVCFG0_POSCBOOST_POSITION)
+    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1 << _DEVCFG0_EJTAGBEN_POSITION);
 
 volatile uint32_t DEVCFG0_B1   __attribute__ ((used, section(".devcfg0_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG0_DEBUG_MASK       |  0x3      << _DEVCFG0_DEBUG_POSITION)
-    & (~_DEVCFG0_JTAGEN_MASK      |  0x1      << _DEVCFG0_JTAGEN_POSITION)
-    & (~_DEVCFG0_ICESEL_MASK      |  0x2      << _DEVCFG0_ICESEL_POSITION)
-    & (~_DEVCFG0_TRCEN_MASK       |  0x1      << _DEVCFG0_TRCEN_POSITION)
-    & (~_DEVCFG0_BOOTISA_MASK     |  0x1      << _DEVCFG0_BOOTISA_POSITION)
-    & (~_DEVCFG0_FECCCON_MASK     |  0x3      << _DEVCFG0_FECCCON_POSITION)
-    & (~_DEVCFG0_FSLEEP_MASK      |  0x1      << _DEVCFG0_FSLEEP_POSITION)
-    & (~_DEVCFG0_DBGPER_MASK      |  0x7      << _DEVCFG0_DBGPER_POSITION)
-    & (~_DEVCFG0_SMCLR_MASK       |  0x1      << _DEVCFG0_SMCLR_POSITION)
-    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2      << _DEVCFG0_SOSCGAIN_POSITION)
-    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1      << _DEVCFG0_SOSCBOOST_POSITION)
-    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2      << _DEVCFG0_POSCGAIN_POSITION)
-    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1      << _DEVCFG0_POSCBOOST_POSITION)
-    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1      << _DEVCFG0_EJTAGBEN_POSITION);
+    & (~_DEVCFG0_DEBUG_MASK       |  0x3 << _DEVCFG0_DEBUG_POSITION)
+    & (~_DEVCFG0_JTAGEN_MASK      |  0x1 << _DEVCFG0_JTAGEN_POSITION)
+    & (~_DEVCFG0_ICESEL_MASK      |  0x2 << _DEVCFG0_ICESEL_POSITION)
+    & (~_DEVCFG0_TRCEN_MASK       |  0x1 << _DEVCFG0_TRCEN_POSITION)
+    & (~_DEVCFG0_BOOTISA_MASK     |  0x1 << _DEVCFG0_BOOTISA_POSITION)
+    & (~_DEVCFG0_FECCCON_MASK     |  0x3 << _DEVCFG0_FECCCON_POSITION)
+    & (~_DEVCFG0_FSLEEP_MASK      |  0x1 << _DEVCFG0_FSLEEP_POSITION)
+    & (~_DEVCFG0_DBGPER_MASK      |  0x7 << _DEVCFG0_DBGPER_POSITION)
+    & (~_DEVCFG0_SMCLR_MASK       |  0x1 << _DEVCFG0_SMCLR_POSITION)
+    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2 << _DEVCFG0_SOSCGAIN_POSITION)
+    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1 << _DEVCFG0_SOSCBOOST_POSITION)
+    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2 << _DEVCFG0_POSCGAIN_POSITION)
+    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1 << _DEVCFG0_POSCBOOST_POSITION)
+    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1 << _DEVCFG0_EJTAGBEN_POSITION);
 
-volatile uint32_t ADEVCFG0_B1  __attribute__ ((used, section(".adevcfg0_b1")))=
+volatile uint32_t ADEVCFG0_B1  __attribute__ ((used, section(".adevcfg0_b1"))) =
     0xffffffff /* unused bits must be 1 */
-    & (~_DEVCFG0_DEBUG_MASK       |  0x3      << _DEVCFG0_DEBUG_POSITION)
-    & (~_DEVCFG0_JTAGEN_MASK      |  0x1      << _DEVCFG0_JTAGEN_POSITION)
-    & (~_DEVCFG0_ICESEL_MASK      |  0x2      << _DEVCFG0_ICESEL_POSITION)
-    & (~_DEVCFG0_TRCEN_MASK       |  0x1      << _DEVCFG0_TRCEN_POSITION)
-    & (~_DEVCFG0_BOOTISA_MASK     |  0x1      << _DEVCFG0_BOOTISA_POSITION)
-    & (~_DEVCFG0_FECCCON_MASK     |  0x3      << _DEVCFG0_FECCCON_POSITION)
-    & (~_DEVCFG0_FSLEEP_MASK      |  0x1      << _DEVCFG0_FSLEEP_POSITION)
-    & (~_DEVCFG0_DBGPER_MASK      |  0x7      << _DEVCFG0_DBGPER_POSITION)
-    & (~_DEVCFG0_SMCLR_MASK       |  0x1      << _DEVCFG0_SMCLR_POSITION)
-    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2      << _DEVCFG0_SOSCGAIN_POSITION)
-    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1      << _DEVCFG0_SOSCBOOST_POSITION)
-    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2      << _DEVCFG0_POSCGAIN_POSITION)
-    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1      << _DEVCFG0_POSCBOOST_POSITION)
-    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1      << _DEVCFG0_EJTAGBEN_POSITION);
+    & (~_DEVCFG0_DEBUG_MASK       |  0x3 << _DEVCFG0_DEBUG_POSITION)
+    & (~_DEVCFG0_JTAGEN_MASK      |  0x1 << _DEVCFG0_JTAGEN_POSITION)
+    & (~_DEVCFG0_ICESEL_MASK      |  0x2 << _DEVCFG0_ICESEL_POSITION)
+    & (~_DEVCFG0_TRCEN_MASK       |  0x1 << _DEVCFG0_TRCEN_POSITION)
+    & (~_DEVCFG0_BOOTISA_MASK     |  0x1 << _DEVCFG0_BOOTISA_POSITION)
+    & (~_DEVCFG0_FECCCON_MASK     |  0x3 << _DEVCFG0_FECCCON_POSITION)
+    & (~_DEVCFG0_FSLEEP_MASK      |  0x1 << _DEVCFG0_FSLEEP_POSITION)
+    & (~_DEVCFG0_DBGPER_MASK      |  0x7 << _DEVCFG0_DBGPER_POSITION)
+    & (~_DEVCFG0_SMCLR_MASK       |  0x1 << _DEVCFG0_SMCLR_POSITION)
+    & (~_DEVCFG0_SOSCGAIN_MASK    |  0x2 << _DEVCFG0_SOSCGAIN_POSITION)
+    & (~_DEVCFG0_SOSCBOOST_MASK   |  0x1 << _DEVCFG0_SOSCBOOST_POSITION)
+    & (~_DEVCFG0_POSCGAIN_MASK    |  0x2 << _DEVCFG0_POSCGAIN_POSITION)
+    & (~_DEVCFG0_POSCBOOST_MASK   |  0x1 << _DEVCFG0_POSCBOOST_POSITION)
+    & (~_DEVCFG0_EJTAGBEN_MASK    |  0x1 << _DEVCFG0_EJTAGBEN_POSITION);
 
 /*
  * uint32_t DEVCFG0_B2  __attribute__ ((section(".devcfg0_b2")))
@@ -358,11 +358,11 @@ volatile uint32_t ADEVCFG0_B1  __attribute__ ((used, section(".adevcfg0_b1")))=
  * CP   OFF Code Protect    Protection Disabled, unused bits must be 1.
  */
 
-volatile uint32_t DEVCP0_LA  __attribute__ ((used, section(".devcp0_la")))  =
+volatile uint32_t DEVCP0_LA  __attribute__ ((used, section(".devcp0_la"))) =
     0xFFFFFFFF | _DEVCP0_CP_MASK;
 volatile uint32_t ADEVCP0_LA __attribute__ ((used, section(".adevcp0_la"))) =
     0xFFFFFFFF | _DEVCP0_CP_MASK;
-volatile uint32_t DEVCP0_B1  __attribute__ ((used, section(".devcp0_b1")))  =
+volatile uint32_t DEVCP0_B1  __attribute__ ((used, section(".devcp0_b1"))) =
     0xFFFFFFFF | _DEVCP0_CP_MASK;
 volatile uint32_t ADEVCP0_B1 __attribute__ ((used, section(".adevcp0_b1"))) =
     0xFFFFFFFF | _DEVCP0_CP_MASK;
@@ -379,9 +379,9 @@ volatile uint32_t ADEVCP0_B1 __attribute__ ((used, section(".adevcp0_b1"))) =
  */
 
 volatile uint32_t SEQ_LA[4] __attribute__ ((used, section(".seq_la"))) =
-    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
+{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
 volatile uint32_t SEQ_B1[4] __attribute__ ((used, section(".seq_b1"))) =
-    { 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
+{ 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF, 0xFFFFFFFF };
 /*
  * Not needed by default:
  * uint32_t SEQ_B2[4] __attribute__ ((section(".seq_b2"))) =
@@ -401,11 +401,11 @@ volatile uint32_t SEQ_B1[4] __attribute__ ((used, section(".seq_b1"))) =
  *
  */
 
-volatile uint32_t DEVSIGN_LA  __attribute__ ((used, section(".devsign_la")))  = 0x7FFFFFFF;
+volatile uint32_t DEVSIGN_LA  __attribute__ ((used, section(".devsign_la"))) = 0x7FFFFFFF;
 volatile uint32_t ADEVSIGN_LA __attribute__ ((used, section(".adevsign_la"))) = 0x7FFFFFFF;
-volatile uint32_t DEVSIGN_B1  __attribute__ ((used, section(".devsign_b1")))  = 0x7FFFFFFF;
+volatile uint32_t DEVSIGN_B1  __attribute__ ((used, section(".devsign_b1"))) = 0x7FFFFFFF;
 volatile uint32_t ADEVSIGN_B1 __attribute__ ((used, section(".adevsign_b1"))) = 0x7FFFFFFF;
-volatile uint32_t DEVSIGN_B2  __attribute__ ((used, section(".devsign_b2")))  = 0x7FFFFFFF;
+volatile uint32_t DEVSIGN_B2  __attribute__ ((used, section(".devsign_b2"))) = 0x7FFFFFFF;
 volatile uint32_t ADEVSIGN_B2 __attribute__ ((used, section(".adevsign_b2"))) = 0x7FFFFFFF;
 
 

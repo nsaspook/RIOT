@@ -1,4 +1,4 @@
-/* 
+/*
  * File:   mrf24.h
  * Author: root
  *
@@ -6,9 +6,9 @@
  */
 
 #ifndef MRF24_H
-#define	MRF24_H
+#define MRF24_H
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 extern "C" {
 #endif
 
@@ -16,9 +16,8 @@ void Mrf24_Init(void);
 void mrf24f_testing(void);
 
 
-#ifdef	__cplusplus
+#ifdef  __cplusplus
 }
 #endif
 
-#endif	/* MRF24_H */
-
+#endif  /* MRF24_H */

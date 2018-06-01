@@ -40,16 +40,15 @@
 #endif
 
 /* core timer blocking delay
- * example: 	ShortDelay(50 * US_TO_CT_TICKS);
+ * example:     ShortDelay(50 * US_TO_CT_TICKS);
  * 50us delay time
  */
 void ShortDelay(uint32_t DelayCount)
 {
-	uint32_t StartTime;
+    uint32_t StartTime;
 
-	StartTime = _mips_mfc0(9); // Get CoreTimer value for StartTime
-	while ((uint32_t) (_mips_mfc0(9) - StartTime) < DelayCount) {
-	}
+    StartTime = _mips_mfc0(9); // Get CoreTimer value for StartTime
+    while ((uint32_t) (_mips_mfc0(9) - StartTime) < DelayCount) {}
 }
 
 /*
@@ -104,134 +103,134 @@ volatile unsigned int compares[CHANNELS];
  */
 int gettimeofday(struct timeval *__restrict __p, void *__restrict __tz)
 {
-	(void) __tz;
+    (void) __tz;
 
-	uint64_t now = counter * US_PER_MS;
-	__p->tv_sec = div_u64_by_1000000(now);
-	__p->tv_usec = now - (__p->tv_sec * US_PER_SEC);
+    uint64_t now = counter * US_PER_MS;
+    __p->tv_sec = div_u64_by_1000000(now);
+    __p->tv_usec = now - (__p->tv_sec * US_PER_SEC);
 
-	return 0;
+    return 0;
 }
 
 int timer_init(tim_t dev, unsigned long freq, timer_cb_t cb, void *arg)
 {
-	assert(dev == 0);
+    assert(dev == 0);
 
-	(void) dev;
-	(void) freq; /* Cannot adjust Frequency */
+    (void) dev;
+    (void) freq; /* Cannot adjust Frequency */
 
-	timer_isr_ctx.cb = cb;
-	timer_isr_ctx.arg = arg;
+    timer_isr_ctx.cb = cb;
+    timer_isr_ctx.arg = arg;
 
-	/* Clear down soft counters */
-	memset((void *) compares, 0, sizeof(compares));
+    /* Clear down soft counters */
+    memset((void *) compares, 0, sizeof(compares));
 
-	counter = (1 << TIMER_ACCURACY_SHIFT);
+    counter = (1 << TIMER_ACCURACY_SHIFT);
 
-	/* Set compare up */
-	mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
+    /* Set compare up */
+    mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
 
-	/* Start the timer if stopped */
-	mips32_bc_c0(C0_CAUSE, CR_DC);
+    /* Start the timer if stopped */
+    mips32_bc_c0(C0_CAUSE, CR_DC);
 
-	/* Enable Timer Interrupts */
+    /* Enable Timer Interrupts */
 #ifdef EIC_IRQ
-	eic_irq_configure(EIC_IRQ_TIMER);
+    eic_irq_configure(EIC_IRQ_TIMER);
 #else
-	mips32_bs_c0(C0_STATUS, SR_HINT5);
+    mips32_bs_c0(C0_STATUS, SR_HINT5);
 #endif
 
 
-	return 0;
+    return 0;
 }
 
 int timer_set(tim_t dev, int channel, unsigned int timeout)
 {
-	assert(dev == 0);
-	assert(channel < CHANNELS);
+    assert(dev == 0);
+    assert(channel < CHANNELS);
 
-	(void) dev;
+    (void) dev;
 
-	timeout >>= TIMER_ACCURACY_SHIFT;
-	timeout <<= TIMER_ACCURACY_SHIFT;
+    timeout >>= TIMER_ACCURACY_SHIFT;
+    timeout <<= TIMER_ACCURACY_SHIFT;
 
-	uint32_t status = irq_disable();
-	compares[channel] = counter + timeout;
-	irq_restore(status);
+    uint32_t status = irq_disable();
+    compares[channel] = counter + timeout;
+    irq_restore(status);
 
-	return 1;
+    return 1;
 }
 
 int timer_set_absolute(tim_t dev, int channel, unsigned int value)
 {
-	assert(dev == 0);
-	assert(channel < CHANNELS);
+    assert(dev == 0);
+    assert(channel < CHANNELS);
 
-	(void) dev;
+    (void) dev;
 
-	value >>= TIMER_ACCURACY_SHIFT;
-	value <<= TIMER_ACCURACY_SHIFT;
+    value >>= TIMER_ACCURACY_SHIFT;
+    value <<= TIMER_ACCURACY_SHIFT;
 
-	uint32_t status = irq_disable();
-	compares[channel] = value;
-	irq_restore(status);
+    uint32_t status = irq_disable();
+    compares[channel] = value;
+    irq_restore(status);
 
-	return 1;
+    return 1;
 }
 
 int timer_clear(tim_t dev, int channel)
 {
-	assert(dev == 0);
-	assert(channel < CHANNELS);
+    assert(dev == 0);
+    assert(channel < CHANNELS);
 
-	(void) dev;
+    (void) dev;
 
-	uint32_t status = irq_disable();
-	compares[channel] = 0;
-	irq_restore(status);
+    uint32_t status = irq_disable();
+    compares[channel] = 0;
+    irq_restore(status);
 
-	return 1;
+    return 1;
 }
 
 unsigned int timer_read(tim_t dev)
 {
-	assert(dev == 0);
+    assert(dev == 0);
 
-	(void) dev;
+    (void) dev;
 
-	return counter;
+    return counter;
 }
 
 void timer_start(tim_t dev)
 {
-	(void) dev;
-	mips32_bc_c0(C0_CAUSE, CR_DC);
+    (void) dev;
+    mips32_bc_c0(C0_CAUSE, CR_DC);
 }
 
 void timer_stop(tim_t dev)
 {
-	(void) dev;
-	mips32_bs_c0(C0_CAUSE, CR_DC);
+    (void) dev;
+    mips32_bs_c0(C0_CAUSE, CR_DC);
 }
 
 void timer_irq_enable(tim_t dev)
 {
-	(void) dev;
+    (void) dev;
 #ifdef EIC_IRQ
-	eic_irq_enable(EIC_IRQ_TIMER);
+    eic_irq_enable(EIC_IRQ_TIMER);
 #else
-	mips32_bs_c0(C0_STATUS, SR_HINT5);
+    mips32_bs_c0(C0_STATUS, SR_HINT5);
 #endif
 
 }
 
 void timer_irq_disable(tim_t dev)
 {
-	(void) dev;
+    (void) dev;
 #ifdef EIC_IRQ
-	eic_irq_disable(EIC_IRQ_TIMER);
+    eic_irq_disable(EIC_IRQ_TIMER);
 #else
-	mips32_bc_c0(C0_STATUS, SR_HINT5);
+    mips32_bc_c0(C0_STATUS, SR_HINT5);
 #endif
 }
 
@@ -258,125 +257,125 @@ void __attribute__((interrupt("vector=sw0"), keep_interrupts_masked)) _mips_isr_
 void __attribute__((interrupt("vector=hw5"))) _mips_isr_hw5(void)
 #endif
 {
-	register int cr = mips_getcr();
+    register int cr = mips_getcr();
 
-	if (cr & CR_TI) {
+    if (cr & CR_TI) {
 #ifdef EIC_IRQ
-		eic_irq_ack(EIC_IRQ_TIMER);
+        eic_irq_ack(EIC_IRQ_TIMER);
 #endif
-		uint32_t status = irq_disable();
-		counter += TIMER_ACCURACY;
-		irq_restore(status);
+        uint32_t status = irq_disable();
+        counter += TIMER_ACCURACY;
+        irq_restore(status);
 
-		if (counter == compares[0]) {
-			/*
-			 * The Xtimer code expects the ISR to take some time
-			 * but our counter is a fake software one, so bump it a
-			 * bit to give the impression some time elapsed in the ISR.
-			 * Without this the callback ( _shoot(timer) on xtimer_core.c )
-			 * never fires.
-			 */
-			counter += TIMER_ACCURACY;
-			timer_isr_ctx.cb(timer_isr_ctx.arg, 0);
+        if (counter == compares[0]) {
+            /*
+             * The Xtimer code expects the ISR to take some time
+             * but our counter is a fake software one, so bump it a
+             * bit to give the impression some time elapsed in the ISR.
+             * Without this the callback ( _shoot(timer) on xtimer_core.c )
+             * never fires.
+             */
+            counter += TIMER_ACCURACY;
+            timer_isr_ctx.cb(timer_isr_ctx.arg, 0);
 
-			if (sched_context_switch_request) {
-				thread_yield();
-			}
-		}
-		if (counter == compares[1]) {
-			timer_isr_ctx.cb(timer_isr_ctx.arg, 1);
+            if (sched_context_switch_request) {
+                thread_yield();
+            }
+        }
+        if (counter == compares[1]) {
+            timer_isr_ctx.cb(timer_isr_ctx.arg, 1);
 
-			if (sched_context_switch_request) {
-				thread_yield();
-			}
-		}
-		if (counter == compares[2]) {
-			timer_isr_ctx.cb(timer_isr_ctx.arg, 2);
+            if (sched_context_switch_request) {
+                thread_yield();
+            }
+        }
+        if (counter == compares[2]) {
+            timer_isr_ctx.cb(timer_isr_ctx.arg, 2);
 
-			if (sched_context_switch_request) {
-				thread_yield();
-			}
-		}
+            if (sched_context_switch_request) {
+                thread_yield();
+            }
+        }
 
-		mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
+        mips_setcompare(mips_getcount() + TICKS_PER_US * TIMER_ACCURACY);
 
-	}
+    }
 
 #ifdef _PORTS_P32MZ2048EFM100_H
-	/* process all device interrupts here */
+    /* process all device interrupts here */
 
-	/* Bus TX - SPI1 DMA 1 Master */
-	if (IEC4bits.DMA1IE && IFS4bits.DMA1IF) {
-		DCH1INTCLR = 0xFF;
-		IFS4CLR = _IFS4_DMA1IF_MASK;
-	}
+    /* Bus TX - SPI1 DMA 1 Master */
+    if (IEC4bits.DMA1IE && IFS4bits.DMA1IF) {
+        DCH1INTCLR = 0xFF;
+        IFS4CLR = _IFS4_DMA1IF_MASK;
+    }
 
-	/* Bus RX SPI1 DMA 0 */
-	if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
-		DMA_SPI_1_ISR_RX();
-		DCH0INTCLR = 0xFF;
-		IFS4CLR = _IFS4_DMA0IF_MASK;
-	}
+    /* Bus RX SPI1 DMA 0 */
+    if (IEC4bits.DMA0IE && IFS4bits.DMA0IF) {
+        DMA_SPI_1_ISR_RX();
+        DCH0INTCLR = 0xFF;
+        IFS4CLR = _IFS4_DMA0IF_MASK;
+    }
 
-	/* Bus TX - SPI2 DMA 3 Master */
-	if (IEC4bits.DMA3IE && IFS4bits.DMA3IF) {
-		DCH3INTCLR = 0xFF;
-		IFS4CLR = _IFS4_DMA3IF_MASK;
-	}
+    /* Bus TX - SPI2 DMA 3 Master */
+    if (IEC4bits.DMA3IE && IFS4bits.DMA3IF) {
+        DCH3INTCLR = 0xFF;
+        IFS4CLR = _IFS4_DMA3IF_MASK;
+    }
 
-	/* Bus RX SPI2 DMA 2 */
-	if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
-		DMA_SPI_2_ISR_RX();
-		DCH2INTCLR = 0xFF;
-		IFS4CLR = _IFS4_DMA2IF_MASK;
-	}
+    /* Bus RX SPI2 DMA 2 */
+    if (IEC4bits.DMA2IE && IFS4bits.DMA2IF) {
+        DMA_SPI_2_ISR_RX();
+        DCH2INTCLR = 0xFF;
+        IFS4CLR = _IFS4_DMA2IF_MASK;
+    }
 
-	if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
-		SPI_1_ISR_RX();
-		IFS3CLR = _IFS3_SPI1RXIF_MASK;
-	}
+    if (IEC3bits.SPI1RXIE && IFS3bits.SPI1RXIF) {
+        SPI_1_ISR_RX();
+        IFS3CLR = _IFS3_SPI1RXIF_MASK;
+    }
 
-	if (IEC4bits.SPI2RXIE && IFS4bits.SPI2RXIF) {
-		SPI_2_ISR_RX();
-		IFS4CLR = _IFS4_SPI2RXIF_MASK;
-	}
+    if (IEC4bits.SPI2RXIE && IFS4bits.SPI2RXIF) {
+        SPI_2_ISR_RX();
+        IFS4CLR = _IFS4_SPI2RXIF_MASK;
+    }
 
-	if (IEC4bits.SPI3RXIE && IFS4bits.SPI3RXIF) {
-		SPI_3_ISR_RX();
-		IFS4CLR = _IFS4_SPI3RXIF_MASK;
-	}
+    if (IEC4bits.SPI3RXIE && IFS4bits.SPI3RXIF) {
+        SPI_3_ISR_RX();
+        IFS4CLR = _IFS4_SPI3RXIF_MASK;
+    }
 
-	/* process uart receive interrupts here */
-	if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
-		IFS3CLR = _IFS3_U1RXIF_MASK;
-		UART_1_ISR_RX();
-	}
+    /* process uart receive interrupts here */
+    if (IEC3bits.U1RXIE && IFS3bits.U1RXIF) {
+        IFS3CLR = _IFS3_U1RXIF_MASK;
+        UART_1_ISR_RX();
+    }
 
-	if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
-		IFS4CLR = _IFS4_U2RXIF_MASK;
-		UART_2_ISR_RX();
-	}
+    if (IEC4bits.U2RXIE && IFS4bits.U2RXIF) {
+        IFS4CLR = _IFS4_U2RXIF_MASK;
+        UART_2_ISR_RX();
+    }
 
-	if (IEC4bits.U3RXIE && IFS4bits.U3RXIF) {
-		IFS4CLR = _IFS4_U3RXIF_MASK;
-		UART_3_ISR_RX();
-	}
+    if (IEC4bits.U3RXIE && IFS4bits.U3RXIF) {
+        IFS4CLR = _IFS4_U3RXIF_MASK;
+        UART_3_ISR_RX();
+    }
 
-	if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
-		IFS5CLR = _IFS5_U4RXIF_MASK;
-		UART_4_ISR_RX();
-	}
+    if (IEC5bits.U4RXIE && IFS5bits.U4RXIF) {
+        IFS5CLR = _IFS5_U4RXIF_MASK;
+        UART_4_ISR_RX();
+    }
 
-	/* Timer0 real interrupt for BLE state machine timers */
-	if (IEC0bits.T1IE && IFS0bits.T1IF) {
-		IFS0CLR = _IFS0_T1IF_MASK;
-		_T1Interrupt();
-	}
+    /* Timer0 real interrupt for BLE state machine timers */
+    if (IEC0bits.T1IE && IFS0bits.T1IF) {
+        IFS0CLR = _IFS0_T1IF_MASK;
+        _T1Interrupt();
+    }
 
-	/* ads1220 conversion done interrupt */
-	if (IEC0bits.INT2IE && IFS0bits.INT2IF) {
-		IFS0CLR = _IFS0_INT2IF_MASK;
-		INT_2_ISR_();
-	}
+    /* ads1220 conversion done interrupt */
+    if (IEC0bits.INT2IE && IFS0bits.INT2IF) {
+        IFS0CLR = _IFS0_INT2IF_MASK;
+        INT_2_ISR_();
+    }
 #endif
 }

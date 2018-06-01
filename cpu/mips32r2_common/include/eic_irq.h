@@ -23,42 +23,42 @@
 extern "C" {
 #endif
 
-	/**
-	 * @ brief Internal Interrupt numbers
-	 *
-	 * MIPS cores have a few internally generated interrupts from the Timer,
-	 * Performance Counters and Fast Debug Channel hardware, in EIC mode these
-	 * become outputs from the core and are connected to the external controller,
-	 * the external control then loops these back at whichever IPL it decides
-	 *
-	 * We use negative numbers to represent these, leaving positive numbers free for
-	 * the SoC specific interrupts
-	 * @{
-	 */
+/**
+ * @ brief Internal Interrupt numbers
+ *
+ * MIPS cores have a few internally generated interrupts from the Timer,
+ * Performance Counters and Fast Debug Channel hardware, in EIC mode these
+ * become outputs from the core and are connected to the external controller,
+ * the external control then loops these back at whichever IPL it decides
+ *
+ * We use negative numbers to represent these, leaving positive numbers free for
+ * the SoC specific interrupts
+ * @{
+ */
 #define EIC_IRQ_TIMER (-1)
 #define EIC_IRQ_FDC   (-2)
 #define EIC_IRQ_PC    (-3)
-	/** @} */
+/** @} */
 
-	/**
-	 * @brief   Configure and route the interrupt
-	 */
-	void eic_irq_configure(int irq_num);
+/**
+ * @brief   Configure and route the interrupt
+ */
+void eic_irq_configure(int irq_num);
 
-	/**
-	 * @brief   Enable an interrupt
-	 */
-	void eic_irq_enable(int irq_num);
+/**
+ * @brief   Enable an interrupt
+ */
+void eic_irq_enable(int irq_num);
 
-	/**
-	 * @brief   Disable an interrupt
-	 */
-	void eic_irq_disable(int irq_num);
+/**
+ * @brief   Disable an interrupt
+ */
+void eic_irq_disable(int irq_num);
 
-	/**
-	 * @brief   Acknowledge an interrupt
-	 */
-	void eic_irq_ack(int irq_num);
+/**
+ * @brief   Acknowledge an interrupt
+ */
+void eic_irq_ack(int irq_num);
 
 #ifdef __cplusplus
 }

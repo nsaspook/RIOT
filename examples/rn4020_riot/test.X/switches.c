@@ -42,27 +42,27 @@ extern APP_DATA appData;
 
 void Switch_Tasks(void)
 {
-	//Check if switches have changed and debounce timers are expired
-	if (appData.sw1Changed && TimerDone(TMR_SW1_DEBOUNCE)) {
+    //Check if switches have changed and debounce timers are expired
+    if (appData.sw1Changed && TimerDone(TMR_SW1_DEBOUNCE)) {
 
-		appData.sw1Changed = false; //clear individual flag
-		appData.sendSwitches = true; //set group flag to request TX
-	}
-	if (appData.sw2Changed && TimerDone(TMR_SW2_DEBOUNCE)) {
+        appData.sw1Changed = false;     //clear individual flag
+        appData.sendSwitches = true;    //set group flag to request TX
+    }
+    if (appData.sw2Changed && TimerDone(TMR_SW2_DEBOUNCE)) {
 
-		appData.sw2Changed = false;
-		appData.sendSwitches = true;
-	}
-	if (appData.sw3Changed && TimerDone(TMR_SW3_DEBOUNCE)) {
+        appData.sw2Changed = false;
+        appData.sendSwitches = true;
+    }
+    if (appData.sw3Changed && TimerDone(TMR_SW3_DEBOUNCE)) {
 
-		appData.sw3Changed = false;
-		appData.sendSwitches = true;
-	}
-	if (appData.sw4Changed && TimerDone(TMR_SW4_DEBOUNCE)) {
+        appData.sw3Changed = false;
+        appData.sendSwitches = true;
+    }
+    if (appData.sw4Changed && TimerDone(TMR_SW4_DEBOUNCE)) {
 
-		appData.sw4Changed = false;
-		appData.sendSwitches = true;
-	}
+        appData.sw4Changed = false;
+        appData.sendSwitches = true;
+    }
 }
 
 //Change notification interrupt
@@ -72,5 +72,4 @@ void Switch_Tasks(void)
 //and groups together multiple switch presses that occur within the debounce period
 
 void _CNInterrupt(void)
-{
-}
+{}

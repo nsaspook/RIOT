@@ -45,77 +45,79 @@ static LED_LIGHTSHOW_T lightShow = LED_IDLE;
 
 void LED_Tasks(void)
 {
-	switch (lightShow) {
-	case LED_IDLE:
-		SLED_ON;
-		break;
+    switch (lightShow) {
+        case LED_IDLE:
+            SLED_ON;
+            break;
 
-	case LED_BTLE_ADVERTISING:
-		if (TimerDone(TMR_LEDS)) {
-			SLED;
-			StartTimer(TMR_LEDS, LED_BLINK_MS);
-		}
-		break;
+        case LED_BTLE_ADVERTISING:
+            if (TimerDone(TMR_LEDS)) {
+                SLED;
+                StartTimer(TMR_LEDS, LED_BLINK_MS);
+            }
+            break;
 
-	case LED_BTLE_PAIRED:
-		if (!appData.led1)
-			RELAY1; /* toggle led 3 for testing */
-		/* 
-		 * logic low turns on relay
-		RELAY1 = !appData.led1; 
-		RELAY2 = !appData.led2;
-		RELAY3 = !appData.led3;
-		RELAY4 = !appData.led4;
-		 */
-		SLED_OFF;
-		G_LED_ON;
-		break;
+        case LED_BTLE_PAIRED:
+            if (!appData.led1) {
+                RELAY1; /* toggle led 3 for testing */
+            }
+            /*
+             * logic low turns on relay
+               RELAY1 = !appData.led1;
+               RELAY2 = !appData.led2;
+               RELAY3 = !appData.led3;
+               RELAY4 = !appData.led4;
+             */
+            SLED_OFF;
+            G_LED_ON;
+            break;
 
-	case LED_ERROR:
-		switch (appData.error_code) {
-		case ERROR_INITIALIZATION:
-			SLED_OFF;
-			break;
-		case ERROR_RN_FW:
-			SLED_OFF;
-			break;
-		default:
-			SLED_OFF;
-			break;
-		}
-		break;
+        case LED_ERROR:
+            switch (appData.error_code) {
+                case ERROR_INITIALIZATION:
+                    SLED_OFF;
+                    break;
+                case ERROR_RN_FW:
+                    SLED_OFF;
+                    break;
+                default:
+                    SLED_OFF;
+                    break;
+            }
+            break;
 
-	case LED_SLEEP:
-		SLED_OFF;
-		break;
+        case LED_SLEEP:
+            SLED_OFF;
+            break;
 
-	default:
-		break;
-	}
+        default:
+            break;
+    }
 }
 
 void LED_SET_LightShow(LED_LIGHTSHOW_T setting)
 {
-	lightShow = setting;
+    lightShow = setting;
 }
 
 //Update LEDs with status from LED update message
 
 void GetNewLEDs(void)
 {
-	if (!appData.update_packet) {
-		appData.led1 = appData.oled1;
-		appData.led2 = appData.oled2;
-		appData.led3 = appData.oled3;
-		appData.led4 = appData.oled4;
-	} else {
-		appData.led1 = appData.receive_packet[9] == '1' ? 1 : 0;
-		appData.led2 = appData.receive_packet[11] == '1' ? 1 : 0;
-		appData.led3 = appData.receive_packet[13] == '1' ? 1 : 0;
-		appData.led4 = appData.receive_packet[15] == '1' ? 1 : 0;
-		appData.oled1 = appData.led1;
-		appData.oled2 = appData.led2;
-		appData.oled3 = appData.led3;
-		appData.oled4 = appData.led4;
-	}
+    if (!appData.update_packet) {
+        appData.led1 = appData.oled1;
+        appData.led2 = appData.oled2;
+        appData.led3 = appData.oled3;
+        appData.led4 = appData.oled4;
+    }
+    else {
+        appData.led1 = appData.receive_packet[9] == '1' ? 1 : 0;
+        appData.led2 = appData.receive_packet[11] == '1' ? 1 : 0;
+        appData.led3 = appData.receive_packet[13] == '1' ? 1 : 0;
+        appData.led4 = appData.receive_packet[15] == '1' ? 1 : 0;
+        appData.oled1 = appData.led1;
+        appData.oled2 = appData.led2;
+        appData.oled3 = appData.led3;
+        appData.oled4 = appData.led4;
+    }
 }

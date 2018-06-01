@@ -30,7 +30,7 @@
  * Compiler:    XC16 v1.23
  *
  * Uart functions
- * 
+ *
  */
 
 #include <stdint.h>
@@ -45,13 +45,13 @@
 /* UART receive buffer type */
 
 typedef struct {
-	char buffer[SIZE_RxBuffer];
+    char buffer[SIZE_RxBuffer];
 } UART_RX_BUFFER_T;
 
 /* UART transmit buffer type */
 
 typedef struct {
-	char buffer[SIZE_TxBuffer];
+    char buffer[SIZE_TxBuffer];
 } UART_TX_BUFFER_T;
 
 /* Buffer instances */
@@ -63,61 +63,61 @@ tsrb_t rn4020_rx, rn4020_tx;
 /* serial #1 interrupt received data callback processing */
 void _rx_cb1(void *data, uint8_t c)
 {
-	(void) data;
-	/* Put received byte in the buffer */
-	tsrb_add_one(&rn4020_rx, (char) c);
+    (void) data;
+    /* Put received byte in the buffer */
+    tsrb_add_one(&rn4020_rx, (char) c);
 }
 
-/* 
-// Initialize the UART to communicate with the Bluetooth module */
+/*
+   // Initialize the UART to communicate with the Bluetooth module */
 
 void UART_Init(void)
 {
-	tsrb_init(&rn4020_rx, rxBuf.buffer, SIZE_RxBuffer);
-	tsrb_init(&rn4020_tx, txBuf.buffer, SIZE_TxBuffer);
-	uart_init(1, 115200, _rx_cb1, &rxBuf.buffer[0]);
+    tsrb_init(&rn4020_rx, rxBuf.buffer, SIZE_RxBuffer);
+    tsrb_init(&rn4020_tx, txBuf.buffer, SIZE_TxBuffer);
+    uart_init(1, 115200, _rx_cb1, &rxBuf.buffer[0]);
 }
 
-/* 
-// See if there are one or more bytes in the receive buffer */
+/*
+   // See if there are one or more bytes in the receive buffer */
 
 bool UART_IsNewRxData(void)
 {
-	if (tsrb_empty(&rn4020_rx)) {
-		return(false);
-	} else {
-		return(true); /* There are bytes in the buffer */
-	}
+    if (tsrb_empty(&rn4020_rx)) {
+        return(false);
+    }
+    else {
+        return(true); /* There are bytes in the buffer */
+    }
 }
 
-/* 
-// Read a byte from the receive buffer */
+/*
+   // Read a byte from the receive buffer */
 
 uint8_t UART_ReadRxBuffer(void)
 {
-	return(uint8_t) tsrb_get_one(&rn4020_rx);
+    return (uint8_t) tsrb_get_one(&rn4020_rx);
 }
 
-/* 
-// Write a byte to the transmit buffer */
+/*
+   // Write a byte to the transmit buffer */
 
 void UART_WriteTxBuffer(const uint8_t TxByte)
 {
-	tsrb_add_one(&rn4020_tx, (char) TxByte);
+    tsrb_add_one(&rn4020_tx, (char) TxByte);
 }
 
-/* 
-// Return the number of bytes free in the TX buffer */
+/*
+   // Return the number of bytes free in the TX buffer */
 
 uint16_t UART_GetTXBufferFreeSpace(void)
 {
-	return(uint16_t) tsrb_free(&rn4020_tx);
+    return (uint16_t) tsrb_free(&rn4020_tx);
 }
 
 
 uint8_t UART_PeekRxBuffer(void)
 {
-	return(0); //No bytes in the buffer so return 0
+    return(0); //No bytes in the buffer so return 0
 
 }
-

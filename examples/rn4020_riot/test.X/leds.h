@@ -34,7 +34,7 @@
  */
 
 #ifndef LEDS_H
-#define	LEDS_H
+#define LEDS_H
 
 //LED display states
 
@@ -50,5 +50,4 @@ void LED_Tasks(void);
 void LED_SET_LightShow(LED_LIGHTSHOW_T setting);
 void GetNewLEDs(void);
 
-#endif	/* LEDS_H */
-
+#endif  /* LEDS_H */

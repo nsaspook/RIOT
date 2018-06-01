@@ -33,7 +33,7 @@
  */
 
 #ifndef SLEEP_H
-#define	SLEEP_H
+#define SLEEP_H
 
 #include "config.h"
 
@@ -41,6 +41,5 @@
 
 void APP_SleepNow(void);
 
-#endif //USE_SLEEP
-#endif	/* SLEEP_H */
-
+#endif  //USE_SLEEP
+#endif  /* SLEEP_H */

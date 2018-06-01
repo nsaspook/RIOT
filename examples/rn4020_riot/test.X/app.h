@@ -49,72 +49,72 @@
 #define ERROR_RN_FW             -3
 
 typedef enum {
-	APP_INITIALIZE = 0, // Initialize application
-	APP_INITIALIZATION_ERROR, // Initialization Error
-	APP_BLUETOOTH_ADVERTISE, // Advertise the bluetooth connection, not connected
-	APP_BLUETOOTH_PAIRED, // Bluetooth module is paired to server, we idle
-	APP_SLEEP // Sleep mode
+    APP_INITIALIZE = 0,         // Initialize application
+    APP_INITIALIZATION_ERROR,   // Initialization Error
+    APP_BLUETOOTH_ADVERTISE,    // Advertise the bluetooth connection, not connected
+    APP_BLUETOOTH_PAIRED,       // Bluetooth module is paired to server, we idle
+    APP_SLEEP                   // Sleep mode
 } APP_STATE_T;
 
 typedef struct {
-	APP_STATE_T state; //APP_Tasks state
-	char receive_packet[BT_RX_PKT_SZ]; //message buffers
-	char transmit_packet[BT_TX_PKT_SZ];
-	bool got_packet, //new packet flag
-	update_packet,
-	sendSwitches, //new switch states ready to send
-	ADCcalFlag, //ADC is calibrated if true
-	led1, led2, led3, led4, led5, led6, //LED states
-	oled1, oled2, oled3, oled4;
-	int8_t error_code;
-	volatile bool sw1, sw2, sw3, sw4, //switch states
-	sw1Changed, sw2Changed, sw3Changed, sw4Changed, //switch state has changed
-	RTCCalarm, //RTCC alarm has tripped
-	accumReady, //ADC accumulator is done
-	ADCinUse, //ADC or accumulator register is currently in use
-	timer1Flag, //Timer1 has tripped
-	CNint, //CN interrupt has tripped (flag to exit sleep)
-	sleepFlag; //sleep mode triggered
-	uint16_t potValue, potValueOld, potValueLastTX, version_code, hrmEnergy, heatValue; //potentiometer values - current, previous, and last transmitted, firmware version
-	int32_t ads1220Value;
-	struct LINK_DATA *packet_data;
+    APP_STATE_T state;                          //APP_Tasks state
+    char receive_packet[BT_RX_PKT_SZ];          //message buffers
+    char transmit_packet[BT_TX_PKT_SZ];
+    bool got_packet,                            //new packet flag
+         update_packet,
+         sendSwitches,                          //new switch states ready to send
+         ADCcalFlag,                            //ADC is calibrated if true
+         led1, led2, led3, led4, led5, led6,    //LED states
+         oled1, oled2, oled3, oled4;
+    int8_t error_code;
+    volatile bool sw1, sw2, sw3, sw4,                                                   //switch states
+                  sw1Changed, sw2Changed, sw3Changed, sw4Changed,                       //switch state has changed
+                  RTCCalarm,                                                            //RTCC alarm has tripped
+                  accumReady,                                                           //ADC accumulator is done
+                  ADCinUse,                                                             //ADC or accumulator register is currently in use
+                  timer1Flag,                                                           //Timer1 has tripped
+                  CNint,                                                                //CN interrupt has tripped (flag to exit sleep)
+                  sleepFlag;                                                            //sleep mode triggered
+    uint16_t potValue, potValueOld, potValueLastTX, version_code, hrmEnergy, heatValue; //potentiometer values - current, previous, and last transmitted, firmware version
+    int32_t ads1220Value;
+    struct LINK_DATA *packet_data;
 } APP_DATA;
 
 /* for 24-bit transmit and extra status data */
 typedef struct A_data {
-	uint32_t dummy12 : 12; // dummy space for adc data
-	uint32_t nullbits : 2;
-	uint32_t index : 3; //adc channel select
-	uint32_t single_diff : 1;
-	uint32_t start_bit : 1;
-	uint32_t dummy8 : 8;
-	uint32_t finish : 1;
-	uint32_t in_progress : 1;
+    uint32_t dummy12 : 12;  // dummy space for adc data
+    uint32_t nullbits : 2;
+    uint32_t index : 3;     //adc channel select
+    uint32_t single_diff : 1;
+    uint32_t start_bit : 1;
+    uint32_t dummy8 : 8;
+    uint32_t finish : 1;
+    uint32_t in_progress : 1;
 } A_data;
 
 /* upper-> lower bytes to 32 bit word for ADC/DAC, etc ... */
 union bytes4 {
-	uint32_t ld;
-	uint8_t bd[4];
+    uint32_t ld;
+    uint8_t bd[4];
 };
 
 /* upper/lower bytes to 16 bit word for ADC/DAC, etc ... */
 union bytes2 {
-	uint16_t ld;
-	uint8_t bd[2];
+    uint16_t ld;
+    uint8_t bd[2];
 };
 
 /* used to hold 24-bit adc buffer, index and control bits */
 union adc_buf_type {
-	uint32_t ld;
-	uint8_t bd[4];
-	struct A_data map;
+    uint32_t ld;
+    uint8_t bd[4];
+    struct A_data map;
 };
 
 typedef struct {
-	union adc_buf_type mcp3208_cmd;
-	uint16_t potValue;
-	uint8_t chan;
+    union adc_buf_type mcp3208_cmd;
+    uint16_t potValue;
+    uint8_t chan;
 } ADC_DATA;
 
 void APP_Tasks(void);
