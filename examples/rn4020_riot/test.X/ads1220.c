@@ -7,6 +7,7 @@
 #include "timers.h"
 #include "ads1220.h"
 #include "periph/dac.h"
+#include "periph/adc.h"
 
 static uint8_t *tx_buff;
 static uint8_t *rx_buff;
@@ -172,11 +173,13 @@ int ads1220_testing(void)
 
         /* mangle the data as necessary */
         /* Bipolar Offset Binary */
-        //		rn4020_appdata.ads1220value &= 0x0ffffff;
-        //		rn4020_appdata.ads1220value ^= 0x0800000;
+        /*
+	 		rn4020_appdata.ads1220value &= 0x0ffffff;
+        		rn4020_appdata.ads1220value ^= 0x0800000;
+	 */
 
         if (SWITCH1 == 0) {
-            printf(" ADS1220 value: %x\r\n", (int) (rn4020_appdata.ads1220value >> 10));
+            printf(" ADS1220 value: %x, an15 value %x,%x,%x\r\n", (int) (rn4020_appdata.ads1220value >> 10),adc_sample(8, ADC_RES_12BIT),adc_sample(9, ADC_RES_12BIT),adc_sample(10, ADC_RES_12BIT));
         }
         upd = false;
         i = 0;

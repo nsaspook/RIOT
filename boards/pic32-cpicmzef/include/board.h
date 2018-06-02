@@ -54,24 +54,24 @@ extern "C" {
  * @{
  */
 
-#define Ja17_1       GPIO_PIN(PORT_E, 1)
-#define Ja17_2       GPIO_PIN(PORT_E, 2)
-#define Ja17_3       GPIO_PIN(PORT_E, 9)
-#define Ja17_4       GPIO_PIN(PORT_B, 3)
-#define Ja17_5       GPIO_PIN(PORT_B, 2)
+#define Ja17_1       GPIO_PIN(PORT_E, 1)    /**/
+#define Ja17_2       GPIO_PIN(PORT_E, 2)    /**/
+#define Ja17_3       GPIO_PIN(PORT_E, 9)    /* adc7 an26 */
+#define Ja17_4       GPIO_PIN(PORT_B, 3)    /* adc3 an3 */
+#define Ja17_5       GPIO_PIN(PORT_B, 2)    /***/
 #define Ja17_6       GPIO_PIN(PORT_A, 10)
-#define Ja17_7       GPIO_PIN(PORT_B, 15)
+#define Ja17_7       GPIO_PIN(PORT_B, 15)   /* adc7 an10 */
 #define Ja17_8       GPIO_PIN(PORT_E, 0)
-#define Ja17_9       GPIO_PIN(PORT_G, 1)
+#define Ja17_9       GPIO_PIN(PORT_G, 1)    /**/
 #define Ja17_10      GPIO_PIN(PORT_D, 13)
 #define Ja17_11      GPIO_PIN(PORT_D, 12)
 #define Ja17_12      GPIO_PIN(PORT_C, 13)
 #define Ja17_13      GPIO_PIN(PORT_D, 9)
-#define Ja17_14      GPIO_PIN(PORT_F, 8)
-#define Ja17_15      GPIO_PIN(PORT_F, 5)
+#define Ja17_14      GPIO_PIN(PORT_F, 8)    /**/
+#define Ja17_15      GPIO_PIN(PORT_F, 5)    /**/
 #define Ja17_16      GPIO_PIN(PORT_A, 6)
-#define Ja17_17      GPIO_PIN(PORT_A, 4)
-#define Ja17_18      GPIO_PIN(PORT_E, 7)
+#define Ja17_17      GPIO_PIN(PORT_A, 4) /**/
+#define Ja17_18      GPIO_PIN(PORT_E, 7) /* adc7 an15*/
 
 #define Ja5_1            GPIO_PIN(PORT_B, 4)
 #define Ja5_2            GPIO_PIN(PORT_A, 9)
@@ -120,31 +120,31 @@ extern "C" {
 #define LED4_PINR           GPIO_PIN(PORT_B, 5)
 #define LED4_PING           GPIO_PIN(PORT_B, 1)
 #define LED4_PINB           GPIO_PIN(PORT_B, 0)
-#define PDEBUG1_PIN         GPIO_PIN(PORT_E, 7)
-#define PDEBUG2_PIN         GPIO_PIN(PORT_E, 1)
-#define PDEBUG3_PIN         GPIO_PIN(PORT_E, 2)
+#define PDEBUG1_PIN         Ja17_17
+#define PDEBUG2_PIN         Ja17_1
+#define PDEBUG3_PIN         Ja17_2
 
 #define C_WIFI_SLEEP        GPIO_PIN(PORT_A, 0)
-#define C_RF24F_CS      GPIO_PIN(PORT_B, 8)
-#define C_WIFI_INT      GPIO_PIN(PORT_F, 4)
+#define C_RF24F_CS          GPIO_PIN(PORT_B, 8)
+#define C_WIFI_INT          GPIO_PIN(PORT_F, 4)
 
 #define C_BLE_IO_WAKE_SW    Ja5_2
 #define C_BLE_IO_WAKE_HW    Ja5_4
 #define C_BLE_IO_CONN       Ja5_1
-#define C_BT_CMD        Ja5_16
-#define C_BT_WS         Ja5_5
+#define C_BT_CMD            Ja5_16
+#define C_BT_WS             Ja5_5
 #define C_BT_MLDP_EV        Ja5_6
 
-#define C_STBY_RST      GPIO_PIN(PORT_A, 5)
-#define C_SWITCH_1      GPIO_PIN(PORT_G, 12)
+#define C_STBY_RST          GPIO_PIN(PORT_A, 5)
+#define C_SWITCH_1          GPIO_PIN(PORT_G, 12)
 #define C_USB_VBUS_SWITCH   GPIO_PIN(PORT_G, 13)
 
 #define C_SPI0_CS_J5        Ja5_3
 #define C_SPI0_CS_J10       Ja10_3
-#define C_SPI1_CS       Ja10_2
-#define C_SPI2_CS       Ja10_13
+#define C_SPI1_CS           Ja10_2
+#define C_SPI2_CS           Ja10_13
 
-#define C_INT2          Ja10_14
+#define C_INT2              Ja10_14
 
 #define LED1_ON             gpio_set(LED1_PIN)
 #define LED1_OFF            gpio_clear(LED1_PIN)
