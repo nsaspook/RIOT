@@ -70,8 +70,8 @@ extern "C" {
 #define Ja17_14      GPIO_PIN(PORT_F, 8)    /**/
 #define Ja17_15      GPIO_PIN(PORT_F, 5)    /**/
 #define Ja17_16      GPIO_PIN(PORT_A, 6)
-#define Ja17_17      GPIO_PIN(PORT_A, 4) /**/
-#define Ja17_18      GPIO_PIN(PORT_E, 7) /* adc7 an15*/
+#define Ja17_17      GPIO_PIN(PORT_A, 4)    /**/
+#define Ja17_18      GPIO_PIN(PORT_E, 7)    /* adc7 an15*/
 
 #define Ja5_1            GPIO_PIN(PORT_B, 4)
 #define Ja5_2            GPIO_PIN(PORT_A, 9)
