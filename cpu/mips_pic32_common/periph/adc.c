@@ -118,9 +118,18 @@ int adc_init_internal(adc_t line)
     ADCCON3bits.CONCLKDIV = 9;
     ADCCON3bits.VREFSEL = 0;    /* Select AVDD and AVSS as reference source */
     ADCTRGMODEbits.SH0ALT = 0;
+    /* adc 3 setup */
+    ADC3TIMEbits.ADCDIV = 1;    /* ADC3 clock frequency is half of control clock = TAD2 */
+    ADC3TIMEbits.SAMC = 5;      /* ADC3 sampling time = 5 * TAD2 */
+    ADC3TIMEbits.SELRES = 3;
+    ADCTRGMODEbits.SH3ALT = 0;  /* ADC3 = AN3 */
+    ADCTRGSNSbits.LVL3 = 0;     /* Edge trigger */
+    ADCTRG1bits.TRGSRC3 = 1;    /* Set AN3 to trigger from software. */
     /* Select ADC input mode */
-    ADCIMCON1bits.SIGN15 = 0;
+    ADCIMCON1bits.DIFF3 = 0;
+    ADCIMCON1bits.SIGN3 = 0;
     ADCIMCON1bits.DIFF15 = 0;
+    ADCIMCON1bits.SIGN15 = 0;
     ADCIMCON2bits.SIGN26 = 0;
     ADCIMCON2bits.DIFF26 = 0;
     ADCIMCON2bits.SIGN28 = 0;
@@ -161,6 +170,9 @@ int adc_init_internal(adc_t line)
     while (ADCCON2bits.REFFLT) {    /* Wait, fault with the reference voltage */
     }
     /* Enable clock to the module */
+    ADCCON3bits.DIGEN3 = 1; /* Enable ADC3 */
+    ADCANCONbits.ANEN3 = 1;
+    while (!ADCANCONbits.WKRDY3) {}
     ADCCON3bits.DIGEN7 = 1;         /* Enable ADC7 */
     ADCANCONbits.ANEN7 = 1;         /* Enable clock, ADC7 */
     while (!ADCANCONbits.WKRDY7) {  /* Wait until ADC7 is ready */
