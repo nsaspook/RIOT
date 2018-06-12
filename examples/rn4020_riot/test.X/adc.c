@@ -19,7 +19,7 @@ void rm4020_adc_Init(void)
 bool rn4040_adc_tasks(void)
 {
     /* read value from the adc */
-    rn4020_adcdata.potvalue = adc_sample(rn4020_adcdata.chan, ADC_RES_12BIT);
+    rn4020_adcdata.potvalue = adc_sample(rn4020_adcdata.chan + ADC_CPU_CHANS, ADC_RES_12BIT);
     rn4020_adcdata.mcp3208_cmd.map.finish = true;
     rn4020_adcdata.mcp3208_cmd.map.in_progress = false;
     rn4020_appdata.accumready = true;

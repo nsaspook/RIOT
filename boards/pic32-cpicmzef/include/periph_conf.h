@@ -44,11 +44,10 @@ extern "C" {
 #define TIMER_0_CHANNELS    (3)
 /** @} */
 
-#define CPU_CLOCK_HZ             (200000000UL)      // CPU Clock Speed in Hz
-#define CPU_CT_HZ            (CPU_CLOCK_HZ / 2)     // CPU CoreTimer   in Hz
-#define PERIPHERAL_CLOCK_HZ      (100000000UL)      // Peripheral Bus  in Hz
+#define CPU_CLOCK_HZ             (200000000UL)
+#define CPU_CT_HZ            (CPU_CLOCK_HZ / 2)
 
-#define US_TO_CT_TICKS  (CPU_CT_HZ / 1000000UL)     // uS to CoreTimer Ticks
+#define US_TO_CT_TICKS  (CPU_CT_HZ / 1000000UL)
 
 /**
  * @name    UART Definitions
@@ -72,6 +71,7 @@ extern "C" {
  */
 #define SPI_NUMOF   (6)
 #define SPI_NUMOF_USED  (3)
+#define ADC_CPU_CHANS (4) /* adc line not on a bus */
 
 static const spi_conf_t spi_config[] = {
     {
