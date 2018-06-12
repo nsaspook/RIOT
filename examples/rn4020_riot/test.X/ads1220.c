@@ -179,7 +179,9 @@ int ads1220_testing(void)
          */
 
         if (SWITCH1 == 0) {
-            printf(" ADS1220 value: %x, an15 value %x,%x,%x\r\n", (int) (rn4020_appdata.ads1220value >> 10), adc_sample(8, ADC_RES_12BIT), adc_sample(9, ADC_RES_12BIT), adc_sample(10, ADC_RES_12BIT));
+            printf(" ADS1220 value: %x, an15 value %i,%i,%i,%i\r\n", (int) (rn4020_appdata.ads1220value >> 10), 
+		    adc_sample(8, ADC_RES_12BIT), adc_sample(9, ADC_RES_12BIT), adc_sample(10, ADC_RES_12BIT),
+		    adc_sample(11, ADC_RES_12BIT));
         }
         upd = false;
         i = 0;
