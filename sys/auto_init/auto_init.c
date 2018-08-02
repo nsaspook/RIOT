@@ -20,10 +20,6 @@
 
 #include "auto_init.h"
 
-#ifdef MODULE_SHT11
-#include "sht11.h"
-#endif
-
 #ifdef MODULE_MCI
 #include "diskio.h"
 #endif
@@ -88,6 +84,10 @@
 #include "ndn-riot/ndn.h"
 #endif
 
+#ifdef MODULE_ASYMCUTE
+#include "net/asymcute.h"
+#endif
+
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
@@ -100,10 +100,6 @@ void auto_init(void)
 #ifdef MODULE_XTIMER
     DEBUG("Auto init xtimer module.\n");
     xtimer_init();
-#endif
-#ifdef MODULE_SHT11
-    DEBUG("Auto init SHT11 module.\n");
-    sht11_init();
 #endif
 #ifdef MODULE_MCI
     DEBUG("Auto init mci module.\n");
@@ -171,6 +167,10 @@ void auto_init(void)
     DEBUG("Auto init rdcli_simple module\n");
     extern void rdcli_simple_run(void);
     rdcli_simple_run();
+#endif
+#ifdef MODULE_ASYMCUTE
+    DEBUG("Auto init Asymcute\n");
+    asymcute_handler_run();
 #endif
 
 /* initialize network devices */
@@ -275,6 +275,12 @@ void auto_init(void)
 #endif
 
 /* initialize sensors and actuators */
+#ifdef MODULE_SHT1X
+    DEBUG("Auto init SHT1X module (SHT10/SHT11/SHT15 sensor driver).\n");
+    extern void auto_init_sht1x(void);
+    auto_init_sht1x();
+#endif
+
 #ifdef MODULE_AUTO_INIT_SAUL
     DEBUG("auto_init SAUL\n");
 
@@ -329,6 +335,10 @@ auto_init_mpu9150();
 #ifdef MODULE_GROVE_LEDBAR
     extern void auto_init_grove_ledbar(void);
     auto_init_grove_ledbar();
+#endif
+#ifdef MODULE_PIR
+    extern void auto_init_pir(void);
+    auto_init_pir();
 #endif
 #ifdef MODULE_SI70XX
     extern void auto_init_si70xx(void);
@@ -413,6 +423,10 @@ auto_init_mpu9150();
 #ifdef MODULE_SI114X
     extern void auto_init_si114x(void);
     auto_init_si114x();
+#endif
+#ifdef MODULE_MMA7660
+    extern void auto_init_mma7660(void);
+    auto_init_mma7660();
 #endif
 
 #endif /* MODULE_AUTO_INIT_SAUL */

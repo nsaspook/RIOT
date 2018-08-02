@@ -59,6 +59,7 @@ endif
 
 ifneq (,$(filter netdev_ieee802154,$(USEMODULE)))
   USEMODULE += ieee802154
+  USEMODULE += random
 endif
 
 ifneq (,$(filter gnrc_uhcpc,$(USEMODULE)))
@@ -305,6 +306,10 @@ ifneq (,$(filter gnrc_ipv6_nib_6ln,$(USEMODULE)))
   USEMODULE += gnrc_sixlowpan_nd
 endif
 
+ifneq (,$(filter gnrc_ipv6_nib_dns,$(USEMODULE)))
+  USEMODULE += gnrc_ipv6_nib
+endif
+
 ifneq (,$(filter gnrc_ipv6_nib_router,$(USEMODULE)))
   USEMODULE += gnrc_ipv6_nib
 endif
@@ -315,6 +320,9 @@ ifneq (,$(filter gnrc_ipv6_nib,$(USEMODULE)))
   USEMODULE += gnrc_netif
   USEMODULE += ipv6_addr
   USEMODULE += random
+  ifneq (,$(filter sock_dns,$(USEMODULE)))
+    USEMODULE += gnrc_ipv6_nib_dns
+  endif
 endif
 
 ifneq (,$(filter gnrc_udp,$(USEMODULE)))
@@ -520,6 +528,9 @@ ifneq (,$(filter gnrc_pktbuf, $(USEMODULE)))
   ifeq (,$(filter gnrc_pktbuf_%, $(USEMODULE)))
     USEMODULE += gnrc_pktbuf_static
   endif
+  ifeq (gnrc_pktbuf_cmd,$(filter gnrc_pktbuf_%, $(USEMODULE)))
+    USEMODULE += gnrc_pktbuf_static
+  endif
   USEMODULE += gnrc_pkt
 endif
 
@@ -613,6 +624,12 @@ ifneq (,$(filter conn_can,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter puf_sram,$(USEMODULE)))
+  USEMODULE += hashes
+  USEMODULE += random
+  FEATURES_REQUIRED += puf_sram
+endif
+
 ifneq (,$(filter random,$(USEMODULE)))
   USEMODULE += prng
   # select default prng
@@ -631,12 +648,24 @@ ifneq (,$(filter random,$(USEMODULE)))
     USEMODULE += tinymt32
   endif
 
+  ifneq (,$(filter prng_sha1prng,$(USEMODULE)))
+    USEMODULE += hashes
+  endif
+
   USEMODULE += luid
 endif
 
 ifneq (,$(filter openthread_contrib,$(USEMODULE)))
   USEMODULE += openthread_contrib_netdev
   FEATURES_REQUIRED += cpp
+endif
+
+ifneq (,$(filter asymcute,$(USEMODULE)))
+  USEMODULE += sock_udp
+  USEMODULE += sock_util
+  USEMODULE += random
+  USEMODULE += event_timeout
+  USEMODULE += event_callback
 endif
 
 ifneq (,$(filter emcute,$(USEMODULE)))
@@ -661,6 +690,12 @@ endif
 
 ifneq (,$(filter sock_dns,$(USEMODULE)))
   USEMODULE += sock_util
+endif
+
+ifneq (,$(filter sock_util,$(USEMODULE)))
+  USEMODULE += posix
+  USEMODULE += fmt
+  USEMODULE += sock_udp
 endif
 
 ifneq (,$(filter event_%,$(USEMODULE)))

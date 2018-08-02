@@ -5,7 +5,7 @@ PKG_LICENSE=ISC
 
 .PHONY: all
 
-export RIOT_CFLAGS = $(CFLAGS) $(INCLUDES)
+RIOT_CFLAGS = $(INCLUDES)
 
 TOOLCHAIN_FILE=$(PKG_BUILDDIR)/xcompile-toolchain.cmake
 
@@ -22,3 +22,6 @@ $(TOOLCHAIN_FILE): git-download
 	$(RIOTTOOLS)/cmake/generate-xcompile-toolchain.sh > $(TOOLCHAIN_FILE)
 
 include $(RIOTBASE)/pkg/pkg.mk
+ifneq (,$(filter -Wformat-nonliteral -Wformat=2, $(CFLAGS)))
+  CFLAGS += -Wno-format-nonliteral
+endif

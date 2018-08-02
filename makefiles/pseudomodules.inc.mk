@@ -1,3 +1,4 @@
+PSEUDOMODULES += at_urc
 PSEUDOMODULES += auto_init_gnrc_rpl
 PSEUDOMODULES += can_mbox
 PSEUDOMODULES += can_pm
@@ -16,11 +17,13 @@ PSEUDOMODULES += gnrc_ipv6_router_default
 PSEUDOMODULES += gnrc_ipv6_nib_6lbr
 PSEUDOMODULES += gnrc_ipv6_nib_6ln
 PSEUDOMODULES += gnrc_ipv6_nib_6lr
+PSEUDOMODULES += gnrc_ipv6_nib_dns
 PSEUDOMODULES += gnrc_ipv6_nib_router
 PSEUDOMODULES += gnrc_netdev_default
 PSEUDOMODULES += gnrc_neterr
 PSEUDOMODULES += gnrc_netapi_callbacks
 PSEUDOMODULES += gnrc_netapi_mbox
+PSEUDOMODULES += gnrc_pktbuf_cmd
 PSEUDOMODULES += gnrc_sixlowpan_border_router_default
 PSEUDOMODULES += gnrc_sixlowpan_default
 PSEUDOMODULES += gnrc_sixlowpan_iphc_nhc
@@ -94,6 +97,11 @@ PSEUDOMODULES += adc121c
 PSEUDOMODULES += sx1272
 PSEUDOMODULES += sx1276
 
+# include variants of SHT1X drivers as pseudo modules
+PSEUDOMODULES += sht10
+PSEUDOMODULES += sht11
+PSEUDOMODULES += sht15
+
 # include variants of Si114x drivers as pseudo modules
 PSEUDOMODULES += si1145
 PSEUDOMODULES += si1146
@@ -123,3 +131,5 @@ NO_PSEUDOMODULES += periph_common
 PSEUDOMODULES += auto_init_skald
 PSEUDOMODULES += skald_ibeacon
 PSEUDOMODULES += skald_eddystone
+
+# Packages may also add modules to PSEUDOMODULES in their `Makefile.include`.
