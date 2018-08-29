@@ -226,6 +226,10 @@ ifneq (,$(filter mag3110,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
 endif
 
+ifneq (,$(filter mma7660,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+endif
+
 ifneq (,$(filter mma8x5x,$(USEMODULE)))
   FEATURES_REQUIRED += periph_i2c
 endif
@@ -279,6 +283,11 @@ ifneq (,$(filter pcd8544,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
+ifneq (,$(filter pir,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio
+  USEMODULE += xtimer
+endif
+
 ifneq (,$(filter rgbled,$(USEMODULE)))
   USEMODULE += color
 endif
@@ -302,7 +311,9 @@ ifneq (,$(filter servo,$(USEMODULE)))
   FEATURES_REQUIRED += periph_pwm
 endif
 
-ifneq (,$(filter sht11,$(USEMODULE)))
+ifneq (,$(filter sht1%,$(USEMODULE)))
+  USEMODULE += sht1x
+  FEATURES_REQUIRED += periph_gpio
   USEMODULE += xtimer
 endif
 
@@ -385,4 +396,9 @@ endif
 ifneq (,$(filter tja1042,$(USEMODULE)))
   USEMODULE += can_trx
   FEATURES_REQUIRED += periph_gpio
+endif
+
+ifneq (,$(filter tsl2561,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_i2c
+  USEMODULE += xtimer
 endif

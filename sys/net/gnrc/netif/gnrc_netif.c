@@ -21,6 +21,7 @@
 #include "net/gnrc.h"
 #ifdef MODULE_GNRC_IPV6_NIB
 #include "net/gnrc/ipv6/nib.h"
+#include "net/gnrc/ipv6.h"
 #endif /* MODULE_GNRC_IPV6_NIB */
 #ifdef MODULE_NETSTATS_IPV6
 #include "net/netstats.h"
@@ -39,6 +40,7 @@
 static gnrc_netif_t _netifs[GNRC_NETIF_NUMOF];
 
 static void _update_l2addr_from_dev(gnrc_netif_t *netif);
+static void _configure_netdev(netdev_t *dev);
 static void *_gnrc_netif_thread(void *args);
 static void _event_cb(netdev_t *dev, netdev_event_t event);
 
@@ -325,6 +327,11 @@ int gnrc_netif_set_from_netdev(gnrc_netif_t *netif,
                 case NETOPT_SRC_LEN:
                     _update_l2addr_from_dev(netif);
                     break;
+                case NETOPT_STATE:
+                    if (*((netopt_state_t *)opt->data) == NETOPT_STATE_RESET) {
+                        _configure_netdev(netif->dev);
+                    }
+                    break;
                 default:
                     break;
             }
@@ -589,8 +596,13 @@ int gnrc_netif_ipv6_addr_add_internal(gnrc_netif_t *netif,
         }
     }
 #if GNRC_IPV6_NIB_CONF_SLAAC
-    else {
-        /* TODO: send out NS to solicited nodes for DAD probing */
+    else if (!gnrc_netif_is_6ln(netif)) {
+        /* cast to remove const qualifier (will still be used NIB internally as
+         * const) */
+        msg_t msg = { .type = GNRC_IPV6_NIB_DAD,
+                      .content = { .ptr = &netif->ipv6.addrs[idx] } };
+
+        msg_send(&msg, gnrc_ipv6_pid);
     }
 #endif
 #else
@@ -961,8 +973,7 @@ static int _create_candidate_set(const gnrc_netif_t *netif,
          *  be included in a candidate set."
          */
         if ((netif->ipv6.addrs_flags[i] == 0) ||
-            (gnrc_netif_ipv6_addr_get_state(netif, i) ==
-             GNRC_NETIF_IPV6_ADDRS_FLAGS_STATE_TENTATIVE)) {
+            gnrc_netif_ipv6_addr_dad_trans(netif, i)) {
             continue;
         }
         /* Check if we only want link local addresses */
@@ -1221,6 +1232,22 @@ static void _init_from_device(gnrc_netif_t *netif)
     _update_l2addr_from_dev(netif);
 }
 
+static void _configure_netdev(netdev_t *dev)
+{
+    /* Enable RX- and TX-complete interrupts */
+    static const netopt_enable_t enable = NETOPT_ENABLE;
+    int res = dev->driver->set(dev, NETOPT_RX_END_IRQ, &enable, sizeof(enable));
+    if (res < 0) {
+        DEBUG("gnrc_netif: enable NETOPT_RX_END_IRQ failed: %d\n", res);
+    }
+#ifdef MODULE_NETSTATS_L2
+    res = dev->driver->set(dev, NETOPT_TX_END_IRQ, &enable, sizeof(enable));
+    if (res < 0) {
+        DEBUG("gnrc_netif: enable NETOPT_TX_END_IRQ failed: %d\n", res);
+    }
+#endif
+}
+
 static void *_gnrc_netif_thread(void *args)
 {
     gnrc_netapi_opt_t *opt;
@@ -1242,6 +1269,7 @@ static void *_gnrc_netif_thread(void *args)
     dev->context = netif;
     /* initialize low-level driver */
     dev->driver->init(dev);
+    _configure_netdev(dev);
     _init_from_device(netif);
     netif->cur_hl = GNRC_NETIF_DEFAULT_HL;
 #ifdef MODULE_GNRC_IPV6_NIB
