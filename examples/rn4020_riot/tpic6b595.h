@@ -2,7 +2,7 @@
  * File:   tpic6b595.h
  * Author: root
  *
- * Created on September 18, 2018, 2:56 PM
+ * Created on September 18, 2018, 2:51 PM
  */
 
 #ifndef TPIC6B595_H
@@ -12,8 +12,8 @@
 extern "C" {
 #endif
 
-int tpic6b595_init(void);
-int tpic6b595_testing(void);
+
+
 
 #ifdef	__cplusplus
 }

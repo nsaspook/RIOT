@@ -6,6 +6,7 @@
 #include "config.h"
 #include "timers.h"
 #include "ads1220.h"
+#include "tpic6b595.h"
 #include "periph/dac.h"
 
 extern rn4020_appdata_t rn4020_appdata;
@@ -38,4 +39,5 @@ void mrf24f_testing(void)
         gpio_set(C_RF24F_CS);
     }
     ads1220_testing();
+    tpic6b595_testing();
 }
