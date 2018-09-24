@@ -55,6 +55,7 @@
 #include "automio.h"
 #include "mrf24.h"
 #include "ads1220.h"
+#include "tpic6b595.h"
 
 rn4020_appdata_t rn4020_appdata;
 rn4020_adcdata_t rn4020_adcdata;

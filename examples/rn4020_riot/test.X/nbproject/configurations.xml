@@ -18,6 +18,7 @@
       <itemPath>spi.h</itemPath>
       <itemPath>mrf24.h</itemPath>
       <itemPath>ads1220.h</itemPath>
+      <itemPath>tpic6b595.h</itemPath>
     </logicalFolder>
     <logicalFolder name="LinkerScript"
                    displayName="Linker Files"
@@ -38,6 +39,7 @@
       <itemPath>switches.c</itemPath>
       <itemPath>mrf24.c</itemPath>
       <itemPath>ads1220.c</itemPath>
+      <itemPath>tpic6b595.c</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"

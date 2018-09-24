@@ -143,6 +143,7 @@ extern "C" {
 #define C_SPI0_CS_J10       Ja10_3
 #define C_SPI1_CS           Ja10_2
 #define C_SPI2_CS           Ja10_13
+#define C_SPI3_CS	    Ja10_16
 
 #define C_INT2              Ja10_14
 
