@@ -12,6 +12,8 @@
 extern "C" {
 #endif
 
+#define TPIC6B595_TEST_DATA	0b01010101
+	
 int tpic6b595_init(void);
 int tpic6b595_testing(void);
 

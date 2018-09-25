@@ -255,6 +255,7 @@ bool rn4020_app_initialize(void)
     rn4020_timers_init();
     Mrf24_Init();
     ads1220_init();
+    tpic6b595_init();
 
     B_LED_ON;
     BT_WAKE_SW_SET; //wake module
