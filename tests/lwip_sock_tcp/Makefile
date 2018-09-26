@@ -27,7 +27,7 @@ ifneq (0, $(LWIP_IPV6))
 endif
 
 USEMODULE += inet_csum
-USEMODULE += lwip_ethernet lwip_netdev
+USEMODULE += lwip_netdev
 USEMODULE += lwip_sock_tcp
 USEMODULE += netdev_eth
 USEMODULE += netdev_test
@@ -42,6 +42,3 @@ CFLAGS += -DLWIP_NETIF_LOOPBACK=1
 CFLAGS += -DLWIP_HAVE_LOOPIF=1
 
 include $(RIOTBASE)/Makefile.include
-
-test:
-	./tests/01-run.py

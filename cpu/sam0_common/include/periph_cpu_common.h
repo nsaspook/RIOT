@@ -299,7 +299,8 @@ static inline int sercom_id(void *sercom)
 #if defined(CPU_FAM_SAMD21)
     return ((((uint32_t)sercom) >> 10) & 0x7) - 2;
 #elif defined(CPU_FAM_SAML21)
-    return ((((uint32_t)sercom) >> 10) & 0x7);
+    /* Left side handles SERCOM0-4 while right side handles unaligned address of SERCOM5 */
+    return ((((uint32_t)sercom) >> 10) & 0x7) + ((((uint32_t)sercom) >> 22) & 0x04);
 #endif
 }
 
@@ -352,8 +353,13 @@ static inline void sercom_set_gen(void *sercom, uint32_t gclk)
                          (SERCOM0_GCLK_ID_CORE + sercom_id(sercom)));
     while (GCLK->STATUS.reg & GCLK_STATUS_SYNCBUSY) {}
 #elif defined(CPU_FAM_SAML21)
-    GCLK->PCHCTRL[SERCOM0_GCLK_ID_CORE + sercom_id(sercom)].reg =
+    if (sercom_id(sercom) < 5) {
+        GCLK->PCHCTRL[SERCOM0_GCLK_ID_CORE + sercom_id(sercom)].reg =
                                                     (GCLK_PCHCTRL_CHEN | gclk);
+    } else {
+        GCLK->PCHCTRL[SERCOM5_GCLK_ID_CORE].reg =
+                                                    (GCLK_PCHCTRL_CHEN | gclk);
+    }
 #endif
 }
 

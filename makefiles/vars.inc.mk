@@ -31,9 +31,13 @@ export BINDIR                # This is the folder where the application should b
 export APPDIR                # The base folder containing the application
 export PKGDIRBASE            # The base folder for building packages
 
+export PYTHONPATH            # Python default search path for module filesi, with RIOT specific packages
+
 export FEATURES_REQUIRED     # List of required features by the application
 export FEATURES_PROVIDED     # List of provided features by the board
 export FEATURES_OPTIONAL     # List of nice to have features
+# TOOLCHAINS_SUPPORTED       # List of supported toolchains by an MCU (gnu/llvm/...).
+# TOOLCHAINS_BLACKLISTED     # List of unspported toolchains for a module or an application.
 
 export TARGET_ARCH           # The target platform name, in GCC triple notation, e.g. "arm-none-eabi", "i686-elf", "avr"
 export PREFIX                # The prefix of the toolchain commands, usually "$(TARGET_ARCH)-", e.g. "arm-none-eabi-" or "msp430-".
@@ -84,3 +88,6 @@ export DLCACHE               # directory used to cache http downloads
 export DOWNLOAD_TO_FILE      # Use `$(DOWNLOAD_TO_FILE) $(DESTINATION) $(URL)` to download `$(URL)` to `$(DESTINATION)`.
 export DOWNLOAD_TO_STDOUT    # Use `$(DOWNLOAD_TO_STDOUT) $(URL)` to download `$(URL)` output `$(URL)` to stdout, e.g. to be piped into `tar xz`.
 export UNZIP_HERE            # Use `cd $(SOME_FOLDER) && $(UNZIP_HERE) $(SOME_FILE)` to extract the contents of the zip file `$(SOME_FILE)` into `$(SOME_FOLDER)`.
+
+export LAZYSPONGE            # Command saving stdin to a file only on content update.
+export LAZYSPONGE_FLAGS      # Parameters supplied to LAZYSPONGE.

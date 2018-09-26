@@ -9,12 +9,6 @@ OLD_USEPKG := $(sort $(USEPKG))
 include $(RIOTBASE)/sys/Makefile.dep
 include $(RIOTBASE)/drivers/Makefile.dep
 
-ifneq (,$(filter cbor_ctime,$(USEMODULE)))
-  ifneq (,$(filter newlib,$(USEMODULE)))
-    USEMODULE += newlib_gnu_source
-  endif
-endif
-
 ifneq (,$(filter ndn-riot,$(USEPKG)))
   USEMODULE += gnrc
   USEMODULE += xtimer
@@ -373,8 +367,8 @@ ifneq (,$(filter newlib,$(USEMODULE)))
   ifeq (,$(filter newlib_syscalls_%,$(USEMODULE)))
     USEMODULE += newlib_syscalls_default
   endif
-  ifeq (,$(filter rtt_stdio,$(USEMODULE)))
-    USEMODULE += uart_stdio
+  ifeq (,$(filter stdio_rtt,$(USEMODULE)))
+    USEMODULE += stdio_uart
   endif
 endif
 
@@ -386,11 +380,11 @@ ifneq (,$(filter posix_sockets,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-ifneq (,$(filter rtt_stdio,$(USEMODULE)))
+ifneq (,$(filter stdio_rtt,$(USEMODULE)))
   USEMODULE += xtimer
 endif
 
-ifneq (,$(filter uart_stdio,$(USEMODULE)))
+ifneq (,$(filter stdio_uart,$(USEMODULE)))
   USEMODULE += isrpipe
   FEATURES_REQUIRED += periph_uart
 endif
@@ -465,6 +459,9 @@ ifneq (,$(filter lwip,$(USEMODULE)))
   endif
   ifeq (,$(filter lwip_tcp lwip_udp lwip_udplite,$(USEMODULE)))
     USEMODULE += lwip_raw
+  endif
+  ifneq (,$(filter netdev_eth,$(USEMODULE)))
+    USEMODULE += lwip_ethernet
   endif
 endif
 
@@ -730,6 +727,7 @@ endif
 ifneq (,$(filter gcoap,$(USEMODULE)))
   USEMODULE += nanocoap
   USEMODULE += gnrc_sock_udp
+  USEMODULE += sock_util
 endif
 
 ifneq (,$(filter luid,$(USEMODULE)))
@@ -782,6 +780,11 @@ endif
 ifneq (,$(filter uuid,$(USEMODULE)))
   USEMODULE += hashes
   USEMODULE += random
+endif
+
+# Enable periph_gpio when periph_gpio_irq is enabled
+ifneq (,$(filter periph_gpio_irq,$(USEMODULE)))
+  FEATURES_REQUIRED += periph_gpio
 endif
 
 # always select gpio (until explicit dependencies are sorted out)

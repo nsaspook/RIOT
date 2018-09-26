@@ -53,7 +53,7 @@ but not limited to:
 * a preemptive, tickless scheduler with priorities
 * flexible memory management
 * high resolution, long-term timers
-* support 100+ boards based on AVR, MSP430, MIPS, ARM7 and ARM Cortex-M
+* support 100+ boards based on AVR, MSP430, ESP8266, MIPS, ARM7 and ARM Cortex-M
 * the native port allows to run RIOT as-is on Linux, BSD, and MacOS. Multiple
   instances of RIOT running on a single machine can also be interconnected via
   a simple virtual Ethernet bridge
@@ -64,7 +64,7 @@ but not limited to:
 * CoAP
 * CCN-Lite
 * Sigfox
-* LoRaWAN (Experimental)
+* LoRaWAN
 
 
 ## GETTING STARTED
@@ -124,6 +124,6 @@ http://www.riot-os.org
 
 
 [master-ci-badge]: https://ci.riot-os.org/RIOT-OS/RIOT/master/latest/badge.svg
-[master-ci-link]: https://ci.riot-os.org/RIOT-OS/RIOT/master/latest/output.html
+[master-ci-link]: https://ci.riot-os.org/nightlies.html#master
 [irc-badge]: https://img.shields.io/badge/IRC-join%20chat%20%E2%86%92-blue.svg
 [irc-link]: http://webchat.freenode.net?channels=%23riot-os

@@ -11,6 +11,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              arduino-zero \
                              avsextrem \
                              b-l072z-lrwan1 \
+                             blackpill \
                              bluepill \
                              calliope-mini \
                              cc2538dk \
@@ -21,6 +22,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              feather-m0 \
                              ikea-tradfri \
                              limifrog-v1 maple-mini \
+                             lobaro-lorabox \
                              mbed_lpc1768 \
                              mega-xplained \
                              microbit \
@@ -49,6 +51,7 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              opencm904 \
                              openmote \
                              openmote-cc2538 \
+                             openmote-b \
                              pba-d-01-kw2x \
                              remote-pa \
                              remote-reva \
@@ -57,16 +60,17 @@ BOARD_INSUFFICIENT_MEMORY := airfy-beacon \
                              samd21-xpro \
                              samr21-xpro \
                              seeeduino_arch-pro \
+                             sensebox_samd21 \
                              slstk3401a \
                              sltb001a \
                              slwstk6220a \
                              sodaq-autonomo \
                              sodaq-explorer \
+                             sodaq-one \
                              spark-core \
                              stk3600 \
                              stm32f0discovery \
                              stm32f3discovery \
-                             stm32mindev \
                              teensy31 \
                              telosb \
                              waspmote-pro \
@@ -171,6 +175,7 @@ ARM_CORTEX_M_BOARDS := airfy-beacon \
                        slwstk6220a \
                        sodaq-autonomo \
                        sodaq-explorer \
+                       sodaq-one \
                        spark-core \
                        stk3600 \
                        stk3700 \
@@ -265,6 +270,3 @@ ifeq (, $(UNIT_TESTS))
 else
   CFLAGS += -DTEST_SUITES='$(subst $() $(),$(charCOMMA),$(UNIT_TESTS:tests-%=%))'
 endif
-
-test:
-	./tests/01-run.py
