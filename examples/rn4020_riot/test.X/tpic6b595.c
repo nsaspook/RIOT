@@ -17,9 +17,7 @@ static void tpic6b595_spi_transfer_bytes(spi_t bus, spi_cs_t cs, bool cont,
 {
     spi_speed_config(bus, 0, SPI_CLK_2MHZ); /* mode , no speed change */
     SPI_CS3_0;
-//    timer_shortdelay(1);
     spi_transfer_bytes(bus, cs, cont, out, in, len);
-    timer_shortdelay(1);
     SPI_CS3_1;
 }
 
@@ -43,7 +41,8 @@ int tpic6b595_testing(void)
 
         /* send test pattern */
         tx_buff[0] = TPIC6B595_TEST_DATA;
-        tpic6b595_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 1);
+	tx_buff[1] = TPIC6B595_TEST_DATA;
+        tpic6b595_spi_transfer_bytes(SPI_DEV(2), 0, true, tx_buff, rx_buff, 2);
         upd = false;
         i = 0;
     }
