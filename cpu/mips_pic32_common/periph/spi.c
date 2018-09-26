@@ -357,7 +357,8 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
 	if (out && in) {
 		dma_able = 0;
 	} else {
-		assert(bus != SPI_NO_DMA_BUS);
+		/* don't try with dma bus channels */
+		assert(bus == SPI_NO_DMA_BUS);
 	}
 
 	/* Translate a kernel (KSEG) virtual address to a physical address. */
