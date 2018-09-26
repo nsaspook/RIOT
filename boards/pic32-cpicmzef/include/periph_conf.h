@@ -71,6 +71,7 @@ extern "C" {
  */
 #define SPI_NUMOF   (6)
 #define SPI_NUMOF_USED  (3)
+#define SPI_NO_DMA_BUS	(3)
 #define ADC_CPU_CHANS (4) /* adc line not on a bus */
 
 static const spi_conf_t spi_config[] = {
