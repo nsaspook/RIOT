@@ -349,7 +349,7 @@ static inline void _spi_transfer_bytes_async(spi_t bus, spi_cs_t cs, bool cont,
     pic_spi[bus].len = len;
     pic_spi[bus].complete = false;
 
-    /* check of we have both buffers */
+    /* check if we have both buffers */
     if (out && in) {
         dma_able = 0;
     }

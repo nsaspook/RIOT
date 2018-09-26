@@ -114,6 +114,7 @@ void board_init(void)
     gpio_init(Ja5_16, GPIO_OUT);    // CMD to rn4020
 
     /* mikro BUS #2 spi related control signals*/
+    gpio_init(Ja10_16, GPIO_OUT);   // CS3
     gpio_init(Ja10_13, GPIO_OUT);   // CS2
     gpio_init(Ja10_2, GPIO_OUT);    // CS1
     gpio_init(Ja10_3, GPIO_OUT);    // CS0

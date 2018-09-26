@@ -166,10 +166,12 @@
 #define SPI_CS0_1_J10 gpio_set(C_SPI0_CS_J10)
 #define SPI_CS1_1 gpio_set(C_SPI1_CS)
 #define SPI_CS2_1 gpio_set(C_SPI2_CS)
+#define SPI_CS3_1 gpio_set(C_SPI3_CS)
 
 #define SPI_CS0_0_J10 gpio_clear(C_SPI0_CS_J10)
 #define SPI_CS1_0 gpio_clear(C_SPI1_CS)
 #define SPI_CS2_0 gpio_clear(C_SPI2_CS)
+#define SPI_CS3_0 gpio_clear(C_SPI3_CS)
 
 /* Timer initialization */
 #define TIMER_OFF 0

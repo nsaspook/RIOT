@@ -12,6 +12,7 @@ void SPI_Init(void)
         SPI_CS0_1_J10;
         SPI_CS1_1;
         SPI_CS2_1;
+	SPI_CS3_1;
         spi_init(SPI_DEV(2));
         spi_acquire(SPI_DEV(2), 0, SPI_MODE_0, SPI_CLK_1MHZ);
         spi_is_init = true;
