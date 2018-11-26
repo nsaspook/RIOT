@@ -41,7 +41,7 @@ static const coap_resource_t _resources[] = {
 };
 
 static gcoap_listener_t _listener = {
-    (coap_resource_t *)&_resources[0],
+    &_resources[0],
     sizeof(_resources) / sizeof(_resources[0]),
     NULL
 };
@@ -72,8 +72,9 @@ static void _resp_handler(unsigned req_state, coap_pkt_t* pdu,
                                                 coap_get_code_class(pdu),
                                                 coap_get_code_detail(pdu));
     if (pdu->payload_len) {
-        if (pdu->content_type == COAP_FORMAT_TEXT
-                || pdu->content_type == COAP_FORMAT_LINK
+        unsigned content_type = coap_get_content_type(pdu);
+        if (content_type == COAP_FORMAT_TEXT
+                || content_type == COAP_FORMAT_LINK
                 || coap_get_code_class(pdu) == COAP_CLASS_CLIENT_FAILURE
                 || coap_get_code_class(pdu) == COAP_CLASS_SERVER_FAILURE) {
             /* Expecting diagnostic payload in failure cases */
@@ -233,7 +234,13 @@ int gcoap_cli_cmd(int argc, char **argv)
         apos++;
     }
 
-    if (argc == apos + 3 || argc == apos + 4) {
+    /*
+     * "get" (code_pos 0) must have exactly apos + 3 arguments
+     * while "post" (code_pos 1) and "put" (code_pos 2) and must have exactly
+     * apos + 4 arguments
+     */
+    if (((argc == apos + 3) && (code_pos == 0)) ||
+        ((argc == apos + 4) && (code_pos != 0))) {
         gcoap_req_init(&pdu, &buf[0], GCOAP_PDU_BUF_SIZE, code_pos+1, argv[apos+2]);
         if (argc == apos + 4) {
             memcpy(pdu.payload, argv[apos+3], strlen(argv[apos+3]));
