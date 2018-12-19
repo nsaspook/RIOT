@@ -42,8 +42,6 @@
 #define ENABLE_DEBUG (0)
 #include "debug.h"
 
-#define _MAX_MHR_OVERHEAD   (25)
-
 static int _send(netdev_t *netdev, const iolist_t *iolist);
 static int _recv(netdev_t *netdev, void *buf, size_t len, void *info);
 static int _init(netdev_t *netdev);
@@ -133,8 +131,11 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     uint8_t phr;
     size_t pkt_len;
 
-    /* frame buffer protection will be unlocked as soon as at86rf2xx_fb_stop()
-     * is called*/
+    /* frame buffer protection will be unlocked as soon as at86rf2xx_fb_stop() is called,
+     * Set receiver to PLL_ON state to be able to free the SPI bus and avoid loosing data. */
+    at86rf2xx_set_state(dev, AT86RF2XX_STATE_PLL_ON);
+
+    /* start frame buffer access */
     at86rf2xx_fb_start(dev);
 
     /* get the size of the received packet */
@@ -143,14 +144,27 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     /* ignore MSB (refer p.80) and substract length of FCS field */
     pkt_len = (phr & 0x7f) - 2;
 
-    /* just return length when buf == NULL */
+    /* return length when buf == NULL */
     if (buf == NULL) {
+        /* release SPI bus */
         at86rf2xx_fb_stop(dev);
+
+        /* drop packet, continue receiving */
+        if (len > 0) {
+            /* set device back in operation state which was used before last transmission.
+             * This state is saved in at86rf2xx.c/at86rf2xx_tx_prepare() e.g RX_AACK_ON */
+            at86rf2xx_set_state(dev, dev->idle_state);
+        }
+
         return pkt_len;
     }
+
     /* not enough space in buf */
     if (pkt_len > len) {
         at86rf2xx_fb_stop(dev);
+        /* set device back in operation state which was used before last transmission.
+         * This state is saved in at86rf2xx.c/at86rf2xx_tx_prepare() e.g RX_AACK_ON */
+        at86rf2xx_set_state(dev, dev->idle_state);
         return -ENOBUFS;
     }
 #ifdef MODULE_NETSTATS_L2
@@ -166,43 +180,46 @@ static int _recv(netdev_t *netdev, void *buf, size_t len, void *info)
     at86rf2xx_fb_read(dev, tmp, 2);
     (void)tmp;
 
-    /* at86rf212  RSSI_BASE_VAL +3.1*RSSI, base varies for diff. modulation and datarates
-     * at86RF232  RSSI_BASE_VAL +3.0*RSSI, base -91dBm
-     * at86RF233  RSSI_BASE_VAL +3.0*RSSI, base -94dBm
-     * at86RF231  RSSI_BASE_VAL +3.0*(RSSI-1), base -91dBm
-     * at***RFR2  RSSI_BASE_VAL +3.0*(RSSI-1), base -90dBm
+    /* AT86RF212B RSSI_BASE_VAL + 1.03 * ED, base varies for diff. modulation and datarates
+     * AT86RF232  RSSI_BASE_VAL + ED, base -91dBm
+     * AT86RF233  RSSI_BASE_VAL + ED, base -94dBm
+     * AT86RF231  RSSI_BASE_VAL + ED, base -91dBm
+     * AT***RFR2  RSSI_BASE_VAL + ED, base -90dBm
      *
-     * AT86RF231 MAN. p.89 8.3.2 Reading RSSI
-     * AT86RF232 MAN. p.88 8.3.2 Reading RSSI
-     * AT86RF233 MAN. p.99 8.4.2 Reading RSSI
-     * "It is not recommended reading the RSSI value when using the Extended
-     * Operating Modes, use ED instead"
-     * at86RF231  RSSI_BASE_VAL +ED, base -90dBm
-     * at86RF232  RSSI_BASE_VAL +ED, base -91dBm
-     * at86RF233  RSSI_BASE_VAL +ED, base -94dBm
-     * at***RFR2  RSSI_BASE_VAL +ED, base -90dBm
+     * AT86RF231 MAN. p.92, 8.4.3 Data Interpretation
+     * AT86RF232 MAN. p.91, 8.4.3 Data Interpretation
+     * AT86RF233 MAN. p.102, 8.5.3 Data Interpretation
+     *
+     * for performance reasons we ignore the 1.03 scale factor on the 212B,
+     * which causes a slight error in the values, but the accuracy of the ED
+     * value is specified as +/- 5 dB, so it should not matter very much in real
+     * life.
      */
     if (info != NULL) {
-        uint8_t rssi = 0;
+        uint8_t ed = 0;
         netdev_ieee802154_rx_info_t *radio_info = info;
+        at86rf2xx_fb_read(dev, &(radio_info->lqi), 1);
 
-#if defined(MODULE_AT86RF231) || defined(MODULE_AT86RF232) || defined(MODULE_AT86RF233)
-        at86rf2xx_fb_read(dev, &(radio_info->lqi), 1);
+#if defined(MODULE_AT86RF231)
+        /* AT86RF231 does not provide ED at the end of the frame buffer, read
+         * from separate register instead */
         at86rf2xx_fb_stop(dev);
-        rssi = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_ED_LEVEL);
+        ed = at86rf2xx_reg_read(dev, AT86RF2XX_REG__PHY_ED_LEVEL);
 #else
-        at86rf2xx_fb_read(dev, &(radio_info->lqi), 1);
-        at86rf2xx_fb_read(dev, &(rssi), 1);
+        at86rf2xx_fb_read(dev, &ed, 1);
         at86rf2xx_fb_stop(dev);
-        rssi = 3 * rssi;
 #endif
-        radio_info->rssi = RSSI_BASE_VAL + rssi;
+        radio_info->rssi = RSSI_BASE_VAL + ed;
         DEBUG("[at86rf2xx] LQI:%d high is good, RSSI:%d high is either good or"
               "too much interference.\n", radio_info->lqi, radio_info->rssi);
     }
     else {
         at86rf2xx_fb_stop(dev);
     }
+
+    /* set device back in operation state which was used before last transmission.
+     * This state is saved in at86rf2xx.c/at86rf2xx_tx_prepare() e.g RX_AACK_ON */
+    at86rf2xx_set_state(dev, dev->idle_state);
 
     return pkt_len;
 }
@@ -282,11 +299,6 @@ static int _get(netdev_t *netdev, netopt_t opt, void *val, size_t max_len)
             assert(max_len >= sizeof(uint16_t));
             ((uint8_t *)val)[1] = 0;
             ((uint8_t *)val)[0] = at86rf2xx_get_page(dev);
-            return sizeof(uint16_t);
-
-        case NETOPT_MAX_PACKET_SIZE:
-            assert(max_len >= sizeof(int16_t));
-            *((uint16_t *)val) = AT86RF2XX_MAX_PKT_LENGTH - _MAX_MHR_OVERHEAD;
             return sizeof(uint16_t);
 
         case NETOPT_STATE:
