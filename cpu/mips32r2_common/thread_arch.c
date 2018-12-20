@@ -187,7 +187,7 @@ extern int _dsp_load(struct dspctx *ctx);
  * The nomips16 attribute should not really be needed, it works around a toolchain
  * issue in 2016.05-03.
  */
-void __attribute__((nomips16))
+void  __attribute__((nomips16)) 
 _mips_handle_exception(struct gpctx *ctx, int exception)
 {
     unsigned int syscall_num = 0;
