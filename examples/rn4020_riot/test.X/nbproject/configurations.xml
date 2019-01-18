@@ -51,6 +51,7 @@
     <Elem>..</Elem>
     <Elem>/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/include</Elem>
     <Elem>../../../core/include</Elem>
+    <Elem>../../..</Elem>
   </sourceRootList>
   <projectmakefile>Makefile</projectmakefile>
   <confs>

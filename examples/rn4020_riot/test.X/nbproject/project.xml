@@ -16,6 +16,7 @@
                 <sourceRootElem>..</sourceRootElem>
                 <sourceRootElem>/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/include</sourceRootElem>
                 <sourceRootElem>../../../core/include</sourceRootElem>
+                <sourceRootElem>../../..</sourceRootElem>
             </sourceRootList>
             <confList>
                 <confElem>
