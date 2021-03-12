@@ -14,11 +14,11 @@
 # You can invoke make with the values of the macros:
 # $ makeMP_CC="/opt/microchip/mplabc30/v3.30c/bin/pic30-gcc" ...  
 #
-PATH_TO_IDE_BIN=/opt/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/
+PATH_TO_IDE_BIN=/opt/microchip/mplabx/v5.45/mplab_platform/platform/../mplab_ide/modules/../../bin/
 # Adding MPLAB X bin directory to path.
-PATH:=/opt/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/:$(PATH)
+PATH:=/opt/microchip/mplabx/v5.45/mplab_platform/platform/../mplab_ide/modules/../../bin/:$(PATH)
 # Path to java used to run MPLAB X when this makefile was created
-MP_JAVA_PATH="/opt/microchip/mplabx/v5.10/sys/java/jre1.8.0_181/bin/"
+MP_JAVA_PATH="/opt/microchip/mplabx/v5.45/sys/java/zulu8.40.0.25-ca-fx-jre8.0.222-linux_x64/bin/"
 OS_CURRENT="$(shell uname -s)"
 MP_CC="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin/mips-mti-elf-gcc"
 # MP_CPPC is not defined
@@ -26,7 +26,7 @@ MP_CC="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin/mips-mti-elf-gcc"
 MP_AS="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin/mips-mti-elf-as"
 MP_LD="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin/mips-mti-elf-as"
 # MP_AR is not defined
-DEP_GEN=${MP_JAVA_PATH}java -jar "/opt/microchip/mplabx/v5.10/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
+DEP_GEN=${MP_JAVA_PATH}java -jar "/opt/microchip/mplabx/v5.45/mplab_platform/platform/../mplab_ide/modules/../../bin/extractobjectdependencies.jar"
 MP_CC_DIR="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin"
 # MP_CPPC_DIR is not defined
 # MP_BC_DIR is not defined
@@ -34,3 +34,4 @@ MP_AS_DIR="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin"
 MP_LD_DIR="/opt/imgtec/Toolchains/mips-mti-elf/2016.05-03/bin"
 # MP_AR_DIR is not defined
 # MP_BC_DIR is not defined
+DFP_DIR=/root/.mchp_packs/Microchip/PIC32MZ-EF_DFP/1.3.58
